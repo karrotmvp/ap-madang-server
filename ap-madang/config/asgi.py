@@ -1,5 +1,5 @@
 """
-ASGI config for meetup project.
+ASGI config for ap-madang project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

@@ -11,5 +11,5 @@ class Base(models.Model):
 
 class Reservation(Base):
     user_id = models.TextField(unique=True)
-    nickname = models.TextField()
-    region_id = models.BigIntegerField()
+    nickname = models.CharField(max_length=100)
+    region = models.CharField(max_length=100)
