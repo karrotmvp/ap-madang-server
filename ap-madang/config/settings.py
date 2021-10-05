@@ -130,3 +130,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 APP_ID_SECRET = secrets["APP_ID_SECRET"]
+API_KEY = secrets["API_KEY"]

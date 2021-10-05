@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import requests
-from config.settings import APP_ID_SECRET
+from config.settings import APP_ID_SECRET, API_KEY
 
 BASE_URL = "https://openapi.kr.karrotmarket.com"
 
@@ -34,7 +34,14 @@ def get_user_info(access_token):
     response = requests.request("GET", url, headers=headers)
     return response.text
 
+def get_region_from_region_id(region_id):
+    url = BASE_URL + "/api/v2/region/" + region_id
 
+    headers = {
+        "X-Api-Key": API_KEY
+    }
+    response = requests.request("GET", url, headers=headers)
+    return response.text
 
 
     
