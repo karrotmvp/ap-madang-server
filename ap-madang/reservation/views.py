@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from oauth import views
+import json
 from django.http import HttpResponse
 
 # Create your views here.
@@ -21,7 +22,6 @@ def reservation(request):
     reservation = Reservation.objects.create( 
             userid = user_id, nickname = nickname, region = region)
 
-    
     return HttpResponse(status=201)
 
 
