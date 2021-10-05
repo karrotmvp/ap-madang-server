@@ -17,7 +17,7 @@ def me(request):
         "scope" : "account/profile",
         "response_type" : "code"
     }
-    headers = {"Authorization": "Basic " + appId:appSecret }
+    headers = {"Authorization": "Basic " + "appId:appSecret" }
     response = requests.request("GET", url, headers=headers, params=querystring)
 
     print(response.text)
