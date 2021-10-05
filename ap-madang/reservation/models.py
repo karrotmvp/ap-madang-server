@@ -10,6 +10,6 @@ class Base(models.Model):
         abstract = True
 
 class Reservation(Base):
-    user_id = models.TextField(unique=True)
+    userid = models.CharField(max_length=100)
     nickname = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
