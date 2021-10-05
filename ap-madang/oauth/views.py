@@ -2,7 +2,7 @@ from django.shortcuts import render
 import requests
 from config.settings import APP_ID_SECRET, API_KEY
 
-BASE_URL = "https://openapi.kr.karrotmarket.com"
+BASE_URL = "https://openapi.alpha.kr.karrotmarket.com"
 
 # Create your views here.
 
