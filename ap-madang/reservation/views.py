@@ -8,15 +8,15 @@ from .models import Reservation
 from drf_yasg.utils import swagger_auto_schema, no_body
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from .serializers import ReservationBodySerializer
 # Create your views here.
 
 BASE_URL = "https://openapi.alpha.kr.karrotmarket.com"
 
 # Create your views here.
 
-@csrf_exempt
 @api_view(['POST'])
-@swagger_auto_schema(request_body=no_body)
+@swagger_auto_schema(request_body=ReservationBodySerializer)
 def reservation(request):
     # body
     code = json.loads(request.body)['code']
