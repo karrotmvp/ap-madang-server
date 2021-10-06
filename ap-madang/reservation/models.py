@@ -13,3 +13,4 @@ class Reservation(Base):
     userid = models.CharField(max_length=100)
     nickname = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
+    suggestion = models.TextField(blank=True, null=True)
