@@ -32,7 +32,10 @@ SECRET_KEY = secrets['SECRET_KEY']
 DEBUG = True
 # DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '.ap-northeast-2.compute.amazonaws.com',
+]
 
 
 # Application definition
