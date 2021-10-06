@@ -35,6 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     '.ap-northeast-2.compute.amazonaws.com',
+    'ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com'
 ]
 
 
