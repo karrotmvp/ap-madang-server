@@ -1,6 +1,10 @@
 # Secrets
 /ap-madang/config/secrets.json 
 
+# Elastic Beanstalk Files
+/ap-madang/.elasticbeanstalk/*
+/ap-madang/!.elasticbeanstalk/*.cfg.yml
+/ap-madang/!.elasticbeanstalk/*.global.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
