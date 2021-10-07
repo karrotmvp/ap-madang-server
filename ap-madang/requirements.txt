@@ -15,6 +15,7 @@ coreschema==0.0.4
 cryptography==35.0.0
 Django==3.2.7
 django-cors-headers==3.10.0
+django-dotenv==1.4.2
 djangorestframework==3.12.4
 docker==4.4.4
 docker-compose==1.25.5

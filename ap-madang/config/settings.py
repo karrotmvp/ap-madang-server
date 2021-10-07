@@ -18,7 +18,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(BASE_DIR, 'secrets.json'), 'rb') as secret_file:
     secrets = json.load(secret_file)
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,10 +26,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = secrets['SECRET_KEY']
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+
+if os.environ.get('DEBUG') == 'False':
+    DEBUG = False
+else: 
+    DEBUG = True
 
 ALLOWED_HOSTS = [
     '*',
@@ -111,9 +113,27 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 if DEBUG:
-    DATABASES = secrets['DB_SETTINGS_DEV']
+    DATABASES = {
+      "default" : {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.environ.get('DB_LOCAL_NAME'),
+        "USER": os.environ.get('DB_LOCAL_USER'),             
+        "PASSWORD": os.environ.get('DB_LOCAL_PASSWORD'),
+        "HOST": os.environ.get('DB_LOCAL_HOST'),
+        "PORT": os.environ.get('DB_LOCAL_PORT')              
+      }
+    }
 else :
-    DATABASES = secrets['DB_SETTINGS_PROD']
+    DATABASES = {
+      "default" : {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.environ.get('DB_PROD_NAME'),
+        "USER": os.environ.get('DB_PROD_USER'),             
+        "PASSWORD": os.environ.get('DB_PROD_PASSWORD'),
+        "HOST": os.environ.get('DB_PROD_HOST'),
+        "PORT": os.environ.get('DB_PROD_PORT')              
+      }
+    }
 
 
 # Password validation
@@ -161,5 +181,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-APP_ID_SECRET = secrets["APP_ID_SECRET"]
-API_KEY = secrets["API_KEY"]
+APP_ID_SECRET = os.environ.get('APP_ID_SECRET')
+API_KEY = os.environ.get('API_KEY')

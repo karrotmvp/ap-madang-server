@@ -1,5 +1,6 @@
 # Secrets
 /ap-madang/config/secrets.json 
+/ap-madang/.env
 
 # Elastic Beanstalk Files
 /ap-madang/.elasticbeanstalk/*
