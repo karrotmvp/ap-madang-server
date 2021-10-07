@@ -73,14 +73,17 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'http://121.166.172.250:3000'
+    'http://121.166.172.250:3000',
+    'http://192.168.60.184:3000'
 ]
 CORS_ALLOWED_ORIGIN_REGEXES = [
     'http://localhost:3000',
-    'http://121.166.172.250:3000'
+    'http://121.166.172.250:3000',
+    'http://192.168.60.184:3000'
 ]
 CORS_ORIGIN_WHITELIST = ['http://localhost:3000',
-                         'http://121.166.172.250:3000'
+                         'http://121.166.172.250:3000',
+                         'http://192.168.60.184:3000'
                          ]
 
 ROOT_URLCONF = 'config.urls'
