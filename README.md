@@ -40,9 +40,10 @@ python3 manage.py migrate
 python3 manage.py runserver
 ```
 
-6. [개발 문서 접속](http://127.0.0.1:8000/swagger/)
+6. 접속
 
-
+[개발 문서 접속](http://127.0.0.1:8000/swagger/)
+[어드민 접속](http://127.0.0.1:8000/admin)
 
 ## 배포
 
