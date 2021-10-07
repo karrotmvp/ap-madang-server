@@ -5,7 +5,7 @@
 
 
 ## 환경 세팅
----
+
 1. 레포지토리를 클론합니다
 ```
 git clone https://github.com/karrotmvp/ap-madang-server.git
@@ -42,7 +42,7 @@ python3 manage.py runserver
 
 6. [개발 문서 접속](http://127.0.0.1:8000/swagger/)
 
----
+
 
 ## 배포
 
@@ -64,7 +64,7 @@ sudo systemctl restart gunicorn nginx
 ```
 
 ## 로그 확인
----
+
 ```
 cat /var/log/nginx/access.log
 ```
@@ -74,7 +74,7 @@ cat /var/log/nginx/error.log
 ```
 
 ## gunicon / nignx 설정 변경시
----
+
 ```
 sudo ln -sf /etc/nginx/sites-available/ap-madang.conf /etc/nginx/sites-enabled/ap-madang.conf
 ```
