@@ -6,6 +6,9 @@
 /ap-madang/!.elasticbeanstalk/*.cfg.yml
 /ap-madang/!.elasticbeanstalk/*.global.yml
 
+# static
+/ap-madang/static
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
