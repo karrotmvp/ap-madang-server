@@ -33,7 +33,9 @@ SECRET_KEY = secrets['SECRET_KEY']
 DEBUG = False
 
 ALLOWED_HOSTS = [
+    '*',
     '127.0.0.1',
+    '121.166.172.250',
     '.ap-northeast-2.compute.amazonaws.com',
     '.ap-northeast-2.elasticbeanstalk.com',
 ]
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     'oauth',
     'rest_framework',
     'drf_yasg',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,6 +67,21 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://121.166.172.250:3000'
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    'http://localhost:3000',
+    'http://121.166.172.250:3000'
+]
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000',
+                         'http://121.166.172.250:3000'
+                         ]
 
 ROOT_URLCONF = 'config.urls'
 
