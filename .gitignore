@@ -8,7 +8,7 @@
 /ap-madang/!.elasticbeanstalk/*.global.yml
 
 # static
-/ap-madang/static
+# /ap-madang/static
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
