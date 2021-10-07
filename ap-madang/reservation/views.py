@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from oauth.views import get_access_token_from_code, get_user_info, get_region_from_region_id
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
 from .models import Reservation
@@ -46,6 +46,12 @@ def reservation(request):
 
 
 
+@api_view(['GET'])
+def region(request):
+    region_id = request.GET.get("region_id", None)
+    region_name = get_region_from_region_id(region_id).get("data").get("region").get("name2")
+
+    return JsonResponse({'region': region_name},status=200, safe=False)
 
 
 
