@@ -190,3 +190,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 APP_ID_SECRET = os.environ.get('APP_ID_SECRET')
 API_KEY = os.environ.get('API_KEY')
+BASE_URL_REGION = os.environ.get('BASE_URL_REGION')
+BASE_URL_OAUTH = os.environ.get('BASE_URL_OAUTH')
