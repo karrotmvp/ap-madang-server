@@ -32,12 +32,12 @@ jobs:
       run: |
         touch .env
         echo DEBUG="False" >> .env
-        echo DB_PROD_NAME=${{ secrets.DB_PROD_NAME }} >> .env
-        echo DB_PROD_USER=${{ secrets.DB_PROD_USER }} >> .env
-        echo DB_PROD_PASSWORD=${{ secrets.DB_PROD_PASSWORD }} >> .env
-        echo DB_PROD_HOST=${{ secrets.DB_PROD_HOST }} >> .env
-        echo DB_PROD_PORT=${{ secrets.DB_PROD_PORT }} >> .env
-        echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+        echo DB_PROD_NAME="${{ secrets.DB_PROD_NAME }}" >> .env
+        echo DB_PROD_USER="${{ secrets.DB_PROD_USER }}" >> .env
+        echo DB_PROD_PASSWORD="${{ secrets.DB_PROD_PASSWORD }}" >> .env
+        echo DB_PROD_HOST="${{ secrets.DB_PROD_HOST }}" >> .env
+        echo DB_PROD_PORT="${{ secrets.DB_PROD_PORT }}" >> .env
+        echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         cat .env
     - name: Run Migrations
       run: |
