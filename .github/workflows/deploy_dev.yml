@@ -38,8 +38,6 @@ jobs:
         echo DB_PROD_HOST=${{ secrets.DB_PROD_HOST }} >> .env
         echo DB_PROD_PORT=${{ secrets.DB_PROD_PORT }} >> .env
         echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-
-
         cat .env
     - name: Run Migrations
       run: |
