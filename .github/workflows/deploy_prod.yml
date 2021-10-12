@@ -57,5 +57,5 @@ jobs:
         echo "--- Start EB deploy ---"
         cd ap-madang
         eb init --region ap-northeast-2 --platform "Python 3.8 running on 64bit Amazon Linux 2" ap-madang
-        eb use ap-madang-dev
+        eb use ap-madang-env
         eb deploy
