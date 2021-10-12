@@ -27,8 +27,7 @@ jobs:
       run: |
         cd ap-madang
         python -m pip install --upgrade pip
-        pip freeze > requirements.txt
-      # pip install -r requirements.txt
+        pip install -r requirements.txt
     - name: Create .env
       run: |
         cd ap-madang
@@ -36,7 +35,7 @@ jobs:
         echo DEBUG="False" >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         cat .env
-        pip install django-dotenv
+  
     
     - name: Collect Static
       run: |
