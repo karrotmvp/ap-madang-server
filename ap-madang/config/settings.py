@@ -36,6 +36,7 @@ else:
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
+    'localhost',
     '.ap-northeast-2.compute.amazonaws.com',
     'ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com',
     'd2p80xtunaym1x.cloudfront.net',
