@@ -35,12 +35,11 @@ else:
     DEBUG = True
 
 ALLOWED_HOSTS = [
-    '*',
     '127.0.0.1',
-    '121.166.172.250',
     '.ap-northeast-2.compute.amazonaws.com',
     'ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com',
-    'd2p80xtunaym1x.cloudfront.net'
+    'd2p80xtunaym1x.cloudfront.net',
+    'dtm2ixz1i9ezl.cloudfront.net'
 ]
 
 
@@ -72,28 +71,16 @@ MIDDLEWARE = [
 ]
 
 # CORS
+
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGIN_REGEXES = CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
-    'http://121.166.172.250:3000',
-    'http://192.168.60.184:3000',
     'https://d2p80xtunaym1x.cloudfront.net',
-    'http://d2p80xtunaym1x.cloudfront.net'
+    'http://d2p80xtunaym1x.cloudfront.net',
+    'https://dtm2ixz1i9ezl.cloudfront.net',
+    'http://dtm2ixz1i9ezl.cloudfront.net'
 ]
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    'http://localhost:3000',
-    'http://121.166.172.250:3000',
-    'http://192.168.60.184:3000',
-    'https://d2p80xtunaym1x.cloudfront.net',
-    'http://d2p80xtunaym1x.cloudfront.net'
-]
-CORS_ORIGIN_WHITELIST = ['http://localhost:3000',
-                         'http://121.166.172.250:3000',
-                         'http://192.168.60.184:3000',
-                         'https://d2p80xtunaym1x.cloudfront.net',
-                         'http://d2p80xtunaym1x.cloudfront.net'
-                         ]
 
 ROOT_URLCONF = 'config.urls'
 
