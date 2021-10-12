@@ -11,7 +11,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.8]
 
     steps:
     - uses: actions/checkout@v2
@@ -29,9 +29,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Run Migrations
-      run: python manage.py migrate
+      run: |
+        cd ap-madang
+        python manage.py migrate
     - name: Collect Static
       run: |
+        cd ap-madang
         python manage.py collectstatic
   
     - name: Configure AWS credentials
@@ -48,6 +51,7 @@ jobs:
         pip install awsebcli --upgrade
         eb --version
         echo “--- Start EB deploy ---”
+        cd ap-madang
         eb init --region ap-northeast-2 --platform “Python 3.8 running on 64bit Amazon Linux 2" ap-madang
         eb use ap-madang-dev
         eb deploy
