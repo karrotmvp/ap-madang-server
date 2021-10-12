@@ -79,6 +79,7 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGIN_REGEXES = CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
+    'http://192.168.60.184:3000'
     'https://d2p80xtunaym1x.cloudfront.net',
     'http://d2p80xtunaym1x.cloudfront.net',
     'https://dtm2ixz1i9ezl.cloudfront.net',
