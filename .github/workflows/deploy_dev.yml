@@ -31,6 +31,7 @@ jobs:
         pip freeze > requirements.txt
     - name: create .env
       run: |
+        cd ap-madang
         touch .env
         echo DEBUG="False" >> .env
         echo DB_PROD_NAME="${{ secrets.DB_PROD_NAME }}" >> .env
