@@ -36,7 +36,7 @@ jobs:
         echo DEBUG="False" >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         cat .env
-        pip install python-dotenv
+        pip install django-dotenv
     
     - name: Collect Static
       run: |
