@@ -41,10 +41,10 @@ jobs:
         echo DB_PROD_PORT="${{ secrets.DB_PROD_PORT }}" >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         cat .env
-    - name: Run Migrations
-      run: |
-        cd ap-madang
-        python manage.py migrate
+    # - name: Run Migrations
+    #  run: |
+    #    cd ap-madang
+    #    python manage.py migrate
     - name: Collect Static
       run: |
         cd ap-madang
