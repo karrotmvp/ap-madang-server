@@ -2,7 +2,7 @@ name: Deploy to prod
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   build:
@@ -27,15 +27,16 @@ jobs:
       run: |
         cd ap-madang
         python -m pip install --upgrade pip
-        pip freeze > requirements.txt
         pip install -r requirements.txt
-    - name: create .env
+    - name: Create .env
       run: |
         cd ap-madang
         touch .env
         echo DEBUG="False" >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         cat .env
+  
+    
     - name: Collect Static
       run: |
         cd ap-madang
