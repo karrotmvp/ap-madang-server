@@ -59,12 +59,12 @@ jobs:
     
     - name: Deploy to EB-cli
       run: |
-        echo “--- Installing EB CLI ---”
+        echo "--- Installing EB CLI ---"
         python -m pip install --upgrade pip
         pip install awsebcli --upgrade
         eb --version
-        echo “--- Start EB deploy ---”
+        echo "--- Start EB deploy ---"
         cd ap-madang
-        eb init --region ap-northeast-2 --platform “Python 3.8 running on 64bit Amazon Linux 2" ap-madang
+        eb init --region ap-northeast-2 --platform "Python 3.8 running on 64bit Amazon Linux 2" ap-madang
         eb use ap-madang-dev
         eb deploy
