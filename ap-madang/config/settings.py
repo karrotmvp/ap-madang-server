@@ -35,6 +35,7 @@ else:
     DEBUG = True
 
 ALLOWED_HOSTS = [
+    '121.166.172.250',
     '127.0.0.1',
     'localhost',
     '.ap-northeast-2.compute.amazonaws.com',
