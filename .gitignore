@@ -1,3 +1,5 @@
+.vscode
+
 # Secrets
 /ap-madang/config/secrets.json 
 /ap-madang/.env
