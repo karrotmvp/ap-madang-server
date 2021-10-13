@@ -2,17 +2,21 @@ from django.shortcuts import render
 from oauth.views import get_access_token_from_code, get_user_info, get_region_from_region_id
 import json
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import requests
 from .models import Reservation
-from drf_yasg.utils import swagger_auto_schema, no_body
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .serializers import ReservationBodySerializer
+
+
 
 @api_view(['POST'])
-@swagger_auto_schema(request_body=ReservationBodySerializer)
 def reservation(request):
+    '''
+    사전 예약 등록 API
+    ---
+    사전 예약을 신청한 유저의 정보를 등록합니다
+    '''
+
     # body
     code = json.loads(request.body)['code']
     region_id = json.loads(request.body)['region_id']
@@ -42,6 +46,11 @@ def reservation(request):
 
 @api_view(['GET'])
 def region(request):
+    '''
+    지역(구) 정보 조회 API
+    ---
+    region_id를 기준으로 지역구를 조회합니다
+    '''
     region_id = request.GET.get("region_id", None)
     region_name = get_region_from_region_id(region_id).get("name2")
 
