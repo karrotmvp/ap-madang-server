@@ -33,7 +33,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('oauth/', include('oauth.urls')),
     path('reservation/', include('reservation.urls')),
-    # path('reservation/', include('reservation.urls')),
+    path('user/', include('user.urls')),
 ]
 
 
