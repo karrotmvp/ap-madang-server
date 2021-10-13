@@ -48,6 +48,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'reservation',
     'oauth',
+    'user',
     'rest_framework',
     'drf_yasg',
     'corsheaders',
