@@ -1,13 +1,8 @@
-from django.shortcuts import render
 from oauth.views import get_access_token_from_code, get_user_info, get_region_from_region_id
 import json
 from django.http import HttpResponse, JsonResponse
 from .models import Reservation
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-
-
 
 @api_view(['POST'])
 def reservation(request):
@@ -42,8 +37,6 @@ def reservation(request):
 
     return HttpResponse(status=201)
 
-
-
 @api_view(['GET'])
 def region(request):
     '''
@@ -55,6 +48,3 @@ def region(request):
     region_name = get_region_from_region_id(region_id).get("name2")
 
     return JsonResponse({'region': region_name},status=200, safe=False)
-
-
-
