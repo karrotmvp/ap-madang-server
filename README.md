@@ -42,17 +42,39 @@ python3 manage.py runserver
 [개발 문서 접속](http://127.0.0.1:8000/swagger/)
 [어드민 접속](http://127.0.0.1:8000/admin)
 
-## 프로덕션 배포
 
-1. 새로 추가한 라이브러리가 있는 경우
+## PR 시 주의사항
+
+* develop branch에 PR 날리기
+* 새로 추가한 라이브러리가 있는 경우
 ```
 pip3 freeze > requirements.txt
 ```
+* 마이그레이션 파일 확인
 
-2. 모델링을 변경한 경우( 로컬, 테스트, 프로덕션 모두 )
+## 테스트 배포
+1. 모델링을 변경한 경우, 로컬에서 dev db 연결 후에
 ```
 python3 manage.py migrate
 ```
+
+2. 추가한 환경 변수가 있는 경우 -> 배포 후에 AWS 에서 등록
+
+3. `feature` -> `develop` 으로 PR & merge
+
+4. github actions log 확인
+
+5. 배포 후 QA 진행
+
+
+## 프로덕션 배포
+
+1. 모델링을 변경한 경우, 로컬에서 production db 연결 후레
+```
+python3 manage.py migrate
+```
+
+2. 추가한 환경 변수가 있는 경우 -> 수동배포!
 
 3. `develop` -> `main` 으로 PR & merge
 
