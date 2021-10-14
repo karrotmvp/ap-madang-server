@@ -62,6 +62,7 @@ jobs:
     
     - name: swap urls
       run: |
+        cd ap-madang
         eb swap ap-madang-dev --destination_name ap-madang-dev-sub
         
     
@@ -79,4 +80,5 @@ jobs:
 
     - name: swap urls back
       run: |
+        cd ap-madang
         eb swap ap-madang-dev --destination_name ap-madang-dev-sub
