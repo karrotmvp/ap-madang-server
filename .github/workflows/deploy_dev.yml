@@ -36,7 +36,6 @@ jobs:
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         cat .env
   
-    
     - name: Collect Static
       run: |
         cd ap-madang
@@ -49,7 +48,24 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     
-    - name: Deploy to EB-cli
+    - name: Deploy to ap-madang-dev-sub
+      run: |
+        echo "--- Installing EB CLI ---"
+        python -m pip install --upgrade pip
+        pip install awsebcli --upgrade
+        eb --version
+        echo "--- Start EB deploy ---"
+        cd ap-madang
+        eb init --region ap-northeast-2 --platform "Python 3.8 running on 64bit Amazon Linux 2" ap-madang
+        eb use ap-madang-dev-sub
+        eb deploy
+    
+    - name: swap urls
+      run: |
+        eb swap ap-madang-dev --destination_name ap-madang-dev-sub
+        
+    
+    - name: Deploy to ap-madang-dev
       run: |
         echo "--- Installing EB CLI ---"
         python -m pip install --upgrade pip
@@ -60,3 +76,7 @@ jobs:
         eb init --region ap-northeast-2 --platform "Python 3.8 running on 64bit Amazon Linux 2" ap-madang
         eb use ap-madang-dev
         eb deploy
+
+    - name: swap urls back
+      run: |
+        eb swap ap-madang-dev --destination_name ap-madang-dev-sub
