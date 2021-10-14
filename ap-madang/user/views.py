@@ -16,6 +16,7 @@ import jwt
 def login(request):
     code = json.loads(request.body)["code"]
     region_id = json.loads(request.body)["region_id"]
+    # TODO body 값 없을 때 -> 404 Not Found
 
     # get access token
     access_token = get_access_token_from_code(code)
