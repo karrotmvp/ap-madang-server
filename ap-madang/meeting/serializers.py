@@ -26,3 +26,9 @@ class MeetingDetailSerializer(MeetingSerializer):
             "meeting_url",
             "region",
         ]
+
+
+class UserMeetingEnterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMeetingEnter
+        fields = ["user", "meeting", "created_at"]

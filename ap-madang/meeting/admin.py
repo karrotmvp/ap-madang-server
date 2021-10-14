@@ -4,9 +4,9 @@ from .models import Meeting, UserMeetingEnter
 # Register your models here.
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
-    list_display = ("title", "region", "start_time", "end_time")
+    list_display = ("id", "title", "region", "start_time", "end_time")
 
 
 @admin.register(UserMeetingEnter)
 class UserMeetingEnterAdmin(admin.ModelAdmin):
-    list_display = ("user", "meeting", "created_at")
+    list_display = ("id", "user", "meeting", "created_at")
