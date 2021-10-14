@@ -28,9 +28,9 @@ def env_name(request):
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Ap-Madang API",
+        title="Online Town Meeting API",
         default_version="v1",
-        description="우리동네 앞마당 API 문서",
+        description="랜던 동네 모임 API 문서",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
@@ -41,7 +41,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("oauth/", include("oauth.urls")),
     path("reservation/", include("reservation.urls")),
-    path("user/", include("user.urls")),
+    path("users/", include("user.urls")),
+    path("meetings/", include("meeting.urls")),
 ]
 
 
