@@ -34,7 +34,7 @@ def login(request):
     profile_image_url = user_info.get("profile_image_url", None)
 
     # 지역(구) 정보 가져오기
-    region = get_region_from_region_id(region_id).get("name")
+    region = get_region_from_region_id(region_id).get("name2")
     # TODO region 문제 있을 때 에러 처리
 
     user, is_created = User.objects.update_or_create(

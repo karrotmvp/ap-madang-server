@@ -44,21 +44,26 @@ ALLOWED_HOSTS = [
 
 
 # Application definition
-
-INSTALLED_APPS = [
-    "reservation",
-    "oauth",
-    "user",
+THIRD_PARTY_APPS = [
     "rest_framework",
     "drf_yasg",
     "corsheaders",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
 ]
+
+CUSTOM_APPS = ["reservation", "oauth", "user", "meeting"]
+
+INSTALLED_APPS = (
+    CUSTOM_APPS
+    + THIRD_PARTY_APPS
+    + [
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
+    ]
+)
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
