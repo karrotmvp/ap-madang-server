@@ -44,11 +44,7 @@ ALLOWED_HOSTS = [
 
 
 # Application definition
-THIRD_PARTY_APPS = [
-    "rest_framework",
-    "drf_yasg",
-    "corsheaders",
-]
+THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "corsheaders", "django-crontab"]
 
 CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk"]
 
@@ -64,6 +60,11 @@ INSTALLED_APPS = (
         "django.contrib.staticfiles",
     ]
 )
+
+# Cron
+CRONJOBS = [
+    ("* */1 * * *", "alarmtalk.cron.send_meeting_alarm", ">> /var/log/crontab.log")
+]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

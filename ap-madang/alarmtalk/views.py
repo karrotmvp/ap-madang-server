@@ -1,8 +1,50 @@
+from django.http.response import HttpResponse
 from rest_framework import viewsets, mixins, status
 from user.jwt_authentication import jwt_authentication
 from .models import *
 from .serializers import *
 from rest_framework.response import Response
+from config.settings import API_KEY, BASE_URL_REGION
+import json
+
+
+def send_biz_chat_message(
+    user_id, title, text, primary_button_url, primary_button_text
+):
+    import requests
+
+    url = BASE_URL_REGION + "/api/v2/chat/send_biz_chat_message"
+
+    payload = {
+        "input": {
+            "actions": [
+                {
+                    "payload": {
+                        "text": primary_button_text,
+                        "linkUrl": primary_button_url,
+                    },
+                    "type": "PRIMARY_BUTTON",
+                }
+            ],
+            "userId": user_id,
+            "title": title,
+            "text": text,
+        }
+    }
+    headers = {
+        "Accept": "application/json",
+        "X-Api-Key": API_KEY,
+        "Content-Type": "application/json",
+    }
+
+    response = requests.request("POST", url, json=payload, headers=headers)
+    return (
+        json.loads(response.text)
+        .get("data", None)
+        .get("sendBizChatMessage", None)
+        .get("status", None)
+        == "OK"
+    )
 
 
 class UserMeetingAlarmViewSet(
