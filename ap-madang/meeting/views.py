@@ -2,7 +2,6 @@ from rest_framework import viewsets, mixins
 from user.jwt_authentication import jwt_authentication
 from .models import *
 from .serializers import *
-from rest_framework.decorators import action
 
 # Create your views here.
 class MeetingViewSet(

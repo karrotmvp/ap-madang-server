@@ -1,14 +1,16 @@
 from rest_framework import serializers
 from .models import *
 from datetime import datetime
+from alarmtalk.models import UserMeetingAlarm
 
 
 class MeetingSerializer(serializers.ModelSerializer):
     is_live = serializers.SerializerMethodField()
+    alarm_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Meeting
-        fields = ["id", "title", "start_time", "end_time", "is_live"]
+        fields = ["id", "title", "start_time", "end_time", "is_live", "alarm_id"]
 
     def get_is_live(self, obj):
         now = datetime.now().time()
@@ -17,6 +19,13 @@ class MeetingSerializer(serializers.ModelSerializer):
         if start > end:
             return now >= start or now < end
         return start <= now < end
+
+    def get_alarm_id(self, obj):
+        user = self.context["request"].user
+        alarm = UserMeetingAlarm.objects.filter(sent_at=None, user=user, meeting=obj)
+        if alarm:
+            return alarm.first().id
+        return None
 
 
 class MeetingDetailSerializer(MeetingSerializer):

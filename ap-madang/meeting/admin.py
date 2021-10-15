@@ -4,7 +4,7 @@ from .models import Meeting, UserMeetingEnter
 # Register your models here.
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "region", "start_time", "end_time")
+    list_display = ("id", "title", "region", "start_time", "end_time", "is_deleted")
 
 
 @admin.register(UserMeetingEnter)

@@ -43,6 +43,7 @@ urlpatterns = [
     path("reservation/", include("reservation.urls")),
     path("users/", include("user.urls")),
     path("meetings/", include("meeting.urls")),
+    path("alarms/", include("alarmtalk.urls")),
 ]
 
 

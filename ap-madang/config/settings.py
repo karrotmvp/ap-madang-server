@@ -50,7 +50,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
 ]
 
-CUSTOM_APPS = ["reservation", "oauth", "user", "meeting"]
+CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk"]
 
 INSTALLED_APPS = (
     CUSTOM_APPS
