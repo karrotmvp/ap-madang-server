@@ -40,7 +40,7 @@ def send_biz_chat_message(
     request_data = json.loads(response.text).get("data", None)
 
     if request_data is None:
-        print("----- Alarm talk sent failed!!! -----")
+        print("***** Alarm talk sent failed!!! *****")
         print(response.text)
         return False
 
