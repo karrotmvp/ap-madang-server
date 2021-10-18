@@ -5,3 +5,4 @@ from .models import UserMeetingAlarm
 @admin.register(UserMeetingAlarm)
 class UserMeetingAlarmAdmin(admin.ModelAdmin):
     list_display = ("user", "meeting", "created_at", "sent_at")
+    list_filter = ["meeting", "sent_at"]

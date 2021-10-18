@@ -5,6 +5,7 @@ from .models import Meeting, UserMeetingEnter
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "region", "start_time", "end_time", "is_deleted")
+    list_filter = ["title", "region", "is_deleted"]
 
 
 @admin.register(UserMeetingEnter)
