@@ -122,5 +122,6 @@ sudo crontab -l
 
 9. 로그 확인
 ```
-sudo tail -20 /var/log/cron
+cat /var/log/crontab_meeting_alarm.log
+cat /var/log/crontab_test.log
 ```
