@@ -11,13 +11,13 @@ class ReservationAdmin(admin.ModelAdmin):
     actions = ["send_open_alarm"]
 
     def send_open_alarm(self, request, queryset):
-        title = "랜선 동네 모임 서비스 오픈"
-        text = '사전예약 해주신 랜선 동네 모임 서비스가 오픈했습니다. 아래 "서비스 확인하러 가기" 버튼을 눌러 이웃과 대화를 나눠보세요.'
+        title = "랜선동네모임 서비스가 오픈했어요🎉"
+        text = "오픈 알림받기를 신청한 랜선동네모임 서비스를 이제 당근마켓에서 만나볼 수 있어요!\n아래 '서비스 확인하러 가기' 버튼을 눌러 이웃을 만나보세요."
         primary_button_text = "서비스 확인하러 가기"
         primary_button_url = "https://www.daangn.com"
         total_alarm_num = 0
 
-        alarm_list = Reservation.objects.filter(sent_at=None)
+        alarm_list = queryset.filter(sent_at=None)
         print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
         for alarm in alarm_list:
             if send_biz_chat_message(

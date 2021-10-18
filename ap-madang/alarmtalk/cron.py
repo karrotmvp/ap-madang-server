@@ -10,7 +10,7 @@ def cron_test():
 
 def send_meeting_alarm():
     title = " 모임이 시작됐어요"
-    text = '아래 "모임 바로가기" 버튼을 눌러 이웃과 대화를 나눠보세요.'
+    text = "아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
     primary_button_text = "모임 바로가기"
     total_alarm_num = 0
 
@@ -20,7 +20,7 @@ def send_meeting_alarm():
 
     # 해당 모임 예약 내역 가져오기
     alarm_list = UserMeetingAlarm.objects.filter(sent_at=None, meeting__in=meetings)
-    print("----- user meeting alarm start : " + str(now) + " -----")
+    print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
 
     for alarm in alarm_list:
         if send_biz_chat_message(
@@ -40,7 +40,9 @@ def send_meeting_alarm():
             pass
 
     print(
-        "----- user meeting alarm end with : " + str(now) + " alarm talks total ",
+        "----- user meeting alarm end with : "
+        + str(datetime.now())
+        + " alarm talks total ",
         total_alarm_num,
         "-----",
     )

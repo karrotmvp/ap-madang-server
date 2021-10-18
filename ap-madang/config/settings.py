@@ -69,8 +69,12 @@ INSTALLED_APPS = (
 # Cron
 if DEBUG or ENV_NAME == "cron":
     CRONJOBS = [
-        ("* * * * *", "alarmtalk.cron.cron_test", ">> /var/log/crontab.log"),
-        ("0 */1 * * *", "alarmtalk.cron.send_meeting_alarm", ">> /var/log/crontab.log"),
+        ("*/5 * * * *", "alarmtalk.cron.cron_test", ">> /var/log/crontab_test.log"),
+        (
+            "0 */1 * * *",
+            "alarmtalk.cron.send_meeting_alarm",
+            ">> /var/log/crontab_meeting_alarm.log",
+        ),
     ]
 
 MIDDLEWARE = [
