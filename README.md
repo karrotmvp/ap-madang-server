@@ -1,5 +1,7 @@
 # ap-madang-server
 랜던 동네 모임 서버
+![image](https://user-images.githubusercontent.com/57395765/137661835-504cf61f-530d-4772-97d1-f47ac7792078.png)
+
 
 ## 환경 세팅
 
@@ -69,7 +71,7 @@ python3 manage.py migrate
 
 ## 프로덕션 배포
 
-1. 모델링을 변경한 경우, 로컬에서 production db 연결 후레
+1. 모델링을 변경한 경우, 로컬에서 production db 연결 후
 ```
 python3 manage.py migrate
 ```
@@ -79,3 +81,46 @@ python3 manage.py migrate
 3. `develop` -> `main` 으로 PR & merge
 
 4. github actions log 확인
+
+## 크론잡 배포
+1. 크론잡을 추가한 경우에 CRON_JOBS에 추가
+
+2. 모델링을 변경한 경우, 로컬에서 production db 연결 후
+```
+python3 manage.py migrate
+```
+
+3. EC2에 SSH 접속 후 소스코드 업로드
+```
+git pull origin main
+```
+
+4. cron job 제거
+```
+python3 manage.py crontab remove
+```
+
+5. cron job 등록
+```
+python3 manage.py crontab add
+```
+
+6. cron job 조회
+```
+python3 manage.py crontab show
+```
+
+7. 서버 재시작
+```
+sudo systemctl restart gunicorn nginx
+```
+
+8. 리눅스 cronjob 스케줄 확인
+```
+sudo crontab -l
+```
+
+9. 로그 확인
+```
+sudo tail -20 /var/log/cron
+```

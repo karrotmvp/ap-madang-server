@@ -1,4 +1,3 @@
-from django.http.response import HttpResponse
 from rest_framework import viewsets, mixins, status
 from user.jwt_authentication import jwt_authentication
 from .models import *
@@ -6,13 +5,12 @@ from .serializers import *
 from rest_framework.response import Response
 from config.settings import API_KEY, BASE_URL_REGION
 import json
+import requests
 
 
 def send_biz_chat_message(
     user_id, title, text, primary_button_url, primary_button_text
 ):
-    import requests
-
     url = BASE_URL_REGION + "/api/v2/chat/send_biz_chat_message"
 
     payload = {
@@ -38,13 +36,15 @@ def send_biz_chat_message(
     }
 
     response = requests.request("POST", url, json=payload, headers=headers)
-    return (
-        json.loads(response.text)
-        .get("data", None)
-        .get("sendBizChatMessage", None)
-        .get("status", None)
-        == "OK"
-    )
+
+    request_data = json.loads(response.text).get("data", None)
+
+    if request_data is None:
+        print("----- Alarm talk sent failed!!! -----")
+        print(response.text)
+        return False
+
+    return request_data.get("sendBizChatMessage", None).get("status", None) == "OK"
 
 
 class UserMeetingAlarmViewSet(
