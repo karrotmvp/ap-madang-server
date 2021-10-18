@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Reservation
 from alarmtalk.views import send_biz_chat_message
 from datetime import datetime
+from django.contrib import messages
 
 
 @admin.register(Reservation)
@@ -18,7 +19,7 @@ class ReservationAdmin(admin.ModelAdmin):
         total_alarm_num = 0
 
         alarm_list = queryset.filter(sent_at=None)
-        print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
+        total_list_num = len(alarm_list)
         for alarm in alarm_list:
             if send_biz_chat_message(
                 alarm.userid,
@@ -36,12 +37,21 @@ class ReservationAdmin(admin.ModelAdmin):
                 # TODO 우리한테 노티스 보내기? 아니면 retry 하기?
                 pass
 
-        print(
-            "----- user service open alarm end with : "
-            + str(datetime.now())
-            + " alarm talks total ",
-            total_alarm_num,
-            "-----",
-        )
+        if total_alarm_num != total_list_num:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                str(total_list_num)
+                + "명 중 "
+                + str(total_list_num - total_alarm_num)
+                + "명 에게 오픈 알람을 전송하지 못했습니다",
+            )
+
+        else:
+            messages.add_message(
+                request,
+                messages.INFO,
+                str(total_alarm_num) + "명 에게 오픈 알람을 전송했습니다",
+            )
 
     send_open_alarm.short_description = "오픈 알람 (안 받은 사람) 전체 보내기"
