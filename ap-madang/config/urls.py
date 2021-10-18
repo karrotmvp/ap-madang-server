@@ -44,6 +44,7 @@ urlpatterns = [
     path("users/", include("user.urls")),
     path("meetings/", include("meeting.urls")),
     path("alarms/", include("alarmtalk.urls")),
+    path("support/", include("support.urls")),
 ]
 
 

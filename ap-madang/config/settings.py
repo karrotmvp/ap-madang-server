@@ -51,7 +51,7 @@ else:
 # Application definition
 THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "corsheaders", "django_crontab"]
 
-CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk"]
+CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk", "support"]
 
 INSTALLED_APPS = (
     CUSTOM_APPS
