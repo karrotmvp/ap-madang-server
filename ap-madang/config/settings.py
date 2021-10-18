@@ -31,20 +31,25 @@ if os.environ.get("DEBUG") == "False":
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = [
-    "*",
-    "121.166.172.250",
-    "127.0.0.1",
-    "localhost",
-    ".ap-northeast-2.compute.amazonaws.com",
-    "ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
-    "d2p80xtunaym1x.cloudfront.net",
-    "dtm2ixz1i9ezl.cloudfront.net",
-]
+ENV_NAME = os.environ.get("ENV_NAME")
+
+if DEBUG or ENV_NAME in ["dev", "dev-sub"]:
+    ALLOWED_HOSTS = ["*"]
+
+else:
+    ALLOWED_HOSTS = [
+        "121.166.172.250",
+        "127.0.0.1",
+        "localhost",
+        ".ap-northeast-2.compute.amazonaws.com",
+        "ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
+        "d2p80xtunaym1x.cloudfront.net",
+        "dtm2ixz1i9ezl.cloudfront.net",
+    ]
 
 
 # Application definition
-THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "corsheaders", "django-crontab"]
+THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "corsheaders", "django_crontab"]
 
 CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk"]
 
@@ -63,7 +68,7 @@ INSTALLED_APPS = (
 
 # Cron
 CRONJOBS = [
-    ("* */1 * * *", "alarmtalk.cron.send_meeting_alarm", ">> /var/log/crontab.log")
+    ("0 */1 * * *", "alarmtalk.cron.send_meeting_alarm", ">> /var/log/crontab.log")
 ]
 
 MIDDLEWARE = [
@@ -78,17 +83,20 @@ MIDDLEWARE = [
 ]
 
 # CORS
+if DEBUG or ENV_NAME in ["dev", "dev-sub"]:
+    CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGIN_REGEXES = CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
-    "http://192.168.60.184:3000",
-    "https://d2p80xtunaym1x.cloudfront.net",
-    "http://d2p80xtunaym1x.cloudfront.net",
-    "https://dtm2ixz1i9ezl.cloudfront.net",
-    "http://dtm2ixz1i9ezl.cloudfront.net",
-]
+else:
+    CORS_ORIGIN_ALLOW_ALL = False
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGIN_REGEXES = CORS_ORIGIN_WHITELIST = [
+        "http://localhost:3000",
+        "http://192.168.60.184:3000",
+        "https://d2p80xtunaym1x.cloudfront.net",
+        "http://d2p80xtunaym1x.cloudfront.net",
+        "https://dtm2ixz1i9ezl.cloudfront.net",
+        "http://dtm2ixz1i9ezl.cloudfront.net",
+    ]
 
 ROOT_URLCONF = "config.urls"
 
@@ -188,4 +196,3 @@ API_KEY = os.environ.get("API_KEY")
 BASE_URL_REGION = os.environ.get("BASE_URL_REGION")
 BASE_URL_OAUTH = os.environ.get("BASE_URL_OAUTH")
 JWT_SECRET = os.environ.get("JWT_SECRET")
-ENV_NAME = os.environ.get("ENV_NAME")
