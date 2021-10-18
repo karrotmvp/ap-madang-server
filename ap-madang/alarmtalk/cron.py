@@ -9,8 +9,9 @@ def cron_test():
 
 
 def send_meeting_alarm():
-    title = " 모임이 시작됐어요"
-    text = "아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
+    title = "지금 바로 모임에 참여해보세요🚪"
+    text1 = "알림 신청하신 ["
+    text2 = "] 모임이 시작됐어요.\n아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
     primary_button_text = "모임 바로가기"
     total_alarm_num = 0
 
@@ -25,8 +26,8 @@ def send_meeting_alarm():
     for alarm in alarm_list:
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
-            alarm.meeting.title + title,
-            text,
+            title,
+            text1 + alarm.meeting.title + text2,
             alarm.meeting.meeting_url,
             primary_button_text,
         ):
