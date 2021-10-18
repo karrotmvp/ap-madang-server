@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 from datetime import datetime
 from alarmtalk.models import UserMeetingAlarm
+import json
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -29,12 +30,17 @@ class MeetingSerializer(serializers.ModelSerializer):
 
 
 class MeetingDetailSerializer(MeetingSerializer):
+    description = serializers.SerializerMethodField()
+
     class Meta(MeetingSerializer.Meta):
         fields = MeetingSerializer.Meta.fields + [
             "description",
             "meeting_url",
             "region",
         ]
+
+    def get_description(self, obj):
+        return json.loads(obj.description)
 
 
 class UserMeetingEnterSerializer(serializers.ModelSerializer):
