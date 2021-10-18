@@ -13,8 +13,8 @@ def jwt_authentication(func):
 
         encode_token = request.headers["Authorization"]
         try:
+            user = User.objects.get(token=encode_token)
             data = jwt.decode(encode_token, JWT_SECRET, algorithms="HS256")
-            user = User.objects.get(id=data["id"])
             request.region = data["region"]
             request.user = user
 

@@ -37,19 +37,19 @@ def login(request):
     region = get_region_from_region_id(region_id).get("name2")
     # TODO region 문제 있을 때 에러 처리
 
-    user, is_created = User.objects.update_or_create(
+    token = jwt.encode(
+        {"nickname": nickname, "region": region, "code": code},
+        JWT_SECRET,
+        algorithm="HS256",
+    )
+
+    User.objects.update_or_create(
         karrot_user_id=karrot_user_id,
         defaults={
             "nickname": nickname,
             "profile_image_url": profile_image_url,
             "manner_point": manner_point,
+            "token": token,
         },
     )
-
-    print(is_created, karrot_user_id, nickname, profile_image_url, manner_point, region)
-
-    token = jwt.encode({"id": user.id, "region": region}, JWT_SECRET, algorithm="HS256")
-
-    return JsonResponse(
-        {"token": token, "nickname": nickname, "region": region}, status=200, safe=False
-    )
+    return JsonResponse({"token": token}, status=200, safe=False)
