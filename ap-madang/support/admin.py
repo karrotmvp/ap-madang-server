@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+
+@admin.register(UserOpinion)
+class UserOpinionAdmin(admin.ModelAdmin):
+    list_display = ("user", "body", "created_at")
