@@ -1,3 +1,17 @@
-from django.shortcuts import render
+from rest_framework import viewsets, mixins
+from user.jwt_authentication import jwt_authentication
+from .models import *
+from .serializers import *
 
-# Create your views here.
+
+class UserOpinionViewSet(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = UserOpinionSerializer
+    queryset = UserOpinion.objects.all()
+
+    @jwt_authentication
+    def create(self, request, *args, **kwargs):
+        self.request.data.update({"user": request.user.id, "region": request.region})
+        return super().create(request, *args, **kwargs)
