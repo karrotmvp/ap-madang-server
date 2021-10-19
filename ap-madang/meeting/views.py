@@ -12,7 +12,9 @@ class MeetingViewSet(
 
     def get_queryset(self):
         region = self.request.region
-        return Meeting.objects.filter(is_deleted=False, region=region)
+        return Meeting.objects.filter(is_deleted=False, region=region).order_by(
+            "start_time"
+        )
 
     def get_serializer_class(self):
         if self.action == "retrieve":
