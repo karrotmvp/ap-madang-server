@@ -6,20 +6,22 @@ import json
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    is_live = serializers.SerializerMethodField()
+    live_status = serializers.SerializerMethodField()
     alarm_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Meeting
-        fields = ["id", "title", "start_time", "end_time", "is_live", "alarm_id"]
+        fields = ["id", "title", "start_time", "end_time", "live_status", "alarm_id"]
 
-    def get_is_live(self, obj):
+    def get_live_status(self, obj):
         now = datetime.now().time()
         start = obj.start_time
         end = obj.end_time
-        if start > end:
-            return now >= start or now < end
-        return start <= now < end
+        if (start <= now < end) or (start > end and (now >= start or now < end)):
+            return "live"
+        if now < start:
+            return "upcoming"
+        return "finish"
 
     def get_alarm_id(self, obj):
         user = self.context["request"].user
