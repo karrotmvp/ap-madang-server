@@ -1,7 +1,6 @@
 # ap-madang-server
-우리 동네 앞마당 서버
-
-당근마켓 MVP 인턴십 Jinny
+랜던 동네 모임 서버
+![image](https://user-images.githubusercontent.com/57395765/137661835-504cf61f-530d-4772-97d1-f47ac7792078.png)
 
 
 ## 환경 세팅
@@ -25,7 +24,7 @@ pip3 install -r requirements.txt
 ```
 
 4. DB 연결
-* secrets.json 파일을 생성해서 DB 정보 작성
+* .env 파일을 생성해서 DB 정보 작성
 
 ```
 python3 manage.py makemigrations
@@ -45,45 +44,85 @@ python3 manage.py runserver
 [개발 문서 접속](http://127.0.0.1:8000/swagger/)
 [어드민 접속](http://127.0.0.1:8000/admin)
 
-## 배포
 
-1. 새로 추가한 라이브러리가 있는 경우
+## PR 시 주의사항
+
+* develop branch에 PR 날리기
+* 새로 추가한 라이브러리가 있는 경우
 ```
 pip3 freeze > requirements.txt
 ```
+* 마이그레이션 파일 확인
 
-2. `develop` -> `main` 으로 PR & merge
-
-3. EC2에 소스코드 업로드 
+## 테스트 배포
+1. 모델링을 변경한 경우, 로컬에서 dev db 연결 후에
 ```
-git pull
+python3 manage.py migrate
 ```
 
-4. 서버 재시작
+2. 추가한 환경 변수가 있는 경우 -> 배포 후에 AWS 에서 등록
+
+3. `feature` -> `develop` 으로 PR & merge
+
+4. github actions log 확인
+
+5. 배포 후 QA 진행
+
+
+## 프로덕션 배포
+
+1. 모델링을 변경한 경우, 로컬에서 production db 연결 후
+```
+python3 manage.py migrate
+```
+
+2. 추가한 환경 변수가 있는 경우 -> 수동배포!
+
+3. `develop` -> `main` 으로 PR & merge
+
+4. github actions log 확인
+
+## 크론잡 배포
+1. 크론잡을 추가한 경우에 CRON_JOBS에 추가
+
+2. 모델링을 변경한 경우, 로컬에서 production db 연결 후
+```
+python3 manage.py migrate
+```
+
+3. EC2에 SSH 접속 후 소스코드 업로드
+```
+git pull origin main
+pip3 install -r requirements.txt
+```
+
+4. cron job 제거
+```
+python3 manage.py crontab remove
+```
+
+5. cron job 등록
+```
+python3 manage.py crontab add
+```
+
+6. cron job 조회
+```
+python3 manage.py crontab show
+```
+
+7. 서버 재시작
 ```
 sudo systemctl restart gunicorn nginx
 ```
 
-## 로그 확인
-
+8. 리눅스 cronjob 스케줄 확인
 ```
-cat /var/log/nginx/access.log
-```
-
-```
-cat /var/log/nginx/error.log
+crontab -l
 ```
 
-## gunicon / nignx 설정 변경시
-
+9. 로그 확인
 ```
-sudo ln -sf /etc/nginx/sites-available/ap-madang.conf /etc/nginx/sites-enabled/ap-madang.conf
-```
-
-```
-sudo systemctl daemon-reload
-```
-
-```
-sudo systemctl restart gunicorn nginx
+cat /var/log/crontab_meeting_alarm.log
+cat /var/log/crontab_test.log
 ```
