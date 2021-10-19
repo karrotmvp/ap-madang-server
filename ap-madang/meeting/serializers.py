@@ -37,6 +37,7 @@ class MeetingDetailSerializer(MeetingSerializer):
             "description",
             "meeting_url",
             "region",
+            "image",
         ]
 
     def get_description(self, obj):

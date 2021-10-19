@@ -49,7 +49,13 @@ else:
 
 
 # Application definition
-THIRD_PARTY_APPS = ["rest_framework", "drf_yasg", "corsheaders", "django_crontab"]
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "drf_yasg",
+    "corsheaders",
+    "django_crontab",
+    "storages",
+]
 
 CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk", "support"]
 
@@ -189,7 +195,25 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = "ap-madang-server"
+AWS_S3_REGION_NAME = "ap-northeast-2"
+
+AWS_S3_CUSTOM_DOMAIN = "%s.s3.%s.amazonaws.com" % (
+    AWS_STORAGE_BUCKET_NAME,
+    AWS_S3_REGION_NAME,
+)
+DEFAULT_FILE_STORAGE = "config.custom_storages.S3DefaultStorage"
+STATICFILES_STORAGE = "config.custom_storages.S3StaticStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
