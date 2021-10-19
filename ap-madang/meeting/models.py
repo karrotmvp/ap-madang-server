@@ -12,7 +12,11 @@ class Base(models.Model):
 
 class Meeting(Base):
     title = models.TextField()
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(
+        blank=True,
+        null=True,
+        default='{"text" : "", "recommend_user": [{"text": ""}],"recommend_topic": [{"text": ""}]}',
+    )
     region = models.CharField(max_length=200)
     start_time = models.TimeField()
     end_time = models.TimeField()
