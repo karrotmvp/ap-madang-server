@@ -17,6 +17,7 @@ class Meeting(Base):
     start_time = models.TimeField()
     end_time = models.TimeField()
     meeting_url = models.TextField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True, upload_to="meeting_image")
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
