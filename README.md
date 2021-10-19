@@ -118,7 +118,7 @@ sudo systemctl restart gunicorn nginx
 
 8. 리눅스 cronjob 스케줄 확인
 ```
-sudo crontab -l
+crontab -l
 ```
 
 9. 로그 확인
