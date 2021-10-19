@@ -10,7 +10,7 @@ def cron_test():
 
 
 def send_meeting_alarm():
-    title = "지금 모임이 시작됐어요🙌"
+    title = "지금 모임이 시작됐어요 🙌"
     text1 = "알림 신청하신 [ "
     text2 = " ] 모임이 시작됐어요.\n아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
     primary_button_text = "모임 바로가기"
