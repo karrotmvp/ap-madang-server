@@ -38,6 +38,7 @@ if DEBUG or ENV_NAME in ["dev", "dev-sub"]:
 
 else:
     ALLOWED_HOSTS = [
+        "daangn-meetup.com",
         "121.166.172.250",
         "127.0.0.1",
         "localhost",
