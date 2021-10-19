@@ -93,6 +93,7 @@ python3 manage.py migrate
 3. EC2에 SSH 접속 후 소스코드 업로드
 ```
 git pull origin main
+pip3 install -r requirements.txt
 ```
 
 4. cron job 제거

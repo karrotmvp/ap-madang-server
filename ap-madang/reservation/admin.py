@@ -3,6 +3,7 @@ from .models import Reservation
 from alarmtalk.views import send_biz_chat_message
 from datetime import datetime
 from django.contrib import messages
+from sentry_sdk import capture_message
 
 
 @admin.register(Reservation)
@@ -34,7 +35,9 @@ class ReservationAdmin(admin.ModelAdmin):
                 total_alarm_num += 1
 
             else:
-                # TODO 우리한테 노티스 보내기? 아니면 retry 하기?
+                capture_message(
+                    "서비스 오픈 알림톡이 전송되지 않았습니다. reservation.id = " + str(alarm.id)
+                )
                 pass
 
         if total_alarm_num != total_list_num:
