@@ -2,6 +2,7 @@ from rest_framework import viewsets, mixins
 from user.jwt_authentication import jwt_authentication
 from .models import *
 from .serializers import *
+from .utils import *
 
 # Create your views here.
 class MeetingViewSet(
@@ -12,14 +13,16 @@ class MeetingViewSet(
 
     def get_queryset(self):
         region = self.request.region
-        return Meeting.objects.filter(is_deleted=False, region=region).order_by(
-            "start_time"
-        )
+        return MeetingLog.objects.filter(
+            meeting__is_deleted=False,
+            meeting__region=region,
+            date__in=[date.today(), date.today() + timedelta(days=1)],
+        ).order_by("date", "meeting__start_time")
 
     def get_serializer_class(self):
         if self.action == "retrieve":
-            return MeetingDetailSerializer
-        return MeetingSerializer
+            return MeetingLogDetailSerializer
+        return MeetingLogSerializer
 
     @jwt_authentication
     def list(self, request, *args, **kwargs):
