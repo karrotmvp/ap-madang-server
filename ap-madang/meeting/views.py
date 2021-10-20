@@ -8,8 +8,8 @@ from .utils import *
 class MeetingViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
-    serializer_class = MeetingSerializer
-    queryset = Meeting.objects
+    serializer_class = MeetingLogSerializer
+    queryset = MeetingLog.objects
 
     def get_queryset(self):
         region = self.request.region
