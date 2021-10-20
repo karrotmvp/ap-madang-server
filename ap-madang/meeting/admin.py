@@ -13,8 +13,8 @@ class DaysAdmin(admin.ModelAdmin):
 class MeetingLogAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "meeting",
         "date",
+        "meeting",
     )
 
 
