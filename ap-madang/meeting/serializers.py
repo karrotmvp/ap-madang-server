@@ -39,6 +39,7 @@ class MeetingLogSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingLog
@@ -50,6 +51,7 @@ class MeetingLogSerializer(serializers.ModelSerializer):
             "title",
             "start_time",
             "end_time",
+            "image",
         ]
 
     def get_title(self, obj):
@@ -60,6 +62,11 @@ class MeetingLogSerializer(serializers.ModelSerializer):
 
     def get_end_time(self, obj):
         return obj.meeting.end_time
+
+    def get_image(self, obj):
+        if obj.meeting.image:
+            return obj.meeting.image.url
+        return None
 
     def get_live_status(self, obj):
         now = datetime.now().time()
@@ -86,7 +93,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
 
     def get_description(self, obj):
         return json.loads(obj.meeting.description)
@@ -97,13 +103,9 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     def get_region(self, obj):
         return obj.meeting.region
 
-    def get_image(self, obj):
-        return obj.meeting.image.url
-
     class Meta(MeetingLogSerializer.Meta):
         fields = MeetingLogSerializer.Meta.fields + [
             "description",
             "meeting_url",
             "region",
-            "image",
         ]
