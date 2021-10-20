@@ -40,6 +40,7 @@ class MeetingLogSerializer(serializers.ModelSerializer):
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
+    alarm_num = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingLog
@@ -52,6 +53,7 @@ class MeetingLogSerializer(serializers.ModelSerializer):
             "start_time",
             "end_time",
             "image",
+            "alarm_num",
         ]
 
     def get_title(self, obj):
@@ -86,6 +88,9 @@ class MeetingLogSerializer(serializers.ModelSerializer):
         if alarm:
             return alarm.first().id
         return None
+
+    def get_alarm_num(self, obj):
+        return UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
 
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
