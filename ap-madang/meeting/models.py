@@ -52,7 +52,7 @@ class Meeting(Base):
     region = models.CharField(max_length=200)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    days = models.ManyToManyField(Days)
+    days = models.ManyToManyField(Days, blank=True, null=True)
     meeting_url = models.TextField(blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
