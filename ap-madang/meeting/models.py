@@ -13,6 +13,22 @@ class Base(models.Model):
         abstract = True
 
 
+class Days(models.Model):
+    DAY_CHOICES = (
+        ("0_MON", "월"),
+        ("1_TUE", "화"),
+        ("2_WED", "수"),
+        ("3_THUR", "목"),
+        ("4_FRI", "금"),
+        ("5_SAT", "토"),
+        ("6_SUN", "일"),
+    )
+    day = models.CharField(max_length=8, choices=DAY_CHOICES, unique=True)
+
+    def __str__(self):
+        return self.day
+
+
 def path_and_rename(instance, filename):
     upload_to = "meeting_image"
     ext = filename.split(".")[-1]
@@ -36,12 +52,23 @@ class Meeting(Base):
     region = models.CharField(max_length=200)
     start_time = models.TimeField()
     end_time = models.TimeField()
+    days = models.ManyToManyField(Days)
     meeting_url = models.TextField(blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title + " - " + self.region
+
+
+class MeetingLog(Base):
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    date = models.DateField()
+
+    def __str__(self):
+        return (
+            self.meeting.title + " - " + self.meeting.region + " at " + str(self.date)
+        )
 
 
 class UserMeetingEnter(Base):
