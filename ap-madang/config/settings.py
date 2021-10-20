@@ -82,6 +82,11 @@ if DEBUG or ENV_NAME == "cron":
             "alarmtalk.cron.send_meeting_alarm",
             ">> /var/log/crontab_meeting_alarm.log",
         ),
+        (
+            "0 1 * * *",
+            "meeting.cron.create_tomorrows_meeting",
+            ">> /var/log/crontab_create_tomorrows_meeting.log",
+        ),
     ]
 
 MIDDLEWARE = [

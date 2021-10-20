@@ -51,3 +51,4 @@ def send_meeting_alarm():
         total_alarm_num,
         "-----",
     )
+    print()
