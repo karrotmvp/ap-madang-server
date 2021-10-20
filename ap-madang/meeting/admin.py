@@ -1,10 +1,37 @@
 from django.contrib import admin
-from .models import Meeting, UserMeetingEnter
+from .models import *
+from django import forms
+from django.db import models
 
-# Register your models here.
+
+# @admin.register(Days)
+# class DaysAdmin(admin.ModelAdmin):
+#     list_display = ("day",)
+
+
+@admin.register(MeetingLog)
+class MeetingLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "meeting",
+        "date",
+    )
+
+
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "region", "start_time", "end_time", "is_deleted")
+    formfield_overrides = {
+        models.ManyToManyField: {"widget": forms.CheckboxSelectMultiple}
+    }
+
+    list_display = (
+        "id",
+        "title",
+        "region",
+        "start_time",
+        "end_time",
+        "is_deleted",
+    )
     list_filter = ["title", "region", "is_deleted"]
 
 
