@@ -4,9 +4,9 @@ from django import forms
 from django.db import models
 
 
-# @admin.register(Days)
-# class DaysAdmin(admin.ModelAdmin):
-#     list_display = ("day",)
+@admin.register(Days)
+class DaysAdmin(admin.ModelAdmin):
+    list_display = ("day",)
 
 
 @admin.register(MeetingLog)
