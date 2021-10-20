@@ -13,11 +13,7 @@ class DaysAdmin(admin.ModelAdmin):
 
 @admin.register(MeetingLog)
 class MeetingLogAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "date",
-        "meeting",
-    )
+    list_display = ("id", "date", "meeting", "created_at")
     list_filter = ["date", "meeting"]
 
 
