@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.constraints import UniqueConstraint
 from user.models import User
 from datetime import datetime
 import os
@@ -64,6 +65,13 @@ class Meeting(Base):
 class MeetingLog(Base):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     date = models.DateField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["meeting", "date"], name="only one meeting for each day"
+            ),
+        ]
 
     def __str__(self):
         return (
