@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from meeting.models import Meeting
 from .models import *
 from .views import *
@@ -18,7 +18,9 @@ def send_meeting_alarm():
 
     # 현재 시간에 열리는 모임 리스트 가져오기
     now = datetime.strftime(datetime.now(), "%H:%M:%000")
-    meetings = Meeting.objects.filter(is_deleted=False, start_time=now)
+    meetings = MeetingLog.objects.filter(
+        meeting__is_deleted=False, meeting__start_time=now, date=date.today()
+    )
 
     # 해당 모임 예약 내역 가져오기
     alarm_list = UserMeetingAlarm.objects.filter(sent_at=None, meeting__in=meetings)
@@ -28,8 +30,8 @@ def send_meeting_alarm():
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
             title,
-            text1 + alarm.meeting.title + text2,
-            alarm.meeting.meeting_url,
+            text1 + alarm.meeting.meeting.title + text2,
+            alarm.meeting.meeting.meeting_url,
             primary_button_text,
         ):
             print("Alarm sent! to ", alarm.user.karrot_user_id)
@@ -41,7 +43,6 @@ def send_meeting_alarm():
             capture_message(
                 "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id)
             )
-            pass
 
     print(
         "----- user meeting alarm end with : "
@@ -50,3 +51,4 @@ def send_meeting_alarm():
         total_alarm_num,
         "-----",
     )
+    print()
