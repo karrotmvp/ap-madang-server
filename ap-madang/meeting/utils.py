@@ -18,3 +18,7 @@ def get_date_of_today():
 def get_date_of_tomorrow():
     tommorow = date.today() + timedelta(days=1)
     return DAY_TO_MODEL.get(tommorow.weekday(), None)
+
+
+def get_date(date):
+    return DAY_TO_MODEL.get(date.weekday(), None)
