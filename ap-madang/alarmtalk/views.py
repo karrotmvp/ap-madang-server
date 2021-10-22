@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from config.settings import API_KEY, BASE_URL_REGION
 import json
 import requests
+from django.db.utils import IntegrityError
 
 
 def send_biz_chat_message(
@@ -58,11 +59,19 @@ class UserMeetingAlarmViewSet(
     @jwt_authentication
     def create(self, request, *args, **kwargs):
         self.request.data.update({"user": request.user.id, "region": request.region})
-        return super().create(request, *args, **kwargs)
+        try:
+            return super().create(request, *args, **kwargs)
+        except IntegrityError:
+            return Response(
+                {"detail": "이미 해당 유저가 해당 모임에 대한 알람을 신청한 상태입니다."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     @jwt_authentication
     def destroy(self, request, *args, **kwargs):
         self.request.data.update({"user": request.user.id, "region": request.region})
         if self.get_object().user.id == request.user.id:
             return super().destroy(request, *args, **kwargs)
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response(
+            {"detail": "알람 신청한 유저만이 알람을 해제할 수 있습니다."}, status=status.HTTP_403_FORBIDDEN
+        )

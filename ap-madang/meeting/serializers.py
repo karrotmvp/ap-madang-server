@@ -94,7 +94,6 @@ class MeetingLogSerializer(serializers.ModelSerializer):
 
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
-    end_time = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
