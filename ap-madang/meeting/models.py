@@ -59,7 +59,7 @@ class Meeting(Base):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title + " - " + self.region
+        return self.title[:10] + " - " + self.region
 
 
 class MeetingLog(Base):
@@ -75,7 +75,11 @@ class MeetingLog(Base):
 
     def __str__(self):
         return (
-            self.meeting.title + " - " + self.meeting.region + " at " + str(self.date)
+            self.meeting.title[:10]
+            + " - "
+            + self.meeting.region
+            + " at "
+            + str(self.date)
         )
 
 
@@ -84,4 +88,4 @@ class UserMeetingEnter(Base):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.nickname + " - " + self.meeting.title
+        return self.user.nickname + " - " + self.meeting.title[:10]
