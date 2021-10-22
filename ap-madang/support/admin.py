@@ -10,3 +10,4 @@ class UserOpinionAdmin(admin.ModelAdmin):
 @admin.register(MeetingReview)
 class MeetingReviewAdmin(admin.ModelAdmin):
     list_display = ("user", "meeting", "body", "created_at")
+    list_filter = ["meeting__date", "meeting"]
