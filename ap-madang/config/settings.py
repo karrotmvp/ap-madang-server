@@ -187,7 +187,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 if ENV_NAME != "Local":
     sentry_sdk.init(
-        dsn="https://a749f41dfe974a0da6398c95c633dcc7@o1043631.ingest.sentry.io/6013271",
+        dsn="https://b8ef20910ff44060b06a7b9123637ce3@o1046587.ingest.sentry.io/6025026",
         integrations=[DjangoIntegration()],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
