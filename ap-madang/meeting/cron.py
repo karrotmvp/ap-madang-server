@@ -15,7 +15,7 @@ def create_tomorrows_meeting():
 
     for meeting in meetings:
         try:
-            MeetingLog.objects.create(meeting=meeting, date=date)
+            MeetingLog.objects.create(meeting=meeting, date=day_aft_tom)
             total += 1
         except IntegrityError:
             duplicate += 1
