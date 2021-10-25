@@ -48,7 +48,7 @@ def send_meeting_alarm():
 
         else:
             capture_message(
-                "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id)
+                "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id), "error"
             )
 
     print(
