@@ -3,6 +3,7 @@ from meeting.models import Meeting
 from .models import *
 from .views import *
 from sentry_sdk import capture_message
+from config.settings import CLIENT_BASE_URL
 
 
 def cron_test():
@@ -27,11 +28,16 @@ def send_meeting_alarm():
     print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
 
     for alarm in alarm_list:
+        url = (
+            CLIENT_BASE_URL
+            + "/index.html#/redirect?meeting="
+            + alarm.meeting.meeting.meeting_url[8:]
+        )
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
             title,
             text1 + alarm.meeting.meeting.title + text2,
-            alarm.meeting.meeting.meeting_url,
+            url,
             primary_button_text,
         ):
             print("Alarm sent! to ", alarm.user.karrot_user_id)
