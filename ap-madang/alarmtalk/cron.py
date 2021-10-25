@@ -32,7 +32,10 @@ def send_meeting_alarm():
             CLIENT_BASE_URL
             + "/index.html#/redirect?meeting="
             + alarm.meeting.meeting.meeting_url[8:]
+            + "&meeting_id="
+            + str(alarm.id)
         )
+        print(url)
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
             title,
