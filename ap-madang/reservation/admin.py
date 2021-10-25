@@ -4,6 +4,7 @@ from alarmtalk.views import send_biz_chat_message
 from datetime import datetime
 from django.contrib import messages
 from sentry_sdk import capture_message
+from config.settings import CLIENT_BASE_URL
 
 
 @admin.register(Reservation)
@@ -16,7 +17,7 @@ class ReservationAdmin(admin.ModelAdmin):
         title = "랜선동네모임 서비스가 오픈했어요🎉"
         text = "오픈 알림받기를 신청한 랜선동네모임 서비스를 이제 당근마켓에서 만나볼 수 있어요!\n아래 '서비스 확인하러 가기' 버튼을 눌러 이웃을 만나보세요."
         primary_button_text = "서비스 확인하러 가기"
-        primary_button_url = "https://www.daangn.com"
+        primary_button_url = CLIENT_BASE_URL + "/index.html"
         total_alarm_num = 0
 
         alarm_list = queryset.filter(sent_at=None)
