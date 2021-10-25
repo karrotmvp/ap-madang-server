@@ -28,12 +28,10 @@ def send_meeting_alarm():
     print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
 
     for alarm in alarm_list:
-        url = (
-            CLIENT_BASE_URL
-            + "/index.html#/redirect?meeting="
-            + alarm.meeting.meeting.meeting_url[8:]
-            + "&meeting_id="
-            + str(alarm.id)
+        url = "{}/index.html#/redirect?meeting={}&meeting_id={}".format(
+            CLIENT_BASE_URL,
+            alarm.meeting.meeting.meeting_url[8:],
+            str(alarm.meeting.id),
         )
         print(url)
         if send_biz_chat_message(
