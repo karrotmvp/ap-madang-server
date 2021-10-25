@@ -5,6 +5,7 @@ from django.db import models
 from .utils import *
 from django.contrib import messages
 from django.db.utils import IntegrityError
+from .filters import CustomDateFieldListFilter
 
 
 @admin.register(Days)
@@ -15,7 +16,7 @@ class DaysAdmin(admin.ModelAdmin):
 @admin.register(MeetingLog)
 class MeetingLogAdmin(admin.ModelAdmin):
     list_display = ("id", "date", "meeting", "created_at")
-    list_filter = ["date", "meeting"]
+    list_filter = [("date", CustomDateFieldListFilter), "meeting__region", "meeting"]
 
 
 def create_meeting_log(request, queryset, date):
