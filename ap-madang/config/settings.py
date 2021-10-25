@@ -149,6 +149,7 @@ if DEBUG:
             "PASSWORD": os.environ.get("DB_LOCAL_PASSWORD"),
             "HOST": os.environ.get("DB_LOCAL_HOST"),
             "PORT": os.environ.get("DB_LOCAL_PORT"),
+            "OPTIONS": {"charset": "utf8mb4"},
         }
     }
 else:
@@ -160,6 +161,7 @@ else:
             "PASSWORD": os.environ.get("DB_PROD_PASSWORD"),
             "HOST": os.environ.get("DB_PROD_HOST"),
             "PORT": os.environ.get("DB_PROD_PORT"),
+            "OPTIONS": {"charset": "utf8mb4"},
         }
     }
 
