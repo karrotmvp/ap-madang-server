@@ -30,7 +30,7 @@ def get_user_info(access_token):
 
 def get_region_from_region_id(region_id):
     # name depth를 지정해서 사용해야됨
-    url = BASE_URL_REGION + "/api/v2/regions/" + region_id
+    url = BASE_URL_REGION + "/api/v2/regions/" + str(region_id)
 
     headers = {"X-Api-Key": API_KEY}
     response = requests.request("GET", url, headers=headers)
