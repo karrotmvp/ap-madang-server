@@ -5,6 +5,7 @@ from django.db import models
 from .utils import *
 from django.contrib import messages
 from django.db.utils import IntegrityError
+from .filters import CustomDateFieldListFilter
 
 
 @admin.register(Days)
@@ -15,7 +16,7 @@ class DaysAdmin(admin.ModelAdmin):
 @admin.register(MeetingLog)
 class MeetingLogAdmin(admin.ModelAdmin):
     list_display = ("id", "date", "meeting", "created_at")
-    list_filter = ["date", "meeting"]
+    list_filter = [("date", CustomDateFieldListFilter), "meeting__region", "meeting"]
 
 
 def create_meeting_log(request, queryset, date):
@@ -76,8 +77,12 @@ class MeetingAdmin(admin.ModelAdmin):
         "end_time",
         "is_deleted",
     )
-    list_filter = ["title", "region", "is_deleted"]
-    actions = ["create_today_meeting_log", "create_tomorrow_meeting_log"]
+    list_filter = ["region", "is_deleted"]
+    actions = [
+        "create_today_meeting_log",
+        "create_tomorrow_meeting_log",
+        "duplicate_meeting_to_another_region",
+    ]
 
     def create_today_meeting_log(self, request, queryset):
         create_meeting_log(request, queryset, date.today())
@@ -85,6 +90,24 @@ class MeetingAdmin(admin.ModelAdmin):
     def create_tomorrow_meeting_log(self, request, queryset):
         create_meeting_log(request, queryset, date.today() + timedelta(days=1))
 
+    def duplicate_meeting_to_another_region(self, request, queryset):
+        total = 0
+        meetings = queryset.filter(is_deleted=False)
+        for meeting in meetings:
+            days = meeting.days.all()
+            meeting.pk = None
+            meeting.region = "관악구"
+            meeting.save()
+            meeting.days.set(days)
+            total += 1
+
+        messages.add_message(
+            request,
+            messages.INFO,
+            str(total) + "개의 미팅 로그를 생성했습니다",
+        )
+
+    duplicate_meeting_to_another_region.short_description = "관악구에 동일 모임 생성"
     create_today_meeting_log.short_description = "오늘 미팅 로그 생성"
     create_tomorrow_meeting_log.short_description = "내일 미팅 로그 생성"
 

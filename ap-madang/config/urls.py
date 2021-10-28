@@ -21,6 +21,8 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from .settings import ENV_NAME
 
+# from alarmtalk.cron import send_meeting_alarm
+
 
 def env_name(request):
     return HttpResponse("This is daangn-meetup " + ENV_NAME)
@@ -45,6 +47,7 @@ urlpatterns = [
     path("meetings/", include("meeting.urls")),
     path("alarms/", include("alarmtalk.urls")),
     path("support/", include("support.urls")),
+    # path("cron", send_meeting_alarm),
 ]
 
 

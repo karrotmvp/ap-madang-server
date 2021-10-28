@@ -56,6 +56,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "django_crontab",
     "storages",
+    "debug_toolbar",
 ]
 
 CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk", "support"]

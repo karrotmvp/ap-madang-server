@@ -15,21 +15,20 @@ def create_tomorrows_meeting():
 
     for meeting in meetings:
         try:
-            MeetingLog.objects.create(meeting=meeting, date=date)
+            MeetingLog.objects.create(meeting=meeting, date=day_aft_tom)
             total += 1
         except IntegrityError:
             duplicate += 1
 
     if total != meetings_num:
         capture_message(
-            str(day_aft_tom)
-            + "의 모임"
-            + str(meetings_num)
-            + "개 중 "
-            + str(meetings_num - total)
-            + "개의 미팅 로그를 생성하지 못했습니다. "
-            + str(duplicate)
-            + " 개의 미팅 로그가 이미 존재합니다."
+            "{}의 모임 {}개 중 {}개의 미팅 로그를 생성하지 못했습니다. {}개의 미팅 로그가 이미 존재합니다.".format(
+                str(day_aft_tom),
+                str(meetings_num),
+                str(meetings_num - total),
+                str(duplicate),
+            ),
+            "error",
         )
     else:
         print("created " + str(total) + " meeting logs")

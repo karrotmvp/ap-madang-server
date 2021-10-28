@@ -28,11 +28,12 @@ def send_meeting_alarm():
     print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
 
     for alarm in alarm_list:
-        url = (
-            CLIENT_BASE_URL
-            + "/index.html#/redirect?meeting="
-            + alarm.meeting.meeting.meeting_url[8:]
+        url = "{}/index.html?meeting_url={}&meeting_id={}#/redirect".format(
+            CLIENT_BASE_URL,
+            alarm.meeting.meeting.meeting_url[8:],
+            str(alarm.meeting.id),
         )
+        print(url)
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
             title,
@@ -47,7 +48,7 @@ def send_meeting_alarm():
 
         else:
             capture_message(
-                "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id)
+                "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id), "error"
             )
 
     print(
