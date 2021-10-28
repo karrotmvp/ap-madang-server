@@ -77,7 +77,7 @@ class MeetingAdmin(admin.ModelAdmin):
         "end_time",
         "is_deleted",
     )
-    list_filter = ["title", "region", "is_deleted"]
+    list_filter = ["region", "is_deleted"]
     actions = [
         "create_today_meeting_log",
         "create_tomorrow_meeting_log",
