@@ -37,7 +37,7 @@ class CustomDateFieldListFilter(DateFieldListFilter):
             (
                 "모레",
                 {
-                    self.lookup_kwarg_since: str(today),
+                    self.lookup_kwarg_since: str(tomorrow),
                     self.lookup_kwarg_until: str(day_after_tomorrow),
                 },
             ),
