@@ -30,7 +30,7 @@ def send_meeting_alarm():
     for alarm in alarm_list:
         url = "{}/index.html?meeting_url={}&meeting_id={}#/redirect".format(
             CLIENT_BASE_URL,
-            alarm.meeting.meeting.meeting_url[8:],
+            alarm.meeting.meeting.meeting_url[8:].replace("?", "&"),
             str(alarm.meeting.id),
         )
         print(url)
