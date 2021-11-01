@@ -4,6 +4,8 @@ from user.models import User
 from datetime import datetime
 import os
 from uuid import uuid4
+import json
+from django.core.exceptions import ValidationError
 
 
 class Base(models.Model):
@@ -57,6 +59,12 @@ class Meeting(Base):
     meeting_url = models.TextField(blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
+
+    def clean(self):
+        try:
+            json.loads(self.description)
+        except:
+            raise ValidationError("Description format is not JSON!")
 
     def __str__(self):
         return self.title[:10] + " - " + self.region
