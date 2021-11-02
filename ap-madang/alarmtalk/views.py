@@ -10,21 +10,38 @@ from django.db.utils import IntegrityError
 
 
 def send_biz_chat_message(
-    user_id, title, text, primary_button_url, primary_button_text
+    user_id,
+    title,
+    text,
+    primary_button_url,
+    primary_button_text,
+    is_normal_button,
+    normal_button_url=None,
+    normal_button_text=None,
 ):
     url = BASE_URL_REGION + "/api/v2/chat/send_biz_chat_message"
 
+    actions = [
+        {
+            "payload": {
+                "text": primary_button_text,
+                "linkUrl": primary_button_url,
+            },
+            "type": "PRIMARY_BUTTON",
+        }
+    ]
+
+    if is_normal_button:
+        actions.append(
+            {
+                "payload": {"text": normal_button_text, "linkUrl": normal_button_url},
+                "type": "NORMAL_BUTTON",
+            }
+        )
+
     payload = {
         "input": {
-            "actions": [
-                {
-                    "payload": {
-                        "text": primary_button_text,
-                        "linkUrl": primary_button_url,
-                    },
-                    "type": "PRIMARY_BUTTON",
-                }
-            ],
+            "actions": actions,
             "userId": user_id,
             "title": title,
             "text": text,

@@ -15,8 +15,8 @@ class ReservationAdmin(admin.ModelAdmin):
 
     def send_open_alarm(self, request, queryset):
         title = "랜선동네모임 서비스가 오픈했어요🎉"
-        text = "오픈 알림받기를 신청한 랜선동네모임 서비스를 이제 당근마켓에서 만나볼 수 있어요!\n아래 '서비스 확인하러 가기' 버튼을 눌러 이웃을 만나보세요."
-        primary_button_text = "서비스 확인하러 가기"
+        text = "오픈 알림받기를 신청한 랜선동네모임 서비스를 이제 당근마켓에서 만나볼 수 있어요!\n지금 바로 랜동모에서 열리는 모임을 구경하고, 관심 있는 모임에 참여해 보세요."
+        primary_button_text = "모임 둘러보러 가기"
         primary_button_url = "karrot://minikarrot/router?app=https%3A%2F%2Fwebview.prod.kr.karrotmarket.com%2Fwidget-profile&path=%2Fprofiles%2FV2lkZ2V0OjYxNjdhMjY3MTRjYmRjZjZiNTcwMjU3Ng%3D%3D&navbar=false&scrollable=false"
         total_alarm_num = 0
 
@@ -29,6 +29,7 @@ class ReservationAdmin(admin.ModelAdmin):
                 text,
                 primary_button_url,
                 primary_button_text,
+                False,
             ):
                 print("Alarm sent! to ", alarm.userid)
                 alarm.sent_at = datetime.now()
