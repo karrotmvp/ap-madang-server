@@ -15,6 +15,10 @@ def send_meeting_alarm():
     text1 = "알림 신청하신 [ "
     text2 = " ] 모임이 시작됐어요.\n아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
     primary_button_text = "모임 바로가기"
+    normal_button_url = "{}/index.html?#/".format(
+        CLIENT_BASE_URL,
+    )
+    normal_button_text = "랜동모 홈으로 가기"
     total_alarm_num = 0
 
     # 현재 시간에 열리는 모임 리스트 가져오기
@@ -28,18 +32,19 @@ def send_meeting_alarm():
     print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
 
     for alarm in alarm_list:
-        url = "{}/index.html?meeting_url={}&meeting_id={}#/redirect".format(
+        url = "{}/index.html?#/meetings/{}".format(
             CLIENT_BASE_URL,
-            alarm.meeting.meeting.meeting_url[8:].replace("?", "&"),
             str(alarm.meeting.id),
         )
-        print(url)
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
             title,
             text1 + alarm.meeting.meeting.title + text2,
             url,
             primary_button_text,
+            True,
+            normal_button_url,
+            normal_button_text,
         ):
             print("Alarm sent! to ", alarm.user.karrot_user_id)
             alarm.sent_at = datetime.now()
