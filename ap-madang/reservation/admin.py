@@ -31,7 +31,11 @@ class ReservationAdmin(admin.ModelAdmin):
                 primary_button_text,
                 False,
             ):
-                print("Alarm sent! to ", alarm.userid)
+                print(
+                    "Alarm sent! to nickname:{}, karrot_id : {}".format(
+                        alarm.nickname, alarm.userid
+                    )
+                )
                 alarm.sent_at = datetime.now()
                 alarm.save()
                 total_alarm_num += 1

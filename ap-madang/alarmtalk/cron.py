@@ -46,7 +46,11 @@ def send_meeting_alarm():
             normal_button_url,
             normal_button_text,
         ):
-            print("Alarm sent! to ", alarm.user.karrot_user_id)
+            print(
+                "Alarm sent! to id: {}, nickname: {}, karrot_id: {}".format(
+                    alarm.user.id, alarm.user.nickname, alarm.user.karrot_user_id
+                )
+            )
             alarm.sent_at = datetime.now()
             alarm.save()
             total_alarm_num += 1
