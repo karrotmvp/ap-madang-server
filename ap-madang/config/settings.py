@@ -102,6 +102,8 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
+# INTERNAL_IPS = ["127.0.0.1"]
+
 # CORS
 if DEBUG or ENV_NAME in ["dev", "dev-sub"]:
     CORS_ORIGIN_ALLOW_ALL = True
@@ -167,6 +169,28 @@ else:
         }
     }
 
+if DEBUG:
+    LOGGING = {
+        "version": 1,
+        "filters": {
+            "require_debug_true": {
+                "()": "django.utils.log.RequireDebugTrue",
+            }
+        },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "filters": ["require_debug_true"],
+                "class": "logging.StreamHandler",
+            }
+        },
+        "loggers": {
+            "django.db.backends": {
+                "level": "DEBUG",
+                "handlers": ["console"],
+            }
+        },
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

@@ -19,7 +19,7 @@ from django.urls import path, include, re_path
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
-from .settings import ENV_NAME
+from .settings import ENV_NAME, DEBUG
 
 # from alarmtalk.cron import send_meeting_alarm
 
@@ -66,3 +66,10 @@ urlpatterns += [
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
 ]
+
+if DEBUG:
+    import debug_toolbar
+
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ]
