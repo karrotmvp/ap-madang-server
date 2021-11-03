@@ -3,8 +3,7 @@ from user.jwt_authentication import jwt_authentication
 from .models import *
 from .serializers import *
 from .utils import *
-from django.http import JsonResponse
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 
 # def get_meeting_list_for_bot(request):
