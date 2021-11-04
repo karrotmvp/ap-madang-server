@@ -56,7 +56,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "django_crontab",
     "storages",
-    "debug_toolbar",
+    # "debug_toolbar",
 ]
 
 CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk", "support"]
@@ -99,8 +99,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
+
+# INTERNAL_IPS = ["127.0.0.1"]
 
 # CORS
 if DEBUG or ENV_NAME in ["dev", "dev-sub"]:
@@ -167,6 +169,28 @@ else:
         }
     }
 
+if DEBUG:
+    LOGGING = {
+        "version": 1,
+        "filters": {
+            "require_debug_true": {
+                "()": "django.utils.log.RequireDebugTrue",
+            }
+        },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "filters": ["require_debug_true"],
+                "class": "logging.StreamHandler",
+            }
+        },
+        "loggers": {
+            "django.db.backends": {
+                "level": "DEBUG",
+                "handlers": ["console"],
+            }
+        },
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

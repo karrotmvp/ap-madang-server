@@ -67,7 +67,7 @@ class Meeting(Base):
             raise ValidationError("Description format is not JSON!")
 
     def __str__(self):
-        return self.title[:10] + " - " + self.region
+        return self.title[:15] + " - " + self.region
 
 
 class MeetingLog(Base):
@@ -83,7 +83,7 @@ class MeetingLog(Base):
 
     def __str__(self):
         return (
-            self.meeting.title[:10]
+            self.meeting.title[:15]
             + " - "
             + self.meeting.region
             + " at "
@@ -96,4 +96,4 @@ class UserMeetingEnter(Base):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.nickname + " - " + self.meeting.title[:10]
+        return self.user.nickname + " - " + self.meeting.title[:15]

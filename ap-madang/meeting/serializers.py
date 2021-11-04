@@ -40,7 +40,6 @@ class MeetingLogSerializer(serializers.ModelSerializer):
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
-    alarm_num = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingLog
@@ -53,7 +52,6 @@ class MeetingLogSerializer(serializers.ModelSerializer):
             "start_time",
             "end_time",
             "image",
-            "alarm_num",
         ]
 
     def get_title(self, obj):
@@ -84,19 +82,19 @@ class MeetingLogSerializer(serializers.ModelSerializer):
 
     def get_alarm_id(self, obj):
         user = self.context["request"].user
-        alarm = UserMeetingAlarm.objects.filter(sent_at=None, user=user, meeting=obj)
+        alarm = UserMeetingAlarm.objects.filter(
+            sent_at=None, user=user, meeting=obj
+        ).first()
         if alarm:
-            return alarm.first().id
+            return alarm.id
         return None
-
-    def get_alarm_num(self, obj):
-        return UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
 
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
+    alarm_num = serializers.SerializerMethodField()
 
     def get_description(self, obj):
         return json.loads(obj.meeting.description)
@@ -107,9 +105,13 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     def get_region(self, obj):
         return obj.meeting.region
 
+    def get_alarm_num(self, obj):
+        return UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
+
     class Meta(MeetingLogSerializer.Meta):
         fields = MeetingLogSerializer.Meta.fields + [
             "description",
             "meeting_url",
             "region",
+            "alarm_num",
         ]

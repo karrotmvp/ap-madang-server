@@ -3,38 +3,37 @@ from user.jwt_authentication import jwt_authentication
 from .models import *
 from .serializers import *
 from .utils import *
-from django.http import JsonResponse
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 
-def get_meeting_list_for_bot(request):
-    if request.method == "GET":
-        meeting_in_24_list = list()
+# def get_meeting_list_for_bot(request):
+#     if request.method == "GET":
+#         meeting_in_24_list = list()
 
-        meetings = MeetingLog.objects.filter(
-            meeting__is_deleted=False,
-            date__in=[date.today(), date.today() + timedelta(days=1)],
-        )
+#         meetings = MeetingLog.objects.filter(
+#             meeting__is_deleted=False,
+#             date__in=[date.today(), date.today() + timedelta(days=1)],
+#         )
 
-        now = datetime.now()
+#         now = datetime.now()
 
-        for meeting in meetings:
-            if (
-                timedelta(hours=0)
-                < datetime.combine(meeting.date, meeting.meeting.start_time) - now
-                < timedelta(hours=24)
-            ):
-                dic = {
-                    "title": meeting.meeting.title,
-                    "start_time": meeting.meeting.start_time,
-                    "end_time": meeting.meeting.end_time,
-                    "meeting_url": meeting.meeting.meeting_url,
-                    "region": meeting.meeting.region,
-                    "date": meeting.date,
-                }
-                meeting_in_24_list.append(dic)
+#         for meeting in meetings:
+#             if (
+#                 timedelta(hours=0)
+#                 < datetime.combine(meeting.date, meeting.meeting.start_time) - now
+#                 < timedelta(hours=24)
+#             ):
+#                 dic = {
+#                     "title": meeting.meeting.title,
+#                     "start_time": meeting.meeting.start_time,
+#                     "end_time": meeting.meeting.end_time,
+#                     "meeting_url": meeting.meeting.meeting_url,
+#                     "region": meeting.meeting.region,
+#                     "date": meeting.date,
+#                 }
+#                 meeting_in_24_list.append(dic)
 
-        return JsonResponse(meeting_in_24_list, status=200, safe=False)
+#         return JsonResponse(meeting_in_24_list, status=200, safe=False)
 
 
 # Create your views here.
@@ -46,11 +45,15 @@ class MeetingViewSet(
 
     def get_queryset(self):
         region = self.request.region
-        return MeetingLog.objects.filter(
-            meeting__is_deleted=False,
-            meeting__region=region,
-            date__in=[date.today(), date.today() + timedelta(days=1)],
-        ).order_by("date", "meeting__start_time")
+        return (
+            MeetingLog.objects.filter(
+                meeting__is_deleted=False,
+                meeting__region=region,
+                date__in=[date.today(), date.today() + timedelta(days=1)],
+            )
+            .select_related("meeting")
+            .order_by("date", "meeting__start_time")
+        )
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -68,13 +71,13 @@ class MeetingViewSet(
         return super().retrieve(request, *args, **kwargs)
 
 
-class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    serializer_class = UserMeetingEnterSerializer
-    queryset = UserMeetingEnter.objects.all()
+# class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+#     serializer_class = UserMeetingEnterSerializer
+#     queryset = UserMeetingEnter.objects.all()
 
-    @jwt_authentication
-    def create(self, request, *args, **kwargs):
-        self.request.data.update(
-            {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
-        )
-        return super().create(request, *args, **kwargs)
+#     @jwt_authentication
+#     def create(self, request, *args, **kwargs):
+#         self.request.data.update(
+#             {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
+#         )
+#         return super().create(request, *args, **kwargs)
