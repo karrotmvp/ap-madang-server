@@ -3,6 +3,7 @@
 # Secrets
 /ap-madang/config/secrets.json 
 /ap-madang/.env
+/ap-madang/lambda/config.py
 
 # Elastic Beanstalk Files
 /ap-madang/.elasticbeanstalk/*
