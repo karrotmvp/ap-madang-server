@@ -95,6 +95,7 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
     alarm_num = serializers.SerializerMethodField()
+    channel_name = serializers.SerializerMethodField()
 
     def get_description(self, obj):
         return json.loads(obj.meeting.description)
@@ -108,10 +109,14 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     def get_alarm_num(self, obj):
         return UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
 
+    def get_channel_name(self, obj):
+        return obj.meeting.channel_name
+
     class Meta(MeetingLogSerializer.Meta):
         fields = MeetingLogSerializer.Meta.fields + [
             "description",
             "meeting_url",
             "region",
             "alarm_num",
+            "channel_name",
         ]
