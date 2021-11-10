@@ -7,6 +7,7 @@ from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
+from rest_framework.response import Response
 
 
 # def get_meeting_list_for_bot(request):
@@ -106,6 +107,6 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             usermeetingenter = UserMeetingEnter.objects.get(
                 meeting=kwargs["pk"], user=request.user.id
             )
-            lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-            self.kwargs[lookup_url_kwarg] = request.data[usermeetingenter.id]
-            return super().update(request, *args, **kwargs)
+            usermeetingenter.save()
+            serializer = UserMeetingEnterSerializer(usermeetingenter)
+            return Response(serializer.data)
