@@ -83,13 +83,7 @@ class MeetingLogSerializer(serializers.ModelSerializer):
         return "finish"
 
     def get_alarm_id(self, obj):
-        user = self.context["request"].user
-        alarm = UserMeetingAlarm.objects.filter(
-            sent_at=None, user=user, meeting=obj
-        ).first()
-        if alarm:
-            return alarm.id
-        return None
+        return obj.alarm_id
 
     def get_user_enter_cnt(self, obj):
         cnt = obj.user_enter_cnt
