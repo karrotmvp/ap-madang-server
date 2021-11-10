@@ -4,6 +4,7 @@ from .models import *
 from .serializers import *
 from .utils import *
 from datetime import date, timedelta
+from django.db.models import OuterRef, Subquery, Count
 
 
 # def get_meeting_list_for_bot(request):
@@ -51,6 +52,14 @@ class MeetingViewSet(
                 meeting__region=region,
                 date__in=[date.today(), date.today() + timedelta(days=1)],
             )
+            .annotate(
+                user_enter_cnt=Subquery(
+                    UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+                    .values("meeting")
+                    .annotate(count=Count("meeting"))
+                    .values("count")
+                ),
+            )
             .select_related("meeting")
             .order_by("date", "meeting__start_time")
         )
@@ -71,13 +80,14 @@ class MeetingViewSet(
         return super().retrieve(request, *args, **kwargs)
 
 
-# class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-#     serializer_class = UserMeetingEnterSerializer
-#     queryset = UserMeetingEnter.objects.all()
+class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    serializer_class = UserMeetingEnterSerializer
+    queryset = UserMeetingEnter.objects.all()
 
-#     @jwt_authentication
-#     def create(self, request, *args, **kwargs):
-#         self.request.data.update(
-#             {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
-#         )
-#         return super().create(request, *args, **kwargs)
+    @jwt_authentication
+    def create(self, request, *args, **kwargs):
+        self.request.data.update(
+            {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
+        )
+        # TODO 중복 제거
+        return super().create(request, *args, **kwargs)
