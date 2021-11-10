@@ -6,6 +6,7 @@ import os
 from uuid import uuid4
 import json
 from django.core.exceptions import ValidationError
+from agora.views import create_channel_name
 
 
 class Base(models.Model):
@@ -57,8 +58,15 @@ class Meeting(Base):
     end_time = models.TimeField()
     days = models.ManyToManyField(Days, blank=True)
     meeting_url = models.TextField(blank=True, null=True)
+    channel_name = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            # 새로운 모임인 경우에, 채널 이름 생성
+            self.channel_name = create_channel_name()
+        return super(Meeting, self).save(*args, **kwargs)
 
     def clean(self):
         try:
