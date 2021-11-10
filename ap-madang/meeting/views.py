@@ -101,8 +101,11 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
         )
         try:
-            super().create(request, *args, **kwargs)
+            return super().create(request, *args, **kwargs)
         except IntegrityError:
-            pass
-
-        return HttpResponse(status=201)
+            usermeetingenter = UserMeetingEnter.objects.get(
+                meeting=kwargs["pk"], user=request.user.id
+            )
+            lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+            self.kwargs[lookup_url_kwarg] = request.data[usermeetingenter.id]
+            return super().update(request, *args, **kwargs)

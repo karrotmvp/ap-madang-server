@@ -30,7 +30,7 @@ class MeetingDetailSerializer(MeetingSerializer):
 class UserMeetingEnterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserMeetingEnter
-        fields = ["user", "meeting", "created_at"]
+        fields = ["user", "meeting", "agora_token", "created_at"]
 
 
 class MeetingLogSerializer(serializers.ModelSerializer):
