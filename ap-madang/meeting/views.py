@@ -87,6 +87,7 @@ class MeetingViewSet(
     @jwt_authentication
     def retrieve(self, request, *args, **kwargs):
         self.request.data.update({"user": request.user.id, "region": request.region})
+        self.user_id = request.user.id
         return super().retrieve(request, *args, **kwargs)
 
 
