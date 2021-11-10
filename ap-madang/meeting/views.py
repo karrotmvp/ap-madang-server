@@ -60,7 +60,14 @@ class MeetingViewSet(
                     .values("meeting")
                     .annotate(count=Count("meeting"))
                     .values("count")
-                ),
+                )
+            )
+            .annotate(
+                alarm_id=Subquery(
+                    UserMeetingAlarm.objects.filter(
+                        sent_at=None, user=self.user_id, meeting=OuterRef("pk")
+                    ).values("id")
+                )
             )
             .select_related("meeting")
             .order_by("date", "meeting__start_time")
@@ -74,6 +81,7 @@ class MeetingViewSet(
     @jwt_authentication
     def list(self, request, *args, **kwargs):
         self.request.data.update({"user": request.user.id, "region": request.region})
+        self.user_id = request.user.id
         return super().list(request, *args, **kwargs)
 
     @jwt_authentication
