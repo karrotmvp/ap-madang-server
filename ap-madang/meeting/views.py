@@ -5,6 +5,8 @@ from .serializers import *
 from .utils import *
 from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
+from django.db.utils import IntegrityError
+from django.http import HttpResponse
 
 
 # def get_meeting_list_for_bot(request):
@@ -89,5 +91,9 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         self.request.data.update(
             {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
         )
-        # TODO 중복 제거
-        return super().create(request, *args, **kwargs)
+        try:
+            super().create(request, *args, **kwargs)
+        except IntegrityError:
+            pass
+
+        return HttpResponse(status=201)
