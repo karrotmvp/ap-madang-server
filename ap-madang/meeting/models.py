@@ -6,7 +6,7 @@ import os
 from uuid import uuid4
 import json
 from django.core.exceptions import ValidationError
-from agora.views import create_channel_name
+from agora.views import *
 
 
 class Base(models.Model):
@@ -102,6 +102,7 @@ class MeetingLog(Base):
 class UserMeetingEnter(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(MeetingLog, on_delete=models.CASCADE)
+    agora_token = models.TextField(blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -109,6 +110,10 @@ class UserMeetingEnter(Base):
                 fields=["meeting", "user"], name="user has already entered"
             ),
         ]
+
+    def save(self, *args, **kwargs):
+        self.agora_token = create_agora_token(self.meeting, self.user)
+        return super(UserMeetingEnter, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.user.nickname + " - " + self.meeting.meeting.title[:15]
