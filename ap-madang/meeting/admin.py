@@ -6,7 +6,6 @@ from .utils import *
 from django.contrib import messages
 from django.db.utils import IntegrityError
 from .filters import CustomDateFieldListFilter
-from agora.views import create_channel_name
 
 
 @admin.register(Days)
