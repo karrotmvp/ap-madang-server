@@ -6,8 +6,8 @@ from .utils import *
 from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
-from django.http import HttpResponse
-from rest_framework.response import Response
+from django.http import JsonResponse
+from agora.models import *
 
 
 # def get_meeting_list_for_bot(request):
@@ -104,9 +104,9 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         try:
             return super().create(request, *args, **kwargs)
         except IntegrityError:
-            usermeetingenter = UserMeetingEnter.objects.get(
-                meeting=kwargs["pk"], user=request.user.id
-            )
-            usermeetingenter.save()
-            serializer = UserMeetingEnterSerializer(usermeetingenter)
-            return Response(serializer.data)
+            pass
+
+        code = MeetingEnterCode.objects.create(
+            meeting=MeetingLog.objects.get(id=kwargs["pk"]), user=request.user
+        )
+        return JsonResponse({"code": code.code}, status=201, safe=False)
