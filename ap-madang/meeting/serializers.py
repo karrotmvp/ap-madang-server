@@ -6,31 +6,35 @@ import json
 from .utils import *
 
 
-class MeetingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Meeting
-        fields = ["title", "start_time", "end_time"]
+# class MeetingSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Meeting
+#         fields = [
+#             "id",
+#             "title",
+#             "channel_name",
+#         ]
 
 
-class MeetingDetailSerializer(MeetingSerializer):
-    description = serializers.SerializerMethodField()
+# class MeetingDetailSerializer(MeetingSerializer):
+#     description = serializers.SerializerMethodField()
 
-    class Meta(MeetingSerializer.Meta):
-        fields = MeetingSerializer.Meta.fields + [
-            "description",
-            "meeting_url",
-            "region",
-            "image",
-        ]
+#     class Meta(MeetingSerializer.Meta):
+#         fields = MeetingSerializer.Meta.fields + [
+#             "description",
+#             "meeting_url",
+#             "region",
+#             "image",
+#         ]
 
-    def get_description(self, obj):
-        return json.loads(obj.description)
+#     def get_description(self, obj):
+#         return json.loads(obj.description)
 
 
 class UserMeetingEnterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserMeetingEnter
-        fields = ["user", "meeting", "agora_token", "created_at"]
+        fields = ["user", "meeting", "created_at"]
 
 
 class MeetingLogSerializer(serializers.ModelSerializer):
