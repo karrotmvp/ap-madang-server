@@ -1,4 +1,3 @@
-from django.shortcuts import render
 import requests
 from config.settings import APP_ID_SECRET, API_KEY, BASE_URL_REGION, BASE_URL_OAUTH
 import json
