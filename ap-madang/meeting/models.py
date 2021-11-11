@@ -93,7 +93,14 @@ class MeetingLog(Base):
 
 class UserMeetingEnter(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    meeting = models.ForeignKey(MeetingLog, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["meeting", "user"], name="user has already entered"
+            ),
+        ]
 
     def __str__(self):
-        return self.user.nickname + " - " + self.meeting.title[:15]
+        return self.user.nickname + " - " + self.meeting.meeting.title[:15]

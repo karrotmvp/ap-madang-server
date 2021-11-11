@@ -59,7 +59,15 @@ THIRD_PARTY_APPS = [
     # "debug_toolbar",
 ]
 
-CUSTOM_APPS = ["reservation", "oauth", "user", "meeting", "alarmtalk", "support"]
+CUSTOM_APPS = [
+    "reservation",
+    "oauth",
+    "user",
+    "meeting",
+    "alarmtalk",
+    "support",
+    "agora",
+]
 
 INSTALLED_APPS = (
     CUSTOM_APPS
