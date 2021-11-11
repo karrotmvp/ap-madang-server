@@ -61,6 +61,7 @@ class Meeting(Base):
     channel_name = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
+    is_video = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
