@@ -1,25 +1,20 @@
-import random
-import string
-import datetime
-from .AgoraDynamicKey.RtcTokenBuilder import *
-from config.settings import AGORA_APP_ID, AGORA_APP_CERTIFICATE
+from .models import MeetingEnterCode
+from .serializers import MeetingEnterCodeSerializer
+from rest_framework import status
+from rest_framework.response import Response
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
 
 
-# Create your views here.
-def create_channel_name():
-    return (
-        str(datetime.datetime.now())
-        + "_"
-        + "".join(random.choices(string.ascii_letters + string.digits, k=20))
-    )
+@api_view(["GET"])
+def get_user_meeting_from_code(request):
+    code = request.GET.get("code", None)
+    try:
+        meeting_enter_code = MeetingEnterCode.objects.get(code=code, is_valid=True)
+    except MeetingEnterCode.DoesNotExist:
+        return JsonResponse({"error_code": "INVALID_CODE"}, status=401)
 
-
-def create_agora_token(meeting, user):
-    return RtcTokenBuilder.buildTokenWithUid(
-        AGORA_APP_ID,
-        AGORA_APP_CERTIFICATE,
-        meeting.meeting.channel_name,
-        user.id,
-        Role_Attendee,
-        0,
-    )
+    meeting_enter_code.is_valid = False
+    meeting_enter_code.save()
+    serializer = MeetingEnterCodeSerializer(meeting_enter_code)
+    return Response(serializer.data, status=status.HTTP_200_OK)
