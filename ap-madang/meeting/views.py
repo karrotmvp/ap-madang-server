@@ -6,7 +6,8 @@ from .utils import *
 from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
-from django.http import HttpResponse
+from django.http import JsonResponse
+from agora.models import *
 
 
 # def get_meeting_list_for_bot(request):
@@ -101,8 +102,11 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
         )
         try:
-            super().create(request, *args, **kwargs)
+            return super().create(request, *args, **kwargs)
         except IntegrityError:
             pass
 
-        return HttpResponse(status=201)
+        code = MeetingEnterCode.objects.create(
+            meeting=MeetingLog.objects.get(id=kwargs["pk"]), user=request.user
+        )
+        return JsonResponse({"code": code.code}, status=201, safe=False)

@@ -1,11 +1,12 @@
 from django.db import models
-from django.db.models.constraints import UniqueConstraint
 from user.models import User
 from datetime import datetime
 import os
 from uuid import uuid4
 import json
 from django.core.exceptions import ValidationError
+import random
+import string
 
 
 class Base(models.Model):
@@ -45,6 +46,14 @@ def path_and_rename(instance, filename):
     return os.path.join(upload_to, filename)
 
 
+def create_channel_name():
+    return (
+        str(datetime.datetime.now())
+        + "_"
+        + "".join(random.choices(string.ascii_letters + string.digits, k=20))
+    )
+
+
 class Meeting(Base):
     title = models.TextField()
     description = models.TextField(
@@ -57,8 +66,16 @@ class Meeting(Base):
     end_time = models.TimeField()
     days = models.ManyToManyField(Days, blank=True)
     meeting_url = models.TextField(blank=True, null=True)
+    channel_name = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
+    is_video = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            # 새로운 모임인 경우에, 채널 이름 생성
+            self.channel_name = create_channel_name()
+        return super(Meeting, self).save(*args, **kwargs)
 
     def clean(self):
         try:

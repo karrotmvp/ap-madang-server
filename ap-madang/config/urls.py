@@ -47,6 +47,7 @@ urlpatterns = [
     path("meetings/", include("meeting.urls")),
     path("alarms/", include("alarmtalk.urls")),
     path("support/", include("support.urls")),
+    path("agora/", include("agora.urls")),
     # path("cron", send_meeting_alarm),
 ]
 
