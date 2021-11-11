@@ -48,7 +48,7 @@ def path_and_rename(instance, filename):
 
 def create_channel_name():
     return (
-        str(datetime.datetime.now())
+        str(datetime.now())
         + "_"
         + "".join(random.choices(string.ascii_letters + string.digits, k=20))
     )
