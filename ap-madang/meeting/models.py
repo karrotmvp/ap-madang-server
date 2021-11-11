@@ -1,12 +1,12 @@
 from django.db import models
-from django.db.models.constraints import UniqueConstraint
 from user.models import User
 from datetime import datetime
 import os
 from uuid import uuid4
 import json
 from django.core.exceptions import ValidationError
-from agora.views import *
+import random
+import string
 
 
 class Base(models.Model):
@@ -44,6 +44,14 @@ def path_and_rename(instance, filename):
         filename = "{}{}.{}".format(datetime.now(), uuid4().hex, ext)
     # return the whole path to the file
     return os.path.join(upload_to, filename)
+
+
+def create_channel_name():
+    return (
+        str(datetime.datetime.now())
+        + "_"
+        + "".join(random.choices(string.ascii_letters + string.digits, k=20))
+    )
 
 
 class Meeting(Base):
@@ -103,7 +111,6 @@ class MeetingLog(Base):
 class UserMeetingEnter(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(MeetingLog, on_delete=models.CASCADE)
-    agora_token = models.TextField(blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -111,10 +118,6 @@ class UserMeetingEnter(Base):
                 fields=["meeting", "user"], name="user has already entered"
             ),
         ]
-
-    def save(self, *args, **kwargs):
-        self.agora_token = create_agora_token(self.meeting, self.user)
-        return super(UserMeetingEnter, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.user.nickname + " - " + self.meeting.meeting.title[:15]
