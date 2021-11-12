@@ -26,6 +26,7 @@ def get_user_meeting_from_code(request):
 @jwt_authentication_fbv
 def get_meeting_enter_code(request):
     meeting_id = request.GET.get("meeting", None)
+    # TODO 쿼리 파라미터 없는 경우
     code = MeetingEnterCode.objects.create(
         meeting=MeetingLog.objects.get(id=meeting_id), user=request.user
     )
