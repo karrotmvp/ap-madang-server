@@ -102,7 +102,7 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
         )
         try:
-            return super().create(request, *args, **kwargs)
+            super().create(request, *args, **kwargs)
         except IntegrityError:
             pass
 
