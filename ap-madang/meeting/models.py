@@ -70,6 +70,7 @@ class Meeting(Base):
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
     is_video = models.BooleanField(default=True)
+    sub_topics = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -80,8 +81,9 @@ class Meeting(Base):
     def clean(self):
         try:
             json.loads(self.description)
+            json.loads(self.sub_topics)
         except:
-            raise ValidationError("Description format is not JSON!")
+            raise ValidationError("Description/Sub Topics format is not JSON!")
 
     def __str__(self):
         return self.title[:15] + " - " + self.region
