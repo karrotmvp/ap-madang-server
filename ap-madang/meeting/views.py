@@ -6,7 +6,7 @@ from .utils import *
 from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from agora.models import *
 
 
@@ -106,7 +106,4 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         except IntegrityError:
             pass
 
-        code = MeetingEnterCode.objects.create(
-            meeting=MeetingLog.objects.get(id=kwargs["pk"]), user=request.user
-        )
-        return JsonResponse({"code": code.code}, status=201, safe=False)
+        return HttpResponse(status=201)
