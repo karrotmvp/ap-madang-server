@@ -70,7 +70,7 @@ class Meeting(Base):
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
     is_deleted = models.BooleanField(default=False)
     is_video = models.BooleanField(default=True)
-    sub_topics = models.TextField(blank=True, null=True)
+    sub_topics = models.TextField(default="[]")
 
     def save(self, *args, **kwargs):
         if not self.id:
