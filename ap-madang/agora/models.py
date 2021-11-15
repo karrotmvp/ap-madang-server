@@ -25,7 +25,7 @@ def create_agora_token(meeting, user):
         meeting.meeting.channel_name,
         user.id,
         Role_Attendee,
-        0,
+        datetime.datetime.combine(meeting.date, meeting.meeting.end_time).timestamp(),
     )
 
 
