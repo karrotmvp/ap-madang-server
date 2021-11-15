@@ -22,6 +22,7 @@ from rest_framework import permissions
 from .settings import ENV_NAME, DEBUG
 
 # from alarmtalk.cron import send_meeting_alarm
+# from oauth.views import test
 
 
 def env_name(request):
@@ -49,6 +50,7 @@ urlpatterns = [
     path("support/", include("support.urls")),
     path("agora/", include("agora.urls")),
     # path("cron", send_meeting_alarm),
+    # path("test", test),
 ]
 
 
