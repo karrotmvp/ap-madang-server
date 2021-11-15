@@ -32,8 +32,8 @@ def create_agora_token(meeting, user):
 class MeetingEnterCode(Base):
     user = models.ForeignKey("user.User", on_delete=models.CASCADE)
     meeting = models.ForeignKey("meeting.MeetingLog", on_delete=models.CASCADE)
-    code = models.TextField()
-    agora_token = models.TextField()
+    code = models.CharField(max_length=100)
+    agora_token = models.CharField(max_length=300)
     is_valid = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
@@ -41,3 +41,6 @@ class MeetingEnterCode(Base):
         self.code = create_meeting_enter_code(self.meeting.id, self.user.id)
         self.agora_token = create_agora_token(self.meeting, self.user)
         return super(MeetingEnterCode, self).save(*args, **kwargs)
+
+    class Meta:
+        indexes = [models.Index(fields=["code", "is_valid"])]
