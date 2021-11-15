@@ -16,8 +16,9 @@ def get_user_meeting_from_code(request):
     except MeetingEnterCode.DoesNotExist:
         return JsonResponse({"error_code": "INVALID_CODE"}, status=401)
 
-    meeting_enter_code.is_valid = False
-    meeting_enter_code.save()
+    # meeting_enter_code.is_valid = False
+    # meeting_enter_code.save()
+    # TODO 코드 만료되게 수정해줘!!!
     serializer = MeetingEnterCodeSerializer(meeting_enter_code)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
