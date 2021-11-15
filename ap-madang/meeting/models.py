@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import User
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from uuid import uuid4
 import json
@@ -108,6 +108,13 @@ class MeetingLog(Base):
             + " at "
             + str(self.date)
         )
+
+    def get_meeting_end_datetime(self):
+        if self.meeting.start_time > self.meeting.end_time:
+            return datetime.combine(
+                self.date + timedelta(days=1), self.meeting.end_time
+            )
+        return datetime.combine(self.date, self.meeting.end_time)
 
 
 class UserMeetingEnter(Base):
