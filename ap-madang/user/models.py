@@ -14,7 +14,10 @@ class User(Base):
     nickname = models.CharField(max_length=200)
     profile_image_url = models.TextField(blank=True, null=True)
     manner_point = models.IntegerField()
-    token = models.TextField()
+    token = models.CharField(max_length=400)
 
     def __str__(self):
         return self.nickname
+
+    class Meta:
+        indexes = [models.Index(fields=["token"])]
