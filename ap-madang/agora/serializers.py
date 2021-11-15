@@ -9,10 +9,11 @@ class MeetingLogSimpleSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     channel_name = serializers.SerializerMethodField()
     sub_topics = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingLog
-        fields = ["id", "title", "channel_name", "sub_topics"]
+        fields = ["id", "title", "channel_name", "sub_topics", "description"]
 
     def get_title(self, obj):
         return obj.meeting.title
@@ -22,6 +23,9 @@ class MeetingLogSimpleSerializer(serializers.ModelSerializer):
 
     def get_sub_topics(self, obj):
         return json.loads(obj.meeting.sub_topics)
+
+    def get_description(self, obj):
+        return json.loads(obj.meeting.description)
 
 
 class MeetingEnterCodeSerializer(serializers.ModelSerializer):

@@ -36,10 +36,19 @@ def get_region_from_region_id(region_id):
     return json.loads(response.text).get("data").get("region")
 
 
-def get_manner_point(access_token):
-    url = BASE_URL_OAUTH + "/api/v1/users/me/manner_point"
+# def get_manner_point(access_token):
+#     url = BASE_URL_OAUTH + "/api/v1/users/me/manner_point"
 
-    headers = {"Accept": "application/json", "Authorization": "Bearer " + access_token}
+#     headers = {"Accept": "application/json", "Authorization": "Bearer " + access_token}
+
+#     response = requests.request("GET", url, headers=headers)
+#     return json.loads(response.text).get("data").get("manner_point")
+
+
+def get_manner_temperature(karrot_user_id):
+    url = BASE_URL_REGION + "/api/v2/users/" + karrot_user_id
+
+    headers = {"Accept": "application/json", "X-Api-Key": API_KEY}
 
     response = requests.request("GET", url, headers=headers)
-    return json.loads(response.text).get("data").get("manner_point")
+    return json.loads(response.text).get("data").get("user").get("mannerTemperature")
