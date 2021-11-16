@@ -3,10 +3,10 @@ from .models import *
 
 
 DEFAULT_PROFILE_IMAGE_URL = {
-    0: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/media/meeting_image/2021-10-19_180218.1465851.jpg",
-    1: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/media/meeting_image/2021-10-19_180218.1465851.jpg",
-    2: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/media/meeting_image/2021-10-19_180218.1465851.jpg",
-    3: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/media/meeting_image/2021-10-19_180218.1465851.jpg",
+    0: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/default_profile_image/default1.png",
+    1: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/default_profile_image/default2.png",
+    2: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/default_profile_image/default3.png",
+    3: "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/default_profile_image/default4.png",
 }
 
 
