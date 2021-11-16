@@ -33,15 +33,16 @@ def login(request):
     karrot_user_id = user_info.get("user_id", None)
     nickname = user_info.get("nickname", None)
     profile_image_url = user_info.get("profile_image_url", None)
-
     manner_temperature = get_manner_temperature(karrot_user_id)
 
     # 지역(구) 정보 가져오기
-    region = get_region_from_region_id(region_id).get("name2")
+    region_data = get_region_from_region_id(region_id)
+    region_name = region_data.get("name")
+    region_name2 = region_data.get("name2")
     # TODO region 문제 있을 때 에러 처리
 
     token = jwt.encode(
-        {"nickname": nickname, "region": region, "code": code},
+        {"nickname": nickname, "region": region_name2, "code": code},
         JWT_SECRET,
         algorithm="HS256",
     )
@@ -53,6 +54,7 @@ def login(request):
             "profile_image_url": profile_image_url,
             "manner_temperature": manner_temperature,
             "token": token,
+            "region_name": region_name,
         },
     )
     return JsonResponse({"token": token}, status=200, safe=False)

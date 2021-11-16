@@ -15,7 +15,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "nickname", "profile_image_url", "manner_temperature"]
+        fields = [
+            "id",
+            "nickname",
+            "profile_image_url",
+            "manner_temperature",
+            "region_name",
+        ]
 
     def get_profile_image_url(self, obj):
         return (
