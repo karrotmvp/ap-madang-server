@@ -6,25 +6,29 @@ import json
 from .utils import *
 
 
-class MeetingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Meeting
-        fields = ["title", "start_time", "end_time"]
+# class MeetingSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Meeting
+#         fields = [
+#             "id",
+#             "title",
+#             "channel_name",
+#         ]
 
 
-class MeetingDetailSerializer(MeetingSerializer):
-    description = serializers.SerializerMethodField()
+# class MeetingDetailSerializer(MeetingSerializer):
+#     description = serializers.SerializerMethodField()
 
-    class Meta(MeetingSerializer.Meta):
-        fields = MeetingSerializer.Meta.fields + [
-            "description",
-            "meeting_url",
-            "region",
-            "image",
-        ]
+#     class Meta(MeetingSerializer.Meta):
+#         fields = MeetingSerializer.Meta.fields + [
+#             "description",
+#             "meeting_url",
+#             "region",
+#             "image",
+#         ]
 
-    def get_description(self, obj):
-        return json.loads(obj.description)
+#     def get_description(self, obj):
+#         return json.loads(obj.description)
 
 
 class UserMeetingEnterSerializer(serializers.ModelSerializer):
@@ -41,6 +45,7 @@ class MeetingLogSerializer(serializers.ModelSerializer):
     end_time = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
     user_enter_cnt = serializers.SerializerMethodField()
+    is_video = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingLog
@@ -54,6 +59,7 @@ class MeetingLogSerializer(serializers.ModelSerializer):
             "end_time",
             "image",
             "user_enter_cnt",
+            "is_video",
         ]
 
     def get_title(self, obj):
@@ -88,6 +94,9 @@ class MeetingLogSerializer(serializers.ModelSerializer):
     def get_user_enter_cnt(self, obj):
         cnt = obj.user_enter_cnt
         return 0 if cnt is None else cnt
+
+    def get_is_video(self, obj):
+        return obj.meeting.is_video
 
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
