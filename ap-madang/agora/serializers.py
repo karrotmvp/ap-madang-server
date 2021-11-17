@@ -31,7 +31,11 @@ class MeetingLogSimpleSerializer(serializers.ModelSerializer):
 class MeetingEnterCodeSerializer(serializers.ModelSerializer):
     meeting = MeetingLogSimpleSerializer(read_only=True)
     user = UserSerializer(read_only=True)
+    token = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingEnterCode
-        fields = ["meeting", "user", "agora_token"]
+        fields = ["meeting", "user", "agora_token", "token"]
+
+    def get_token(self, obj):
+        return obj.user.token
