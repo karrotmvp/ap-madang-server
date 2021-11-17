@@ -60,12 +60,10 @@ def login(request):
     return JsonResponse({"token": token}, status=200, safe=False)
 
 
-class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = UserSerializer
     queryset = User.objects
 
     # def get_queryset(self):
     #     user_ids = [int(s) for s in self.request.query_params.get("ids").split(",")]
     #     return User.objects.filter(id__in=user_ids)
-
-    
