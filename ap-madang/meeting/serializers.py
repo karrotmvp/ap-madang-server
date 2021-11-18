@@ -124,7 +124,7 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
         return obj.meeting.region
 
     def get_user(self, obj):
-        return UserSerializer(obj.meeting.user).data
+        return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
 
     def get_alarm_num(self, obj):
         return UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
