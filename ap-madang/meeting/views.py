@@ -3,11 +3,12 @@ from user.jwt_authentication import jwt_authentication
 from .models import *
 from .serializers import *
 from .utils import *
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from agora.models import *
+from rest_framework.response import Response
 
 
 # def get_meeting_list_for_bot(request):
@@ -42,7 +43,10 @@ from agora.models import *
 
 # Create your views here.
 class MeetingViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
 ):
     serializer_class = MeetingLogSerializer
     queryset = MeetingLog.objects
@@ -75,9 +79,9 @@ class MeetingViewSet(
         )
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return MeetingLogDetailSerializer
-        return MeetingLogSerializer
+        if self.action == "list":
+            return MeetingLogSerializer
+        return MeetingLogDetailSerializer
 
     @jwt_authentication
     def list(self, request, *args, **kwargs):
@@ -89,6 +93,32 @@ class MeetingViewSet(
     def retrieve(self, request, *args, **kwargs):
         self.request.data.update({"user": request.user.id, "region": request.region})
         self.user_id = request.user.id
+        return super().retrieve(request, *args, **kwargs)
+
+    @jwt_authentication
+    def create(self, request, *args, **kwargs):
+        self.request.data.update(
+            {
+                "user": request.user.id,
+                "region": request.region,
+                "start_time": datetime.datetime.strftime(
+                    datetime.datetime.now(), "%H:%M:%00"
+                ),
+            }
+        )
+        self.user_id = request.user.id
+
+        # Meeting Obj Create
+        serializer = MeetingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        meeting = serializer.save()
+
+        # MeetingLog Obj Create
+        meeting_log = MeetingLog.objects.create(meeting=meeting, date=date.today())
+
+        # Return Meeting Log Detail
+        self.lookup_url_kwarg = "id"
+        self.kwargs["id"] = meeting_log.id
         return super().retrieve(request, *args, **kwargs)
 
 

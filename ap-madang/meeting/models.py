@@ -61,6 +61,7 @@ class Meeting(Base):
         null=True,
         default='{"text" : "", "recommend_user": [{"text": ""}],"recommend_topic": [{"text": ""}]}',
     )
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     region = models.CharField(max_length=200)
     start_time = models.TimeField()
     end_time = models.TimeField()

@@ -4,16 +4,24 @@ from datetime import datetime
 from alarmtalk.models import UserMeetingAlarm
 import json
 from .utils import *
+from user.serializers import *
 
 
-# class MeetingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Meeting
-#         fields = [
-#             "id",
-#             "title",
-#             "channel_name",
-#         ]
+class MeetingSerializer(serializers.ModelSerializer):
+    # description = serializers.JSONField()
+
+    class Meta:
+        model = Meeting
+        fields = [
+            "title",
+            "description",
+            "user",
+            "region",
+            "start_time",
+            "end_time",
+            "image",
+            "is_video",
+        ]
 
 
 # class MeetingDetailSerializer(MeetingSerializer):
@@ -104,6 +112,7 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
     alarm_num = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     def get_description(self, obj):
         return json.loads(obj.meeting.description)
@@ -114,6 +123,9 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     def get_region(self, obj):
         return obj.meeting.region
 
+    def get_user(self, obj):
+        return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
+
     def get_alarm_num(self, obj):
         return UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
 
@@ -123,4 +135,5 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             "meeting_url",
             "region",
             "alarm_num",
+            "user",
         ]
