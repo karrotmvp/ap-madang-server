@@ -12,6 +12,7 @@ from .models import User
 from .serializers import UserSerializer
 import jwt
 from rest_framework import viewsets, mixins
+from user.jwt_authentication import jwt_authentication
 
 
 @api_view(["POST"])
@@ -63,6 +64,11 @@ def login(request):
 class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = UserSerializer
     queryset = User.objects
+
+    @jwt_authentication
+    def retrieve(self, request, *args, **kwargs):
+        self.request.data.update({"user": request.user.id, "region": request.region})
+        return super().retrieve(request, *args, **kwargs)
 
     # def get_queryset(self):
     #     user_ids = [int(s) for s in self.request.query_params.get("ids").split(",")]
