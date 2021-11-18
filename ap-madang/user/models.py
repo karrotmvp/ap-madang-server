@@ -13,7 +13,7 @@ class User(Base):
     karrot_user_id = models.CharField(max_length=200, unique=True)
     nickname = models.CharField(max_length=200)
     profile_image_url = models.TextField(blank=True, null=True)
-    manner_point = models.IntegerField()
+    manner_point = models.IntegerField(blank=True, null=True)
     manner_temperature = models.FloatField(blank=True, null=True)
     token = models.CharField(max_length=400)
     region_name = models.CharField(max_length=50, blank=True, null=True)
