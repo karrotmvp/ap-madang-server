@@ -35,3 +35,40 @@ def create_tomorrows_meeting():
 
     print("----- meeting log creation end : " + str(datetime.now()) + " -----")
     print()
+
+
+def get_live_status(meeting):
+    now = datetime.now().time()
+    start = meeting.meeting.start_time
+    end = meeting.meeting.end_time
+    if meeting.date != date.today():
+        return 1  # tomorrow
+    if (start <= now < end) or (start > end and (now >= start or now < end)):
+        return 0  # live
+    if now < start:
+        return 1  # upcoming
+    return 2  # finish
+
+
+def get_alarm_increment():
+    return random.choice([0, 0, 0, 1, 1])
+
+
+def get_enter_increment():
+    return random.choice([0, 0, 0, 1, 1, 1, 1, 1, 2, 2])
+
+
+def add_fake_cnt():
+    print("----- add fake count" + str(datetime.now()) + " -----")
+    meetings = MeetingLog.objects.filter(
+        meeting__is_deleted=False,
+        date__in=[date.today(), date.today() + timedelta(days=1)],
+    ).select_related("meeting")
+    for meeting in meetings:
+        live_status = get_live_status(meeting)
+        if live_status == 0:
+            meeting.enter_cnt_fake += get_enter_increment()
+        elif live_status == 1 and meeting.alarm_fake_add_cnt < 100:
+            meeting.alarm_cnt_fake += get_alarm_increment()
+            meeting.alarm_fake_add_cnt += 1
+        meeting.save()
