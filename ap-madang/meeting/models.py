@@ -93,6 +93,9 @@ class Meeting(Base):
 class MeetingLog(Base):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     date = models.DateField()
+    alarm_cnt_fake = models.IntegerField(default=0)
+    enter_cnt_fake = models.IntegerField(default=0)
+    alarm_fake_add_cnt = models.IntegerField(default=0)
 
     class Meta:
         constraints = [
