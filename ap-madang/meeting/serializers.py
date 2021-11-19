@@ -65,47 +65,34 @@ class MeetingRecommendSerializer(serializers.ModelSerializer):
 
     def get_user_enter_cnt(self, obj):
         cnt = obj.user_enter_cnt
-        return 0 if cnt is None else cnt
+        fake = obj.enter_cnt_fake
+        return fake if cnt is None else (cnt + fake)
 
 
-class MeetingLogSerializer(serializers.ModelSerializer):
+class MeetingLogSerializer(MeetingRecommendSerializer):
     live_status = serializers.SerializerMethodField()
     alarm_id = serializers.SerializerMethodField()
-    title = serializers.SerializerMethodField()
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
-    user_enter_cnt = serializers.SerializerMethodField()
     is_video = serializers.SerializerMethodField()
 
-    class Meta:
+    class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
-        fields = [
+        fields = MeetingRecommendSerializer.Meta.fields + [
             "id",
             "date",
             "live_status",
             "alarm_id",
-            "title",
             "start_time",
             "end_time",
-            "image",
-            "user_enter_cnt",
             "is_video",
         ]
-
-    def get_title(self, obj):
-        return obj.meeting.title
 
     def get_start_time(self, obj):
         return obj.meeting.start_time
 
     def get_end_time(self, obj):
         return obj.meeting.end_time
-
-    def get_image(self, obj):
-        if obj.meeting.image:
-            return obj.meeting.image.url
-        return None
 
     def get_live_status(self, obj):
         now = datetime.now().time()
@@ -121,10 +108,6 @@ class MeetingLogSerializer(serializers.ModelSerializer):
 
     def get_alarm_id(self, obj):
         return obj.alarm_id
-
-    def get_user_enter_cnt(self, obj):
-        cnt = obj.user_enter_cnt
-        return 0 if cnt is None else cnt
 
     def get_is_video(self, obj):
         return obj.meeting.is_video
@@ -151,7 +134,10 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
         return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
 
     def get_alarm_num(self, obj):
-        return UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
+        return (
+            UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
+            + obj.alarm_cnt_fake
+        )
 
     def get_recommend(self, obj):
         def check_live(obj):

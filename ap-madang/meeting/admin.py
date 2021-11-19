@@ -15,7 +15,15 @@ class DaysAdmin(admin.ModelAdmin):
 
 @admin.register(MeetingLog)
 class MeetingLogAdmin(admin.ModelAdmin):
-    list_display = ("id", "date", "meeting", "created_at")
+    list_display = (
+        "id",
+        "date",
+        "meeting",
+        "created_at",
+        "alarm_cnt_fake",
+        "enter_cnt_fake",
+        "alarm_fake_add_cnt",
+    )
     list_filter = [("date", CustomDateFieldListFilter), "meeting__region", "meeting"]
 
 
