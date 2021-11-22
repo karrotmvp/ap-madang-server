@@ -15,6 +15,7 @@ def send_biz_chat_message(
     text,
     primary_button_url,
     primary_button_text,
+    image_url,
     is_normal_button,
     normal_button_url=None,
     normal_button_text=None,
@@ -45,6 +46,7 @@ def send_biz_chat_message(
             "userId": user_id,
             "title": title,
             "text": text,
+            "imageUrl": image_url,
         }
     }
     headers = {
