@@ -75,10 +75,11 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
     is_video = serializers.SerializerMethodField()
+    description_text = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
-        fields = MeetingRecommendSerializer.Meta.fields + [
+        common_fields = MeetingRecommendSerializer.Meta.fields + [
             "id",
             "date",
             "live_status",
@@ -87,6 +88,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "end_time",
             "is_video",
         ]
+        fields = common_fields + ["description_text"]
 
     def get_start_time(self, obj):
         return obj.meeting.start_time
@@ -112,14 +114,17 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     def get_is_video(self, obj):
         return obj.meeting.is_video
 
+    def get_description_text(self, obj):
+        return json.loads(obj.meeting.description).get("text", None)
+
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
     alarm_num = serializers.SerializerMethodField()
-    user = serializers.SerializerMethodField()
-    recommend = serializers.SerializerMethodField()
+    # user = serializers.SerializerMethodField()
+    # recommend = serializers.SerializerMethodField()
 
     def get_description(self, obj):
         return json.loads(obj.meeting.description)
@@ -130,8 +135,8 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     def get_region(self, obj):
         return obj.meeting.region
 
-    def get_user(self, obj):
-        return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
+    # def get_user(self, obj):
+    #     return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
 
     def get_alarm_num(self, obj):
         return (
@@ -139,41 +144,41 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             + obj.alarm_cnt_fake
         )
 
-    def get_recommend(self, obj):
-        def check_live(obj):
-            now = datetime.now().time()
-            start = obj.meeting.start_time
-            end = obj.meeting.end_time
-            if (start <= now < end) or (start > end and (now >= start or now < end)):
-                return True
-            return False
+    # def get_recommend(self, obj):
+    #     def check_live(obj):
+    #         now = datetime.now().time()
+    #         start = obj.meeting.start_time
+    #         end = obj.meeting.end_time
+    #         if (start <= now < end) or (start > end and (now >= start or now < end)):
+    #             return True
+    #         return False
 
-        meeting_logs = (
-            MeetingLog.objects.filter(
-                meeting__is_deleted=False,
-                meeting__region=obj.meeting.region,
-                date=date.today(),
-            )
-            .exclude(id=obj.id)
-            .annotate(
-                user_enter_cnt=Subquery(
-                    UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
-                    .values("meeting")
-                    .annotate(count=Count("meeting"))
-                    .values("count")
-                )
-            )
-            .select_related("meeting")
-        )
-        meeting_logs = list(filter(check_live, meeting_logs))
-        return MeetingRecommendSerializer(meeting_logs, many=True).data
+    #     meeting_logs = (
+    #         MeetingLog.objects.filter(
+    #             meeting__is_deleted=False,
+    #             meeting__region=obj.meeting.region,
+    #             date=date.today(),
+    #         )
+    #         .exclude(id=obj.id)
+    #         .annotate(
+    #             user_enter_cnt=Subquery(
+    #                 UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+    #                 .values("meeting")
+    #                 .annotate(count=Count("meeting"))
+    #                 .values("count")
+    #             )
+    #         )
+    #         .select_related("meeting")
+    #     )
+    #     meeting_logs = list(filter(check_live, meeting_logs))
+    #     return MeetingRecommendSerializer(meeting_logs, many=True).data
 
     class Meta(MeetingLogSerializer.Meta):
-        fields = MeetingLogSerializer.Meta.fields + [
+        fields = MeetingLogSerializer.Meta.common_fields + [
             "description",
             "meeting_url",
             "region",
             "alarm_num",
-            "user",
-            "recommend",
+            # "user",
+            # "recommend",
         ]
