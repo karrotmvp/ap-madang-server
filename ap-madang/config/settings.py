@@ -46,6 +46,7 @@ else:
         "ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
         "d2p80xtunaym1x.cloudfront.net",
         "dtm2ixz1i9ezl.cloudfront.net",
+        "meeting.daangn-meetup.com",
     ]
 
 
@@ -127,6 +128,7 @@ else:
         "http://d2p80xtunaym1x.cloudfront.net",
         "https://dtm2ixz1i9ezl.cloudfront.net",
         "http://dtm2ixz1i9ezl.cloudfront.net",
+        "https://meeting.daangn-meetup.com",
     ]
 
 ROOT_URLCONF = "config.urls"
