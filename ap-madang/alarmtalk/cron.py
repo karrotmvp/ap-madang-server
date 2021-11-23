@@ -33,8 +33,7 @@ def send_meeting_alarm():
 
     for alarm in alarm_list:
         url = "{}/index.html?#/meetings/{}".format(
-            CLIENT_BASE_URL,
-            str(alarm.meeting.id),
+            CLIENT_BASE_URL, str(alarm.meeting.id)
         )
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
@@ -42,6 +41,7 @@ def send_meeting_alarm():
             text1 + alarm.meeting.meeting.title + text2,
             url,
             primary_button_text,
+            alarm.meeting.meeting.image.url,
             True,
             normal_button_url,
             normal_button_text,

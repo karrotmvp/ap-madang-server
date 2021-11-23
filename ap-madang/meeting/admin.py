@@ -15,7 +15,15 @@ class DaysAdmin(admin.ModelAdmin):
 
 @admin.register(MeetingLog)
 class MeetingLogAdmin(admin.ModelAdmin):
-    list_display = ("id", "date", "meeting", "created_at")
+    list_display = (
+        "id",
+        "date",
+        "meeting",
+        "created_at",
+        "alarm_cnt_fake",
+        "enter_cnt_fake",
+        "alarm_fake_add_cnt",
+    )
     list_filter = [("date", CustomDateFieldListFilter), "meeting__region", "meeting"]
 
 
@@ -76,12 +84,14 @@ class MeetingAdmin(admin.ModelAdmin):
         "start_time",
         "end_time",
         "is_deleted",
+        "is_video",
     )
     list_filter = ["region", "is_deleted"]
     actions = [
         "create_today_meeting_log",
         "create_tomorrow_meeting_log",
         "duplicate_meeting_to_another_region",
+        "create_channel_name",
     ]
 
     def create_today_meeting_log(self, request, queryset):
@@ -107,9 +117,24 @@ class MeetingAdmin(admin.ModelAdmin):
             str(total) + "개의 미팅 로그를 생성했습니다",
         )
 
+    def create_channel_name(self, request, queryset):
+        total = 0
+        meetings = queryset.filter(channel_name__isnull=True)
+        for meeting in meetings:
+            meeting.channel_name = create_channel_name()
+            meeting.save()
+            total += 1
+
+        messages.add_message(
+            request,
+            messages.INFO,
+            str(total) + "개의 미팅의 채널 이름을 추가했습니다",
+        )
+
     duplicate_meeting_to_another_region.short_description = "관악구에 동일 모임 생성"
     create_today_meeting_log.short_description = "오늘 미팅 로그 생성"
     create_tomorrow_meeting_log.short_description = "내일 미팅 로그 생성"
+    create_channel_name.short_description = "채널 이름이 없는 미팅에, 채널 이름 추가"
 
 
 @admin.register(UserMeetingEnter)

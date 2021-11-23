@@ -1,12 +1,15 @@
 from rest_framework import viewsets, mixins
-from user.jwt_authentication import jwt_authentication
+from user.jwt_authentication import jwt_authentication, jwt_light_authentication
 from .models import *
 from .serializers import *
 from .utils import *
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
+from agora.models import *
+from rest_framework.response import Response
+from oauth.views import get_region_from_region_id
 
 
 # def get_meeting_list_for_bot(request):
@@ -41,53 +44,123 @@ from django.http import HttpResponse
 
 # Create your views here.
 class MeetingViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
 ):
     serializer_class = MeetingLogSerializer
     queryset = MeetingLog.objects
 
     def get_queryset(self):
-        region = self.request.region
-        return (
-            MeetingLog.objects.filter(
-                meeting__is_deleted=False,
-                meeting__region=region,
-                date__in=[date.today(), date.today() + timedelta(days=1)],
-            )
-            .annotate(
-                user_enter_cnt=Subquery(
-                    UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
-                    .values("meeting")
-                    .annotate(count=Count("meeting"))
-                    .values("count")
+        if self.request.user is not None:
+            queryset = (
+                MeetingLog.objects.filter(
+                    meeting__is_deleted=False,
+                    date__in=[date.today(), date.today() + timedelta(days=1)],
                 )
-            )
-            .annotate(
-                alarm_id=Subquery(
-                    UserMeetingAlarm.objects.filter(
-                        sent_at=None, user=self.user_id, meeting=OuterRef("pk")
-                    ).values("id")
+                .annotate(
+                    user_enter_cnt=Subquery(
+                        UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
                 )
+                .annotate(
+                    alarm_num=Subquery(
+                        UserMeetingAlarm.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
+                )
+                .annotate(
+                    alarm_id=Subquery(
+                        UserMeetingAlarm.objects.filter(
+                            sent_at=None,
+                            user=self.request.user.id,
+                            meeting=OuterRef("pk"),
+                        ).values("id")
+                    )
+                )
+                .select_related("meeting")
+                .order_by("date", "meeting__start_time")
             )
-            .select_related("meeting")
-            .order_by("date", "meeting__start_time")
-        )
+
+        else:
+            queryset = (
+                MeetingLog.objects.filter(
+                    meeting__is_deleted=False,
+                    date__in=[date.today(), date.today() + timedelta(days=1)],
+                )
+                .annotate(
+                    user_enter_cnt=Subquery(
+                        UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
+                )
+                .annotate(
+                    alarm_num=Subquery(
+                        UserMeetingAlarm.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
+                )
+                .select_related("meeting")
+                .order_by("date", "meeting__start_time")
+            )
+
+        if self.action == "list":
+            region = self.request.region
+            queryset.filter(meeting__region=region)
+
+        return queryset
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return MeetingLogDetailSerializer
-        return MeetingLogSerializer
+        if self.action == "list":
+            return MeetingLogSerializer
+        return MeetingLogDetailSerializer
 
-    @jwt_authentication
+    @jwt_light_authentication
     def list(self, request, *args, **kwargs):
-        self.request.data.update({"user": request.user.id, "region": request.region})
-        self.user_id = request.user.id
+        region_id = request.GET.get("region_id", None)
+        request.region = get_region_from_region_id(region_id).get("name2")
+        # TODO region 문제 있을 때 에러 처리
+        self.request.data.update({"user": request.user})
         return super().list(request, *args, **kwargs)
 
-    @jwt_authentication
+    @jwt_light_authentication
     def retrieve(self, request, *args, **kwargs):
-        self.request.data.update({"user": request.user.id, "region": request.region})
+        return super().retrieve(request, *args, **kwargs)
+
+    @jwt_authentication
+    def create(self, request, *args, **kwargs):
+        self.request.data.update(
+            {
+                "user": request.user.id,
+                "region": request.region,
+                "start_time": datetime.datetime.strftime(
+                    datetime.datetime.now(), "%H:%M:%00"
+                ),
+            }
+        )
         self.user_id = request.user.id
+
+        # Meeting Obj Create
+        serializer = MeetingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        meeting = serializer.save()
+
+        # MeetingLog Obj Create
+        meeting_log = MeetingLog.objects.create(meeting=meeting, date=date.today())
+
+        # Return Meeting Log Detail
+        self.lookup_url_kwarg = "id"
+        self.kwargs["id"] = meeting_log.id
         return super().retrieve(request, *args, **kwargs)
 
 

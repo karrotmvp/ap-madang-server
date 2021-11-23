@@ -5,11 +5,14 @@ from oauth.views import (
     get_access_token_from_code,
     get_user_info,
     get_region_from_region_id,
-    get_manner_point,
+    get_manner_temperature,
 )
 from django.http import HttpResponse, JsonResponse
 from .models import User
+from .serializers import UserSerializer
 import jwt
+from rest_framework import viewsets, mixins
+from user.jwt_authentication import jwt_authentication
 
 
 @api_view(["POST"])
@@ -25,20 +28,22 @@ def login(request):
 
     # get user info
     user_info = get_user_info(access_token)
-    manner_point = get_manner_point(access_token)
-    if (user_info is None) or (manner_point is None):
+    if user_info is None:
         return HttpResponse(status=401)
 
     karrot_user_id = user_info.get("user_id", None)
     nickname = user_info.get("nickname", None)
     profile_image_url = user_info.get("profile_image_url", None)
+    manner_temperature = get_manner_temperature(karrot_user_id)
 
     # 지역(구) 정보 가져오기
-    region = get_region_from_region_id(region_id).get("name2")
+    region_data = get_region_from_region_id(region_id)
+    region_name = region_data.get("name")
+    region_name2 = region_data.get("name2")
     # TODO region 문제 있을 때 에러 처리
 
     token = jwt.encode(
-        {"nickname": nickname, "region": region, "code": code},
+        {"nickname": nickname, "region": region_name2, "code": code},
         JWT_SECRET,
         algorithm="HS256",
     )
@@ -48,8 +53,23 @@ def login(request):
         defaults={
             "nickname": nickname,
             "profile_image_url": profile_image_url,
-            "manner_point": manner_point,
+            "manner_temperature": manner_temperature,
             "token": token,
+            "region_name": region_name,
         },
     )
     return JsonResponse({"token": token}, status=200, safe=False)
+
+
+class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects
+
+    @jwt_authentication
+    def retrieve(self, request, *args, **kwargs):
+        self.request.data.update({"user": request.user.id, "region": request.region})
+        return super().retrieve(request, *args, **kwargs)
+
+    # def get_queryset(self):
+    #     user_ids = [int(s) for s in self.request.query_params.get("ids").split(",")]
+    #     return User.objects.filter(id__in=user_ids)

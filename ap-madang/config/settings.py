@@ -46,6 +46,7 @@ else:
         "ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
         "d2p80xtunaym1x.cloudfront.net",
         "dtm2ixz1i9ezl.cloudfront.net",
+        "meeting.daangn-meetup.com",
     ]
 
 
@@ -86,6 +87,7 @@ INSTALLED_APPS = (
 if DEBUG or ENV_NAME == "cron":
     CRONJOBS = [
         ("*/5 * * * *", "alarmtalk.cron.cron_test", ">> /var/log/crontab_test.log"),
+        # ("*/5 * * * *", "meeting.cron.add_fake_cnt", ">> /var/log/add_fake_cnt.log"),
         (
             "*/30 * * * *",
             "alarmtalk.cron.send_meeting_alarm",
@@ -126,6 +128,7 @@ else:
         "http://d2p80xtunaym1x.cloudfront.net",
         "https://dtm2ixz1i9ezl.cloudfront.net",
         "http://dtm2ixz1i9ezl.cloudfront.net",
+        "https://meeting.daangn-meetup.com",
     ]
 
 ROOT_URLCONF = "config.urls"
@@ -284,3 +287,5 @@ BASE_URL_REGION = os.environ.get("BASE_URL_REGION")
 BASE_URL_OAUTH = os.environ.get("BASE_URL_OAUTH")
 JWT_SECRET = os.environ.get("JWT_SECRET")
 CLIENT_BASE_URL = os.environ.get("CLIENT_BASE_URL")
+AGORA_APP_ID = os.environ.get("AGORA_APP_ID")
+AGORA_APP_CERTIFICATE = os.environ.get("AGORA_APP_CERTIFICATE")
