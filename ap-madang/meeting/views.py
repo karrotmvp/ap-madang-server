@@ -68,6 +68,14 @@ class MeetingViewSet(
                     )
                 )
                 .annotate(
+                    alarm_num=Subquery(
+                        UserMeetingAlarm.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
+                )
+                .annotate(
                     alarm_id=Subquery(
                         UserMeetingAlarm.objects.filter(
                             sent_at=None,
@@ -89,6 +97,14 @@ class MeetingViewSet(
                 .annotate(
                     user_enter_cnt=Subquery(
                         UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
+                )
+                .annotate(
+                    alarm_num=Subquery(
+                        UserMeetingAlarm.objects.filter(meeting=OuterRef("pk"))
                         .values("meeting")
                         .annotate(count=Count("meeting"))
                         .values("count")
