@@ -76,6 +76,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     end_time = serializers.SerializerMethodField()
     is_video = serializers.SerializerMethodField()
     description_text = serializers.SerializerMethodField()
+    alarm_num = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
@@ -87,6 +88,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "start_time",
             "end_time",
             "is_video",
+            "alarm_num",
         ]
         fields = common_fields + ["description_text"]
 
@@ -121,12 +123,21 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     def get_description_text(self, obj):
         return json.loads(obj.meeting.description).get("text", None)
 
+    def get_alarm_num(self, obj):
+        # return (
+        #     UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
+        #     + obj.alarm_cnt_fake
+        # )
+        cnt = obj.alarm_num
+        fake = obj.alarm_cnt_fake
+        return fake if cnt is None else (cnt + fake)
+
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
-    alarm_num = serializers.SerializerMethodField()
+
     # user = serializers.SerializerMethodField()
     # recommend = serializers.SerializerMethodField()
 
@@ -141,12 +152,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
 
     # def get_user(self, obj):
     #     return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
-
-    def get_alarm_num(self, obj):
-        return (
-            UserMeetingAlarm.objects.filter(sent_at=None, meeting=obj).count()
-            + obj.alarm_cnt_fake
-        )
 
     # def get_recommend(self, obj):
     #     def check_live(obj):
@@ -182,7 +187,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             "description",
             "meeting_url",
             "region",
-            "alarm_num",
             # "user",
             # "recommend",
         ]
