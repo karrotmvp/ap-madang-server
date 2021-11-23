@@ -1,5 +1,5 @@
 from rest_framework import viewsets, mixins
-from user.jwt_authentication import jwt_authentication
+from user.jwt_authentication import jwt_authentication, jwt_light_authentication
 from .models import *
 from .serializers import *
 from .utils import *
@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from agora.models import *
 from rest_framework.response import Response
+from oauth.views import get_region_from_region_id
 
 
 # def get_meeting_list_for_bot(request):
@@ -52,47 +53,72 @@ class MeetingViewSet(
     queryset = MeetingLog.objects
 
     def get_queryset(self):
-        region = self.request.region
-        return (
-            MeetingLog.objects.filter(
-                meeting__is_deleted=False,
-                meeting__region=region,
-                date__in=[date.today(), date.today() + timedelta(days=1)],
-            )
-            .annotate(
-                user_enter_cnt=Subquery(
-                    UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
-                    .values("meeting")
-                    .annotate(count=Count("meeting"))
-                    .values("count")
+        if self.request.user is not None:
+            queryset = (
+                MeetingLog.objects.filter(
+                    meeting__is_deleted=False,
+                    date__in=[date.today(), date.today() + timedelta(days=1)],
                 )
-            )
-            .annotate(
-                alarm_id=Subquery(
-                    UserMeetingAlarm.objects.filter(
-                        sent_at=None, user=self.user_id, meeting=OuterRef("pk")
-                    ).values("id")
+                .annotate(
+                    user_enter_cnt=Subquery(
+                        UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
                 )
+                .annotate(
+                    alarm_id=Subquery(
+                        UserMeetingAlarm.objects.filter(
+                            sent_at=None,
+                            user=self.request.user.id,
+                            meeting=OuterRef("pk"),
+                        ).values("id")
+                    )
+                )
+                .select_related("meeting")
+                .order_by("date", "meeting__start_time")
             )
-            .select_related("meeting")
-            .order_by("date", "meeting__start_time")
-        )
+
+        else:
+            queryset = (
+                MeetingLog.objects.filter(
+                    meeting__is_deleted=False,
+                    date__in=[date.today(), date.today() + timedelta(days=1)],
+                )
+                .annotate(
+                    user_enter_cnt=Subquery(
+                        UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+                        .values("meeting")
+                        .annotate(count=Count("meeting"))
+                        .values("count")
+                    )
+                )
+                .select_related("meeting")
+                .order_by("date", "meeting__start_time")
+            )
+
+        if self.action == "list":
+            region = self.request.region
+            queryset.filter(meeting__region=region)
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action == "list":
             return MeetingLogSerializer
         return MeetingLogDetailSerializer
 
-    @jwt_authentication
+    @jwt_light_authentication
     def list(self, request, *args, **kwargs):
-        self.request.data.update({"user": request.user.id, "region": request.region})
-        self.user_id = request.user.id
+        region_id = request.GET.get("region_id", None)
+        request.region = get_region_from_region_id(region_id).get("name2")
+        # TODO region 문제 있을 때 에러 처리
+        self.request.data.update({"user": request.user})
         return super().list(request, *args, **kwargs)
 
-    @jwt_authentication
+    @jwt_light_authentication
     def retrieve(self, request, *args, **kwargs):
-        self.request.data.update({"user": request.user.id, "region": request.region})
-        self.user_id = request.user.id
         return super().retrieve(request, *args, **kwargs)
 
     @jwt_authentication
