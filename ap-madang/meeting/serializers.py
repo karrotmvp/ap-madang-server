@@ -109,6 +109,10 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         return "finish"
 
     def get_alarm_id(self, obj):
+        user = self.context["request"].user
+        if user is None:
+            return None
+
         return obj.alarm_id
 
     def get_is_video(self, obj):
