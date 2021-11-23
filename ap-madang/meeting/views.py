@@ -116,7 +116,7 @@ class MeetingViewSet(
 
         if self.action == "list":
             region = self.request.region
-            queryset.filter(meeting__region=region)
+            queryset = queryset.filter(meeting__region=region)
 
         return queryset
 
