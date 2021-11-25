@@ -6,6 +6,7 @@ from .utils import *
 from django.contrib import messages
 from django.db.utils import IntegrityError
 from .filters import CustomDateFieldListFilter
+from alarmtalk.views import send_meeting_end_alarm_talk
 
 
 @admin.register(Days)
@@ -139,4 +140,37 @@ class MeetingAdmin(admin.ModelAdmin):
 
 @admin.register(UserMeetingEnter)
 class UserMeetingEnterAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "meeting", "created_at")
+    list_display = (
+        "id",
+        "user",
+        "meeting",
+        "created_at",
+        "meeting_review_alarm_sent_at",
+    )
+    actions = ["send_review_alarm"]
+
+    def send_review_alarm(self, request, queryset):
+
+        enter_list = queryset.filter(meeting_review_alarm_sent_at=None)
+        total_list_num = len(enter_list)
+
+        total_alarm_num = send_meeting_end_alarm_talk(enter_list)
+
+        if total_alarm_num != total_list_num:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                str(total_list_num)
+                + "명 중 "
+                + str(total_list_num - total_alarm_num)
+                + "명 에게 모임 후기 알람을 전송하지 못했습니다",
+            )
+
+        else:
+            messages.add_message(
+                request,
+                messages.INFO,
+                str(total_alarm_num) + "명 에게 모임 후기 알람을 전송했습니다",
+            )
+
+    send_review_alarm.short_description = "모임 후기 알림톡 보내기"
