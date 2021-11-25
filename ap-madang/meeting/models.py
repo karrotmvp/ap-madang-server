@@ -124,6 +124,7 @@ class MeetingLog(Base):
 class UserMeetingEnter(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(MeetingLog, on_delete=models.CASCADE)
+    meeting_review_alarm_sent_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         constraints = [
