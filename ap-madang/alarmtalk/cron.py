@@ -1,70 +1,32 @@
-from datetime import datetime, date
-from meeting.models import Meeting
+from meeting.models import UserMeetingEnter
 from .models import *
 from .views import *
-from sentry_sdk import capture_message
-from config.settings import CLIENT_BASE_URL
-
-
-def cron_test():
-    print("cron job is working!", str(datetime.now()))
+from datetime import date
 
 
 def send_meeting_alarm():
-    title = "지금 모임이 시작됐어요 🙌"
-    text1 = "알림 신청하신 [ "
-    text2 = " ] 모임이 시작됐어요.\n아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
-    primary_button_text = "모임 바로가기"
-    normal_button_url = "{}/index.html?#/".format(
-        CLIENT_BASE_URL,
-    )
-    normal_button_text = "랜동모 홈으로 가기"
-    total_alarm_num = 0
+    now = datetime.strftime(datetime.now(), "%H:%M:%000")
 
     # 현재 시간에 열리는 모임 리스트 가져오기
-    now = datetime.strftime(datetime.now(), "%H:%M:%000")
     meetings = MeetingLog.objects.filter(
         meeting__is_deleted=False, meeting__start_time=now, date=date.today()
     )
 
     # 해당 모임 예약 내역 가져오기
     alarm_list = UserMeetingAlarm.objects.filter(sent_at=None, meeting__in=meetings)
-    print("----- user meeting alarm start : " + str(datetime.now()) + " -----")
 
-    for alarm in alarm_list:
-        url = "{}/index.html?#/meetings/{}".format(
-            CLIENT_BASE_URL, str(alarm.meeting.id)
-        )
-        if send_biz_chat_message(
-            alarm.user.karrot_user_id,
-            title,
-            text1 + alarm.meeting.meeting.title + text2,
-            url,
-            primary_button_text,
-            alarm.meeting.meeting.image.url,
-            True,
-            normal_button_url,
-            normal_button_text,
-        ):
-            print(
-                "Alarm sent! to id: {}, nickname: {}, karrot_id: {}".format(
-                    alarm.user.id, alarm.user.nickname, alarm.user.karrot_user_id
-                )
-            )
-            alarm.sent_at = datetime.now()
-            alarm.save()
-            total_alarm_num += 1
+    # 오픈 알람톡 보내기
+    send_meeting_start_alarm_talk(alarm_list)
 
-        else:
-            capture_message(
-                "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id), "error"
-            )
-
-    print(
-        "----- user meeting alarm end with : "
-        + str(datetime.now())
-        + " alarm talks total ",
-        total_alarm_num,
-        "-----",
+    # 현재 시간에 끝나는 모임 리스트 가져오기
+    meetings = MeetingLog.objects.filter(
+        meeting__is_deleted=False, meeting__end_time=now, date=date.today()
     )
-    print()
+
+    # 해당 모임 참여 내역 가져오기
+    enter_list = UserMeetingEnter.objects.filter(
+        meeting_review_alarm_sent_at=None, meeting__in=meetings
+    )
+
+    # 종료/후기 알람톡 보내기
+    send_meeting_end_alarm_talk(enter_list)
