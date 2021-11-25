@@ -18,6 +18,7 @@ def generate_jwt_for_zoom():
 
 def create_zoom_meeting(meeting):
     url = "https://api.zoom.us/v2/users/me/meetings"
+    # TODO duration 계산하기
 
     payload = json.dumps(
         {
