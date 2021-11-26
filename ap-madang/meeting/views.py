@@ -10,6 +10,8 @@ from django.http import HttpResponse
 from agora.models import *
 from rest_framework.response import Response
 from oauth.views import get_region_from_region_id
+import urllib.request
+from django.core.files import File
 
 
 # def get_meeting_list_for_bot(request):
@@ -42,6 +44,12 @@ from oauth.views import get_region_from_region_id
 #         return JsonResponse(meeting_in_24_list, status=200, safe=False)
 
 
+DEFAULT_MEETING_IMAGE = {
+    0: "2021-10-28_150407.7778955b2a9df87d3f4848aab5d8dff472e01b.webp",
+    1: "2021-10-28_150453.594534dddd39265b1f4b4e94e1daa7095464e8.webp",
+    2: "2021-10-28_150541.020312e465ca20180941018a25ef3f0e297d97.webp",
+}
+
 # Create your views here.
 class MeetingViewSet(
     mixins.ListModelMixin,
@@ -55,11 +63,7 @@ class MeetingViewSet(
     def get_queryset(self):
         if self.request.user is not None:
             queryset = (
-                MeetingLog.objects.filter(
-                    meeting__is_deleted=False,
-                    date__in=[date.today(), date.today() + timedelta(days=1)],
-                )
-                .annotate(
+                MeetingLog.objects.annotate(
                     user_enter_cnt=Subquery(
                         UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
                         .values("meeting")
@@ -116,7 +120,11 @@ class MeetingViewSet(
 
         if self.action == "list":
             region = self.request.region
-            queryset = queryset.filter(meeting__region=region)
+            queryset = queryset.filter(
+                meeting__is_deleted=False,
+                date__in=[date.today(), date.today() + timedelta(days=1)],
+                meeting__region=region,
+            )
 
         return queryset
 
@@ -139,13 +147,16 @@ class MeetingViewSet(
 
     @jwt_authentication
     def create(self, request, *args, **kwargs):
+        desc = json.dumps(request.data["description"], ensure_ascii=False)
         self.request.data.update(
             {
                 "user": request.user.id,
                 "region": request.region,
-                "start_time": datetime.datetime.strftime(
-                    datetime.datetime.now(), "%H:%M:%00"
-                ),
+                "image": "meeting_image/"
+                + DEFAULT_MEETING_IMAGE[
+                    random.choice(range(len(DEFAULT_MEETING_IMAGE)))
+                ],
+                "description": desc,
             }
         )
         self.user_id = request.user.id
@@ -156,7 +167,8 @@ class MeetingViewSet(
         meeting = serializer.save()
 
         # MeetingLog Obj Create
-        meeting_log = MeetingLog.objects.create(meeting=meeting, date=date.today())
+        date = request.data["date"]
+        meeting_log = MeetingLog.objects.create(meeting=meeting, date=date)
 
         # Return Meeting Log Detail
         self.lookup_url_kwarg = "id"

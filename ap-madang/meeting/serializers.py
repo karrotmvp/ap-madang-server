@@ -9,19 +9,19 @@ from django.db.models import OuterRef, Subquery, Count
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    # description = serializers.JSONField()
+    image = serializers.CharField()
 
     class Meta:
         model = Meeting
         fields = [
             "title",
-            "description",
             "user",
             "region",
             "start_time",
             "end_time",
-            "image",
             "is_video",
+            "image",
+            "description",
         ]
 
 
