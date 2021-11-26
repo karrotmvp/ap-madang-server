@@ -138,7 +138,7 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
 
-    # user = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     # recommend = serializers.SerializerMethodField()
 
     def get_description(self, obj):
@@ -150,8 +150,8 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     def get_region(self, obj):
         return obj.meeting.region
 
-    # def get_user(self, obj):
-    #     return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
+    def get_user(self, obj):
+        return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
 
     # def get_recommend(self, obj):
     #     def check_live(obj):
@@ -187,6 +187,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             "description",
             "meeting_url",
             "region",
-            # "user",
+            "user",
             # "recommend",
         ]
