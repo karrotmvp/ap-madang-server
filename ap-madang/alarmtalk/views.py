@@ -154,10 +154,10 @@ def send_meeting_start_alarm_talk(alarm_list):
 def send_meeting_end_alarm_talk(enter_list):
     title = "모임은 어떠셨나요? 😊"
     text1 = "참여하신 [ "
-    text2 = " ] 모임에 대한 사용자분의 후기를 듣고 싶어요. \n아래 '설문 하러가기' 버튼을 눌러 의견을 남겨주세요."
-    primary_button_text = "설문하러 가기"
+    text2 = " ] 모임에 대한 사용자분의 후기를 듣고 싶어요. \n아래 아래 버튼을 눌러 의견을 남겨주세요."
+    primary_button_text = "의견 보내러 가기"
     total_alarm_num = 0
-    url = "karrot://minikarrot/router?remote=https%3A%2F%2Fadmin-webapp.kr.karrotmarket.com%2Fad%2Fuser_surveys%2F5450&present=top&navbar=true&scrollable=true"
+    url = "towneers://web/ad/user_surveys/5450"
     meeting_review_image = "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/%EC%95%8C%EB%A6%BC%ED%86%A1.png"
 
     print(
