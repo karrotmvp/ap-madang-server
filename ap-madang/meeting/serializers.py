@@ -102,11 +102,22 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         now = datetime.now().time()
         start = obj.meeting.start_time
         end = obj.meeting.end_time
-        if obj.date != date.today():
+        meeting_start_date = obj.date
+        today_date = date.today()
+        # 내일 시작되는 모임
+        if meeting_start_date > today_date:
             return "tomorrow"
-        if (start <= now < end) or (start > end and (now >= start or now < end)):
+        # 현재 진행중인 모임
+        if (meeting_start_date == today_date and start <= now < end) or (
+            start > end
+            and (
+                (meeting_start_date == today_date and now >= start)
+                or (meeting_start_date == today_date - timedelta(days=1) and now < end)
+            )
+        ):
             return "live"
-        if now < start:
+        # 오늘 예정된 모임
+        if meeting_start_date == today_date and now < start:
             return "upcoming"
         return "finish"
 
