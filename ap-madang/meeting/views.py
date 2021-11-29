@@ -3,15 +3,12 @@ from user.jwt_authentication import jwt_authentication, jwt_light_authentication
 from .models import *
 from .serializers import *
 from .utils import *
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from agora.models import *
-from rest_framework.response import Response
 from oauth.views import get_region_from_region_id
-import urllib.request
-from django.core.files import File
 
 
 # def get_meeting_list_for_bot(request):
@@ -94,11 +91,7 @@ class MeetingViewSet(
 
         else:
             queryset = (
-                MeetingLog.objects.filter(
-                    meeting__is_deleted=False,
-                    date__in=[date.today(), date.today() + timedelta(days=1)],
-                )
-                .annotate(
+                MeetingLog.objects.annotate(
                     user_enter_cnt=Subquery(
                         UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
                         .values("meeting")
@@ -122,7 +115,11 @@ class MeetingViewSet(
             region = self.request.region
             queryset = queryset.filter(
                 meeting__is_deleted=False,
-                date__in=[date.today(), date.today() + timedelta(days=1)],
+                date__in=[
+                    date.today() - timedelta(days=1),
+                    date.today(),
+                    date.today() + timedelta(days=1),
+                ],
                 meeting__region=region,
             )
 
