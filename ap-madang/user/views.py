@@ -13,6 +13,10 @@ from .serializers import UserSerializer
 import jwt
 from rest_framework import viewsets, mixins
 from user.jwt_authentication import jwt_authentication
+from meeting.models import MeetingLog, UserMeetingEnter
+from alarmtalk.models import UserMeetingAlarm
+from meeting.serializers import MeetingLogSerializer
+from django.db.models import OuterRef, Subquery, Count
 
 
 @api_view(["POST"])
@@ -73,3 +77,47 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     # def get_queryset(self):
     #     user_ids = [int(s) for s in self.request.query_params.get("ids").split(",")]
     #     return User.objects.filter(id__in=user_ids)
+
+
+class UserMeetingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = MeetingLogSerializer
+    queryset = MeetingLog.objects
+
+    def get_queryset(self):
+        return (
+            MeetingLog.objects.filter(
+                meeting__is_deleted=False, meeting__user=self.request.user.id
+            )
+            .annotate(
+                user_enter_cnt=Subquery(
+                    UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
+                    .values("meeting")
+                    .annotate(count=Count("meeting"))
+                    .values("count")
+                )
+            )
+            .annotate(
+                alarm_num=Subquery(
+                    UserMeetingAlarm.objects.filter(meeting=OuterRef("pk"))
+                    .values("meeting")
+                    .annotate(count=Count("meeting"))
+                    .values("count")
+                )
+            )
+            .annotate(
+                alarm_id=Subquery(
+                    UserMeetingAlarm.objects.filter(
+                        sent_at=None,
+                        user=self.request.user.id,
+                        meeting=OuterRef("pk"),
+                    ).values("id")
+                )
+            )
+            .select_related("meeting")
+            .order_by("-date", "-meeting__start_time")
+        )
+
+    @jwt_authentication
+    def list(self, request, *args, **kwargs):
+        self.request.data.update({"user": request.user.id, "region": request.region})
+        return super().list(request, *args, **kwargs)

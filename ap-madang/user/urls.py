@@ -1,11 +1,12 @@
 from django.urls import path
-from . import views
 from rest_framework import routers
+from .views import *
 
 
 router = routers.DefaultRouter()
-router.register(r"", views.UserViewSet)
+router.register(r"", UserViewSet)
 
 urlpatterns = router.urls + [
-    path("login", views.login),
+    path("login", login),
+    path("me/meetings", UserMeetingViewSet.as_view({"get": "list"})),
 ]
