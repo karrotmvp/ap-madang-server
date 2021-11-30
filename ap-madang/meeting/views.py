@@ -11,6 +11,7 @@ from agora.models import *
 from oauth.views import get_region_from_region_id
 from rest_framework import status
 from rest_framework.response import Response
+from zoom.views import create_zoom_meeting
 
 
 # def get_meeting_list_for_bot(request):
@@ -169,6 +170,10 @@ class MeetingViewSet(
         # MeetingLog Obj Create
         date = request.data["date"]
         meeting_log = MeetingLog.objects.create(meeting=meeting, date=date)
+
+        if meeting.is_video:
+            meeting.meeting_url = create_zoom_meeting(meeting_log)
+            meeting.save()
 
         # Return Meeting Log Detail
         self.lookup_url_kwarg = "id"
