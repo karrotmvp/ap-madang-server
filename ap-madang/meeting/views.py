@@ -9,6 +9,8 @@ from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from agora.models import *
 from oauth.views import get_region_from_region_id
+from rest_framework import status
+from rest_framework.response import Response
 
 
 # def get_meeting_list_for_bot(request):
@@ -52,6 +54,7 @@ class MeetingViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = MeetingLogSerializer
@@ -171,6 +174,18 @@ class MeetingViewSet(
         self.lookup_url_kwarg = "id"
         self.kwargs["id"] = meeting_log.id
         return super().retrieve(request, *args, **kwargs)
+
+    @jwt_authentication
+    def destroy(self, request, *args, **kwargs):
+        meetinglog = self.get_object()
+        if meetinglog.meeting.user != request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        meeting = meetinglog.meeting
+        meeting.is_deleted = True
+        meeting.save()
+
+        return super().destroy(request, *args, **kwargs)
 
 
 class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
