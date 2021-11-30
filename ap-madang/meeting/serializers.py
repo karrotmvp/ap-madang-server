@@ -162,7 +162,17 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
         return obj.meeting.region
 
     def get_user(self, obj):
-        return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
+        return (
+            UserSerializer(obj.meeting.user).data
+            if obj.meeting.user
+            else {
+                "id": 0,
+                "nickname": "랜선동네모임",
+                "profile_image_url": "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/logo.png",
+                "manner_temperature": 36.5,
+                "region_name": "교보타워",
+            }
+        )
 
     # def get_recommend(self, obj):
     #     def check_live(obj):

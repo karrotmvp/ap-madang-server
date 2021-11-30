@@ -112,15 +112,15 @@ class MeetingViewSet(
             )
 
         if self.action == "list":
+            today = date.today()
             region = self.request.region
             queryset = queryset.filter(
                 meeting__is_deleted=False,
-                date__in=[
-                    date.today() - timedelta(days=1),
-                    date.today(),
-                    date.today() + timedelta(days=1),
-                ],
+                date__range=(today - timedelta(days=1), today + timedelta(days=6)),
                 meeting__region=region,
+            ).exclude(
+                date__range=(today + timedelta(days=2), today + timedelta(days=6)),
+                meeting__user__isnull=True,
             )
 
         return queryset
