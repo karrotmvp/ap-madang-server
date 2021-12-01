@@ -77,6 +77,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     is_video = serializers.SerializerMethodField()
     description_text = serializers.SerializerMethodField()
     alarm_num = serializers.SerializerMethodField()
+    is_host = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
@@ -89,6 +90,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "end_time",
             "is_video",
             "alarm_num",
+            "is_host",
         ]
         fields = common_fields + ["description_text"]
 
@@ -143,13 +145,20 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         fake = obj.alarm_cnt_fake
         return fake if cnt is None else (cnt + fake)
 
+    def get_is_host(self, obj):
+        user = self.context["request"].user
+        if user is None:
+            return False
+
+        return user == obj.meeting.user
+
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
 
-    user = serializers.SerializerMethodField()
+    host = serializers.SerializerMethodField()
     # recommend = serializers.SerializerMethodField()
 
     def get_description(self, obj):
@@ -161,7 +170,7 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     def get_region(self, obj):
         return obj.meeting.region
 
-    def get_user(self, obj):
+    def get_host(self, obj):
         return (
             UserSerializer(obj.meeting.user).data
             if obj.meeting.user
@@ -208,6 +217,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             "description",
             "meeting_url",
             "region",
-            "user",
+            "host",
             # "recommend",
         ]
