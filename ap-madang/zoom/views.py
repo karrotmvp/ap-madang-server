@@ -57,3 +57,19 @@ def create_zoom_meeting(meeting):
 
     response = requests.request("POST", url, headers=headers, data=payload)
     return json.loads(response.text).get("join_url")
+
+
+def delete_zoom_meeting(meeting_url):
+    zoom_meeting_id = meeting_url[18 : meeting_url.find("?")]
+    url = "https://api.zoom.us/v2/meetings/" + zoom_meeting_id
+
+    payload = {}
+    headers = {
+        "Authorization": "Bearer " + generate_jwt_for_zoom(),
+        "User-Agent": "Zoom-Jwt-Request",
+        "Content-Type": "application/json",
+    }
+
+    response = requests.request("DELETE", url, headers=headers, data=payload)
+
+    return response.status_code == 204

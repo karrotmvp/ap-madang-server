@@ -11,7 +11,7 @@ from agora.models import *
 from oauth.views import get_region_from_region_id
 from rest_framework import status
 from rest_framework.response import Response
-from zoom.views import create_zoom_meeting
+from zoom.views import create_zoom_meeting, delete_zoom_meeting
 
 
 # def get_meeting_list_for_bot(request):
@@ -188,6 +188,9 @@ class MeetingViewSet(
 
         meeting = meetinglog.meeting
         meeting.is_deleted = True
+        if meeting.is_video:
+            delete_zoom_meeting(meeting.meeting_url)
+
         meeting.save()
 
         return super().destroy(request, *args, **kwargs)
