@@ -23,6 +23,7 @@ from .settings import ENV_NAME, DEBUG
 
 # from alarmtalk.cron import send_meeting_alarm
 # from oauth.views import test
+# from support.views import query
 
 
 def env_name(request):
@@ -51,6 +52,7 @@ urlpatterns = [
     path("agora/", include("agora.urls")),
     # path("cron", send_meeting_alarm),
     # path("test", test),
+    # path("query", query),
 ]
 
 
