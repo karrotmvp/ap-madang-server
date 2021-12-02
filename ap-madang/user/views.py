@@ -47,7 +47,12 @@ def login(request):
     # TODO region 문제 있을 때 에러 처리
 
     token = jwt.encode(
-        {"nickname": nickname, "region": region_name2, "code": code},
+        {
+            "nickname": nickname,
+            "region": region_name2,
+            "code": code,
+            "profile_image_url": profile_image_url,
+        },
         JWT_SECRET,
         algorithm="HS256",
     )
