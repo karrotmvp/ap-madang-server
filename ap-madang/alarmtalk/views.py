@@ -198,3 +198,58 @@ def send_meeting_end_alarm_talk(enter_list):
     )
     print()
     return total_alarm_num
+
+
+def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
+    title = "지금 모임이 시작됐어요 🙌"
+    text1 = "개설하신 [ "
+    text2 = " ] 모임이 시작됐어요.\n아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
+    primary_button_text = "모임 바로가기"
+    normal_button_url = "{}/index.html?#/".format(
+        CLIENT_BASE_URL,
+    )
+    normal_button_text = "랜동모 홈으로 가기"
+    total_alarm_num = 0
+
+    print("----- owner meeting start alarm start : " + str(datetime.now()) + " -----")
+
+    for meetinglog in meetinglog_list:
+        if meetinglog.meeting.user:
+            url = "{}/index.html?#/meetings/{}".format(
+                CLIENT_BASE_URL, str(meetinglog.id)
+            )
+            if send_biz_chat_message(
+                meetinglog.meeting.user.karrot_user_id,
+                title,
+                text1 + meetinglog.meeting.title + text2,
+                url,
+                primary_button_text,
+                meetinglog.meeting.image.url,
+                True,
+                normal_button_url,
+                normal_button_text,
+            ):
+                print(
+                    "Owner Meeting Start Alarm sent! to id: {}, nickname: {}, karrot_id: {}".format(
+                        meetinglog.meeting.user.id,
+                        meetinglog.meeting.user.nickname,
+                        meetinglog.meeting.user.karrot_user_id,
+                    )
+                )
+                total_alarm_num += 1
+
+            else:
+                capture_message(
+                    "모임 시작 알림톡이 전송되지 않았습니다. meetinglog.id = " + str(meetinglog.id),
+                    "error",
+                )
+
+    print(
+        "----- owner meeting start alarm end with : "
+        + str(datetime.now())
+        + " alarm talks total ",
+        total_alarm_num,
+        "-----",
+    )
+    print()
+    return total_alarm_num
