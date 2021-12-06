@@ -84,7 +84,7 @@ class MeetingViewSet(
                     alarm_id=Subquery(
                         UserMeetingAlarm.objects.filter(
                             sent_at=None,
-                            user=self.request.user.id,
+                            user=self.request.user,
                             meeting=OuterRef("pk"),
                         ).values("id")
                     )
@@ -160,7 +160,7 @@ class MeetingViewSet(
                 "description": desc,
             }
         )
-        self.user_id = request.user.id
+        # self.user_id = request.user.id
 
         # Meeting Obj Create
         serializer = MeetingSerializer(data=request.data)
@@ -176,9 +176,10 @@ class MeetingViewSet(
             meeting.save()
 
         # Return Meeting Log Detail
-        self.lookup_url_kwarg = "id"
-        self.kwargs["id"] = meeting_log.id
-        return super().retrieve(request, *args, **kwargs)
+        # self.lookup_url_kwarg = "id"
+        # self.kwargs["id"] = meeting_log.id
+        # return super().retrieve(request, *args, **kwargs)
+        return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
 
     @jwt_authentication
     def destroy(self, request, *args, **kwargs):
