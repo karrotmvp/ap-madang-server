@@ -8,6 +8,7 @@ from config.settings import (
 import boto3
 from botocore.exceptions import ClientError
 from uuid import uuid4
+import mimetypes
 
 DAY_TO_MODEL = {
     0: "0_MON",
@@ -43,9 +44,12 @@ def generate_presigned_url(file_name):
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     )
     try:
+        type = mimetypes.guess_type("hello.png")[0]
         response = s3_client.generate_presigned_post(
             Bucket=AWS_STORAGE_BUCKET_NAME,
             Key="media/meeting_image/" + file_name,
+            Fields={"Content-Type": type},
+            Conditions=[{"Content-Type": type}],
             ExpiresIn=120,
         )
 
