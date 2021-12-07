@@ -78,6 +78,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     description_text = serializers.SerializerMethodField()
     alarm_num = serializers.SerializerMethodField()
     is_host = serializers.SerializerMethodField()
+    host = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
@@ -91,6 +92,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "is_video",
             "alarm_num",
             "is_host",
+            "host",
         ]
         fields = common_fields + ["description_text"]
 
@@ -106,9 +108,13 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         end = obj.meeting.end_time
         meeting_start_date = obj.date
         today_date = date.today()
+        tomorrow_date = date.today() + timedelta(days=1)
         # 내일 시작되는 모임
-        if meeting_start_date > today_date:
+        if meeting_start_date == tomorrow_date:
             return "tomorrow"
+        # 내일 이후 ~ 7일 이내 시작되는 모임
+        if meeting_start_date > tomorrow_date:
+            return "upcoming"
         # 현재 진행중인 모임
         if (meeting_start_date == today_date and start <= now < end) or (
             start > end
@@ -120,7 +126,8 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             return "live"
         # 오늘 예정된 모임
         if meeting_start_date == today_date and now < start:
-            return "upcoming"
+            return "today"
+        # 이미 종료된 모임
         return "finish"
 
     def get_alarm_id(self, obj):
@@ -152,24 +159,6 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
 
         return user == obj.meeting.user
 
-
-class MeetingLogDetailSerializer(MeetingLogSerializer):
-    description = serializers.SerializerMethodField()
-    meeting_url = serializers.SerializerMethodField()
-    region = serializers.SerializerMethodField()
-
-    host = serializers.SerializerMethodField()
-    # recommend = serializers.SerializerMethodField()
-
-    def get_description(self, obj):
-        return json.loads(obj.meeting.description)
-
-    def get_meeting_url(self, obj):
-        return obj.meeting.meeting_url
-
-    def get_region(self, obj):
-        return obj.meeting.region
-
     def get_host(self, obj):
         return (
             UserSerializer(obj.meeting.user).data
@@ -182,6 +171,22 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
                 "region_name": "교보타워",
             }
         )
+
+
+class MeetingLogDetailSerializer(MeetingLogSerializer):
+    description = serializers.SerializerMethodField()
+    meeting_url = serializers.SerializerMethodField()
+    region = serializers.SerializerMethodField()
+    # recommend = serializers.SerializerMethodField()
+
+    def get_description(self, obj):
+        return json.loads(obj.meeting.description)
+
+    def get_meeting_url(self, obj):
+        return obj.meeting.meeting_url
+
+    def get_region(self, obj):
+        return obj.meeting.region
 
     # def get_recommend(self, obj):
     #     def check_live(obj):
@@ -217,6 +222,5 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             "description",
             "meeting_url",
             "region",
-            "host",
             # "recommend",
         ]
