@@ -17,6 +17,7 @@ from meeting.models import MeetingLog, UserMeetingEnter
 from alarmtalk.models import UserMeetingAlarm
 from meeting.serializers import MeetingLogSerializer
 from django.db.models import OuterRef, Subquery, Count
+from .utils import *
 
 
 @api_view(["POST"])
@@ -46,27 +47,30 @@ def login(request):
     region_name2 = region_data.get("name2")
     # TODO region 문제 있을 때 에러 처리
 
-    token = jwt.encode(
-        {
-            "nickname": nickname,
-            "region": region_name2,
-            "code": code,
-            "profile_image_url": profile_image_url,
-        },
-        JWT_SECRET,
-        algorithm="HS256",
-    )
-
-    User.objects.update_or_create(
+    user, _ = User.objects.update_or_create(
         karrot_user_id=karrot_user_id,
         defaults={
             "nickname": nickname,
             "profile_image_url": profile_image_url,
             "manner_temperature": manner_temperature,
-            "token": token,
             "region_name": region_name,
         },
     )
+
+    token = jwt.encode(
+        {
+            "nickname": nickname,
+            "region": region_name2,
+            "code": code,
+            "profile_image_url": get_profile_image_url(user),
+        },
+        JWT_SECRET,
+        algorithm="HS256",
+    )
+
+    user.token = token
+    user.save()
+
     return JsonResponse({"token": token}, status=200, safe=False)
 
 
