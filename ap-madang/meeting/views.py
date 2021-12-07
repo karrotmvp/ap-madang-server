@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from alarmtalk.views import send_meeting_create_alarm_talk
 from rest_framework.decorators import api_view
+from urllib.parse import urlparse
 
 
 # def get_meeting_list_for_bot(request):
@@ -150,15 +151,22 @@ class MeetingViewSet(
 
     @jwt_authentication
     def create(self, request, *args, **kwargs):
+        def get_meeting_image(image_url):
+            if image_url is None:
+                return (
+                    "meeting_image/"
+                    + DEFAULT_MEETING_IMAGE[
+                        random.choice(range(len(DEFAULT_MEETING_IMAGE)))
+                    ]
+                )
+            return "meeting_image/" + urlparse(image_url).path.split("/")[-1]
+
         desc = json.dumps(request.data["description"], ensure_ascii=False)
         self.request.data.update(
             {
                 "user": request.user.id,
                 "region": request.region,
-                "image": "meeting_image/"
-                + DEFAULT_MEETING_IMAGE[
-                    random.choice(range(len(DEFAULT_MEETING_IMAGE)))
-                ],
+                "image": get_meeting_image(request.data.get("image_url", None)),
                 "description": desc,
             }
         )
