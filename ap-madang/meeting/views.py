@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from alarmtalk.views import send_meeting_create_alarm_talk
+from rest_framework.decorators import api_view
 
 
 # def get_meeting_list_for_bot(request):
@@ -214,3 +215,11 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             pass
 
         return HttpResponse(status=201)
+
+
+@api_view(["GET"])
+def get_presigned_url(request):
+    file_name = request.GET.get("file_name", None)
+    url = generate_presigned_url(file_name)
+
+    return Response(url, status=status.HTTP_200_OK)
