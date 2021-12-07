@@ -12,6 +12,7 @@ from oauth.views import get_region_from_region_id
 from rest_framework import status
 from rest_framework.response import Response
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
+from alarmtalk.views import send_meeting_create_alarm_talk
 
 
 # def get_meeting_list_for_bot(request):
@@ -179,6 +180,7 @@ class MeetingViewSet(
         # self.lookup_url_kwarg = "id"
         # self.kwargs["id"] = meeting_log.id
         # return super().retrieve(request, *args, **kwargs)
+        send_meeting_create_alarm_talk(meeting_log)
         return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
 
     @jwt_authentication
