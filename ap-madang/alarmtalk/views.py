@@ -253,3 +253,43 @@ def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
     )
     print()
     return total_alarm_num
+
+
+def send_meeting_create_alarm_talk(meetinglog):
+    title = "모임이 개설됐어요 🥳"
+    text = "[ {} ] 모임이 개설되어, 이웃들의 알림 신청을 기다리고 있어요.\n실시간으로 모임 알림 신청 현황을 확인해보세요.\n모임 시작 일시 : {}".format(
+        meetinglog.meeting.title,
+        meetinglog.date + " " + meetinglog.meeting.start_time.strftime("%H시 %M분"),
+    )
+    primary_button_text = "모임 바로가기"
+    normal_button_url = "{}/index.html?#/".format(
+        CLIENT_BASE_URL,
+    )
+    normal_button_text = "랜동모 홈으로 가기"
+    url = "{}/index.html?#/meetings/{}".format(CLIENT_BASE_URL, str(meetinglog.id))
+
+    if meetinglog.meeting.user:
+        if send_biz_chat_message(
+            meetinglog.meeting.user.karrot_user_id,
+            title,
+            text,
+            url,
+            primary_button_text,
+            meetinglog.meeting.image.url,
+            True,
+            normal_button_url,
+            normal_button_text,
+        ):
+            print(
+                "Meeting Create Alarm sent! to id: {}, nickname: {}, karrot_id: {}".format(
+                    meetinglog.meeting.user.id,
+                    meetinglog.meeting.user.nickname,
+                    meetinglog.meeting.user.karrot_user_id,
+                )
+            )
+
+        else:
+            capture_message(
+                "모임 생성 알림톡이 전송되지 않았습니다. meetinglog.id = " + str(meetinglog.id),
+                "error",
+            )
