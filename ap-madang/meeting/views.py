@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from alarmtalk.views import send_meeting_create_alarm_talk
 from rest_framework.decorators import api_view
+import requests
 
 
 # def get_meeting_list_for_bot(request):
@@ -161,6 +162,7 @@ class MeetingViewSet(
     @jwt_authentication
     def create(self, request, *args, **kwargs):
         desc = json.dumps(request.data["description"], ensure_ascii=False)
+        print(get_meeting_image(request.data.get("image_url", None)))
         self.request.data.update(
             {
                 "user": request.user.id,
@@ -226,12 +228,15 @@ def get_presigned_url(request):
     url = generate_presigned_url(file_name)
 
     # scriptpath = os.path.dirname(__file__)
-    # filename = os.path.join(scriptpath, "logo.png")
+    # filename = os.path.join(scriptpath, "56837413.jpeg")
 
     # with open(filename, "rb") as f:
     #     print("!!")
     #     files = {"file": (filename, f)}
     #     http_response = requests.post(url["url"], data=url["fields"], files=files)
     #     print(http_response)
+    #     print(http_response.request.url)
+    #     print(http_response.request.body)
+    #     print(http_response.request.headers)
 
     return Response(url, status=status.HTTP_200_OK)
