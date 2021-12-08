@@ -9,6 +9,7 @@ import requests
 from django.db.utils import IntegrityError
 from sentry_sdk import capture_message
 from datetime import datetime
+from .utils import *
 
 
 def send_biz_chat_message(
@@ -257,9 +258,12 @@ def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
 
 def send_meeting_create_alarm_talk(meetinglog):
     title = "모임이 개설됐어요 🥳"
+    datetime_in_korean = date_and_time_to_korean(
+        datetime.strptime(meetinglog.date, "%Y-%m-%d").date(),
+        meetinglog.meeting.start_time,
+    )
     text = "[ {} ] 모임이 개설되어, 이웃들의 알림 신청을 기다리고 있어요.\n실시간으로 모임 알림 신청 현황을 확인해보세요.\n\n모임 시작 일시 : {}".format(
-        meetinglog.meeting.title,
-        meetinglog.date + " " + meetinglog.meeting.start_time.strftime("%H시 %M분"),
+        meetinglog.meeting.title, datetime_in_korean
     )
     primary_button_text = "모임 바로가기"
     normal_button_url = "{}/index.html?#/".format(
@@ -293,3 +297,53 @@ def send_meeting_create_alarm_talk(meetinglog):
                 "모임 생성 알림톡이 전송되지 않았습니다. meetinglog.id = " + str(meetinglog.id),
                 "error",
             )
+
+
+def send_meeting_create_function_alarm_talk_to_opinions(opinion_list):
+    title = "이제 모임을 만들어볼 수 있어요🥳"
+    text = "랜선동네모임에 모임 생성 기능이 새롭게 생겼어요! "
+    primary_button_text = "모임 생성하러 가기"
+    total_alarm_num = 0
+    url = "{}/index.html?#/".format(
+        CLIENT_BASE_URL,
+    )
+    meeting_create_image = "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/%EC%95%8C%EB%A6%BC%ED%86%A1.png"
+
+    print(
+        "----- user meeting end/review alarm start : " + str(datetime.now()) + " -----"
+    )
+
+    for opinion in opinion_list:
+        if send_biz_chat_message(
+            opinion.user.karrot_user_id,
+            title,
+            text,
+            url,
+            primary_button_text,
+            meeting_create_image,
+            False,
+        ):
+            print(
+                "New Meeting Create Function sent! to id: {}, nickname: {}, karrot_id: {}".format(
+                    opinion.user.id, opinion.user.nickname, opinion.user.karrot_user_id
+                )
+            )
+            opinion.sent_at = datetime.now()
+            opinion.save()
+            total_alarm_num += 1
+
+        else:
+            capture_message(
+                "모임 생성 기능 알림톡이 전송되지 않았습니다. useropinion.id = " + str(opinion.id),
+                "error",
+            )
+
+    print(
+        "----- user meeting end/review alarm end with : "
+        + str(datetime.now())
+        + " alarm talks total ",
+        total_alarm_num,
+        "-----",
+    )
+    print()
+    return total_alarm_num
