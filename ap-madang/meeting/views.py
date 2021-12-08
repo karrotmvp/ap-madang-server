@@ -162,7 +162,6 @@ class MeetingViewSet(
     @jwt_authentication
     def create(self, request, *args, **kwargs):
         desc = json.dumps(request.data["description"], ensure_ascii=False)
-        print(get_meeting_image(request.data.get("image_url", None)))
         self.request.data.update(
             {
                 "user": request.user.id,
