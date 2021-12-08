@@ -46,7 +46,7 @@ def generate_presigned_url(file_name):
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     )
     try:
-        type = mimetypes.guess_type("hello.png")[0]
+        type = mimetypes.guess_type(file_name)[0]
         response = s3_client.generate_presigned_post(
             Bucket=AWS_STORAGE_BUCKET_NAME,
             Key="media/meeting_image/" + file_name,
