@@ -93,7 +93,7 @@ class MeetingViewSet(
                         ).values("id")
                     )
                 )
-                .select_related("meeting")
+                .prefetch_related("meeting", "meeting__user")
                 .order_by("date", "meeting__start_time")
             )
 
@@ -122,6 +122,7 @@ class MeetingViewSet(
         if self.action == "list":
             today = date.today()
             region = self.request.region
+
             queryset = queryset.filter(
                 meeting__is_deleted=False,
                 date__range=(today - timedelta(days=1), today + timedelta(days=6)),
@@ -130,6 +131,14 @@ class MeetingViewSet(
                 date__range=(today + timedelta(days=2), today + timedelta(days=6)),
                 meeting__user__isnull=True,
             )
+            filtered_queryset = []
+            for q in queryset:
+                q.live_status = get_live_status(
+                    q.date, q.meeting.start_time, q.meeting.end_time
+                )
+                if q.live_status != "finish":
+                    filtered_queryset.append(q)
+            return filtered_queryset
 
         return queryset
 
@@ -143,8 +152,15 @@ class MeetingViewSet(
         region_id = request.GET.get("region_id", None)
         request.region = get_region_from_region_id(region_id).get("name2")
         # TODO region 문제 있을 때 에러 처리
-        self.request.data.update({"user": request.user})
+        # self.request.data.update({"user": request.user})
         return super().list(request, *args, **kwargs)
+
+    def get_object(self):
+        object = super().get_object()
+        object.live_status = get_live_status(
+            object.date, object.meeting.start_time, object.meeting.end_time
+        )
+        return object
 
     @jwt_light_authentication
     def retrieve(self, request, *args, **kwargs):

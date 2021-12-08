@@ -103,32 +103,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         return obj.meeting.end_time
 
     def get_live_status(self, obj):
-        now = datetime.now().time()
-        start = obj.meeting.start_time
-        end = obj.meeting.end_time
-        meeting_start_date = obj.date
-        today_date = date.today()
-        tomorrow_date = date.today() + timedelta(days=1)
-        # 내일 시작되는 모임
-        if meeting_start_date == tomorrow_date:
-            return "tomorrow"
-        # 내일 이후 ~ 7일 이내 시작되는 모임
-        if meeting_start_date > tomorrow_date:
-            return "upcoming"
-        # 현재 진행중인 모임
-        if (meeting_start_date == today_date and start <= now < end) or (
-            start > end
-            and (
-                (meeting_start_date == today_date and now >= start)
-                or (meeting_start_date == today_date - timedelta(days=1) and now < end)
-            )
-        ):
-            return "live"
-        # 오늘 예정된 모임
-        if meeting_start_date == today_date and now < start:
-            return "today"
-        # 이미 종료된 모임
-        return "finish"
+        return obj.live_status
 
     def get_alarm_id(self, obj):
         user = self.context["request"].user
