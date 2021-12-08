@@ -14,6 +14,7 @@ class Base(models.Model):
 class UserOpinion(Base):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     body = models.TextField(blank=True, null=True)
+    sent_at = models.DateTimeField(blank=True, null=True)
 
 
 class MeetingReview(Base):

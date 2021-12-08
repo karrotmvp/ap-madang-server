@@ -18,6 +18,7 @@ from alarmtalk.models import UserMeetingAlarm
 from meeting.serializers import MeetingLogSerializer
 from django.db.models import OuterRef, Subquery, Count
 from .utils import *
+from meeting.utils import *
 
 
 @api_view(["POST"])
@@ -93,7 +94,7 @@ class UserMeetingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = MeetingLog.objects
 
     def get_queryset(self):
-        return (
+        queryset = (
             MeetingLog.objects.filter(
                 meeting__is_deleted=False, meeting__user=self.request.user.id
             )
@@ -125,6 +126,15 @@ class UserMeetingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             .select_related("meeting")
             .order_by("-date", "-meeting__start_time")
         )
+
+        filtered_queryset = []
+        for q in queryset:
+            q.live_status = get_live_status(
+                q.date, q.meeting.start_time, q.meeting.end_time
+            )
+            if q.live_status != "finish":
+                filtered_queryset.append(q)
+        return filtered_queryset
 
     @jwt_authentication
     def list(self, request, *args, **kwargs):
