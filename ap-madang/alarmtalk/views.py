@@ -257,7 +257,7 @@ def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
 
 def send_meeting_create_alarm_talk(meetinglog):
     title = "모임이 개설됐어요 🥳"
-    text = "[ {} ] 모임이 개설되어, 이웃들의 알림 신청을 기다리고 있어요.\n실시간으로 모임 알림 신청 현황을 확인해보세요.\n모임 시작 일시 : {}".format(
+    text = "[ {} ] 모임이 개설되어, 이웃들의 알림 신청을 기다리고 있어요.\n실시간으로 모임 알림 신청 현황을 확인해보세요.\n\n모임 시작 일시 : {}".format(
         meetinglog.meeting.title,
         meetinglog.date + " " + meetinglog.meeting.start_time.strftime("%H시 %M분"),
     )
