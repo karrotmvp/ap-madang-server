@@ -14,8 +14,6 @@ from rest_framework.response import Response
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from alarmtalk.views import send_meeting_create_alarm_talk
 from rest_framework.decorators import api_view
-from urllib.parse import urlparse
-import requests
 
 
 # def get_meeting_list_for_bot(request):
@@ -47,12 +45,6 @@ import requests
 
 #         return JsonResponse(meeting_in_24_list, status=200, safe=False)
 
-
-DEFAULT_MEETING_IMAGE = {
-    0: "2021-10-28_150407.7778955b2a9df87d3f4848aab5d8dff472e01b.webp",
-    1: "2021-10-28_150453.594534dddd39265b1f4b4e94e1daa7095464e8.webp",
-    2: "2021-10-28_150541.020312e465ca20180941018a25ef3f0e297d97.webp",
-}
 
 # Create your views here.
 class MeetingViewSet(
@@ -168,16 +160,6 @@ class MeetingViewSet(
 
     @jwt_authentication
     def create(self, request, *args, **kwargs):
-        def get_meeting_image(image_url):
-            if image_url is None:
-                return (
-                    "meeting_image/"
-                    + DEFAULT_MEETING_IMAGE[
-                        random.choice(range(len(DEFAULT_MEETING_IMAGE)))
-                    ]
-                )
-            return "meeting_image/" + urlparse(image_url).path.split("/")[-1]
-
         desc = json.dumps(request.data["description"], ensure_ascii=False)
         self.request.data.update(
             {
@@ -202,10 +184,6 @@ class MeetingViewSet(
             meeting.meeting_url = create_zoom_meeting(meeting_log)
             meeting.save()
 
-        # Return Meeting Log Detail
-        # self.lookup_url_kwarg = "id"
-        # self.kwargs["id"] = meeting_log.id
-        # return super().retrieve(request, *args, **kwargs)
         send_meeting_create_alarm_talk(meeting_log)
         return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
 
