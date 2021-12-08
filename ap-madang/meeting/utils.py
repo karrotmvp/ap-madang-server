@@ -1,4 +1,6 @@
 from datetime import date, timedelta, datetime
+
+from requests.models import Response
 from config.settings import (
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
@@ -37,7 +39,7 @@ def get_date(date):
 
 
 def generate_presigned_url(file_name):
-    file_name = "{}{}{}".format(datetime.now(), uuid4().hex, file_name)
+    file_name = "{}{}.{}".format(datetime.now(), uuid4().hex, file_name.split(".")[-1])
 
     s3_client = boto3.client(
         "s3",
@@ -54,6 +56,16 @@ def generate_presigned_url(file_name):
             Conditions=[{"Content-Type": type}],
             ExpiresIn=120,
         )
+        # response = s3_client.generate_presigned_url(
+        #     ClientMethod="put_object",
+        #     Params={
+        #         "Bucket": AWS_STORAGE_BUCKET_NAME,
+        #         "Key": "media/meeting_image/" + file_name,
+        #         # "ContentType": type,
+        #         # "ACL": "public-read",
+        #     },
+        #     ExpiresIn=100,
+        # )
 
     except ClientError as e:
         return None
