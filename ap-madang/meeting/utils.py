@@ -9,6 +9,8 @@ import boto3
 from botocore.exceptions import ClientError
 from uuid import uuid4
 import mimetypes
+from urllib.parse import urlparse
+import random
 
 DAY_TO_MODEL = {
     0: "0_MON",
@@ -86,3 +88,22 @@ def get_live_status(start_date, start_time, end_time):
         return "today"
     # 이미 종료된 모임
     return "finish"
+
+
+DEFAULT_MEETING_IMAGE = {
+    0: "default_meeting_image01.webpp",
+    1: "default_meeting_image02.webpp",
+    2: "default_meeting_image03.webp",
+    3: "default_meeting_image04.webp",
+    4: "default_meeting_image05.webp",
+    5: "default_meeting_image06.webp",
+}
+
+
+def get_meeting_image(image_url):
+    if image_url is None:
+        return (
+            "meeting_image/"
+            + DEFAULT_MEETING_IMAGE[random.choice(range(len(DEFAULT_MEETING_IMAGE)))]
+        )
+    return "meeting_image/" + urlparse(image_url).path.split("/")[-1]
