@@ -91,8 +91,8 @@ def get_live_status(start_date, start_time, end_time):
 
 
 DEFAULT_MEETING_IMAGE = {
-    0: "default_meeting_image01.webpp",
-    1: "default_meeting_image02.webpp",
+    0: "default_meeting_image01.webp",
+    1: "default_meeting_image02.webp",
     2: "default_meeting_image03.webp",
     3: "default_meeting_image04.webp",
     4: "default_meeting_image05.webp",
