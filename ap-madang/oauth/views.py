@@ -52,3 +52,17 @@ def get_manner_temperature(karrot_user_id):
 
     response = requests.request("GET", url, headers=headers)
     return json.loads(response.text).get("data").get("user").get("mannerTemperature")
+
+
+def get_karrot_scheme(origin_url):
+    url = BASE_URL_REGION + "/api/v2/widget/entry_target_uri"
+
+    payload = {"to": origin_url}
+    headers = {
+        "Accept": "application/json",
+        "X-Api-Key": API_KEY,
+        "Content-Type": "application/json",
+    }
+
+    response = requests.request("POST", url, json=payload, headers=headers)
+    return json.loads(response.text).get("data").get("widget").get("entryTargetUri")

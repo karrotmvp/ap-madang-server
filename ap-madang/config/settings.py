@@ -68,6 +68,7 @@ CUSTOM_APPS = [
     "alarmtalk",
     "support",
     "agora",
+    "share",
 ]
 
 INSTALLED_APPS = (
@@ -290,3 +291,4 @@ AGORA_APP_ID = os.environ.get("AGORA_APP_ID")
 AGORA_APP_CERTIFICATE = os.environ.get("AGORA_APP_CERTIFICATE")
 ZOOM_API_KEY = os.environ.get("ZOOM_API_KEY")
 ZOOM_API_SECRET = os.environ.get("ZOOM_API_SECRET")
+SERVER_SHORT_URL_BASE_URL = os.environ.get("SERVER_SHORT_URL_BASE_URL")
