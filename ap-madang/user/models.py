@@ -17,6 +17,7 @@ class User(Base):
     manner_temperature = models.FloatField(blank=True, null=True)
     token = models.CharField(max_length=400)
     region_name = models.CharField(max_length=50, blank=True, null=True)
+    sent_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.nickname

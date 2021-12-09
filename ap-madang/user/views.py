@@ -19,6 +19,7 @@ from meeting.serializers import MeetingLogSerializer
 from django.db.models import OuterRef, Subquery, Count
 from .utils import *
 from meeting.utils import *
+from alarmtalk.views import send_welcome_alarm_talk_to_new_user
 
 
 @api_view(["POST"])
@@ -48,7 +49,7 @@ def login(request):
     region_name2 = region_data.get("name2")
     # TODO region 문제 있을 때 에러 처리
 
-    user, _ = User.objects.update_or_create(
+    user, created = User.objects.update_or_create(
         karrot_user_id=karrot_user_id,
         defaults={
             "nickname": nickname,
@@ -71,6 +72,9 @@ def login(request):
 
     user.token = token
     user.save()
+
+    if created:
+        send_welcome_alarm_talk_to_new_user(user)
 
     return JsonResponse({"token": token}, status=200, safe=False)
 

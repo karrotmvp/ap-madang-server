@@ -301,7 +301,7 @@ def send_meeting_create_alarm_talk(meetinglog):
 
 def send_meeting_create_function_alarm_talk_to_opinions(opinion_list):
     title = "이제 모임을 만들어볼 수 있어요🥳"
-    text = "랜선동네모임에 모임 생성 기능이 새롭게 생겼어요! "
+    text = "지금 랜선동네모임에서 모임을 만들고 이웃을 만나보세요!"
     primary_button_text = "모임 생성하러 가기"
     total_alarm_num = 0
     url = "{}/index.html?#/".format(
@@ -347,3 +347,36 @@ def send_meeting_create_function_alarm_talk_to_opinions(opinion_list):
     )
     print()
     return total_alarm_num
+
+
+def send_welcome_alarm_talk_to_new_user(user):
+    title = "{}님 환영해요🤗"
+    text = "랜선동네모임에 오신 것을 환영해요!\n\n당근마켓 앱 하단의 '내근처'>'생활서비스'에서 랜동모를 확인할 수 있어요"
+    primary_button_text = "랜동모 홈으로 가기"
+    url = "{}/index.html?#/".format(
+        CLIENT_BASE_URL,
+    )
+    welcome_image = "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/%EC%95%8C%EB%A6%BC%ED%86%A1.png"
+
+    if send_biz_chat_message(
+        user.karrot_user_id,
+        title.format(user.nickname),
+        text,
+        url,
+        primary_button_text,
+        welcome_image,
+        False,
+    ):
+        print(
+            "Welcome Alarmtalk sent! to id: {}, nickname: {}, karrot_id: {}".format(
+                user.id, user.nickname, user.karrot_user_id
+            )
+        )
+        user.sent_at = datetime.now()
+        user.save()
+
+    else:
+        capture_message(
+            "새 유저 환영 알림톡이 전송되지 않았습니다. useropinion.id = " + str(user.id),
+            "error",
+        )
