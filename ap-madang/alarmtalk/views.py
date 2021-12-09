@@ -372,8 +372,8 @@ def send_welcome_alarm_talk_to_new_user(user):
                 user.id, user.nickname, user.karrot_user_id
             )
         )
-        welcome_image.sent_at = datetime.now()
-        welcome_image.save()
+        user.sent_at = datetime.now()
+        user.save()
 
     else:
         capture_message(
