@@ -50,6 +50,7 @@ urlpatterns = [
     path("alarms/", include("alarmtalk.urls")),
     path("support/", include("support.urls")),
     path("agora/", include("agora.urls")),
+    path("share/", include("share.urls")),
     # path("cron", send_meeting_alarm),
     # path("test", test),
     # path("query", query),
