@@ -131,14 +131,11 @@ class UserMeetingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             .order_by("-date", "-meeting__start_time")
         )
 
-        filtered_queryset = []
         for q in queryset:
             q.live_status = get_live_status(
                 q.date, q.meeting.start_time, q.meeting.end_time
             )
-            if q.live_status != "finish":
-                filtered_queryset.append(q)
-        return filtered_queryset
+        return queryset
 
     @jwt_authentication
     def list(self, request, *args, **kwargs):
