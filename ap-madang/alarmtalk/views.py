@@ -300,8 +300,8 @@ def send_meeting_create_alarm_talk(meetinglog):
 
 
 def send_meeting_create_function_alarm_talk_to_opinions(opinion_list):
-    title = "이제 모임을 만들어볼 수 있어요🥳"
-    text = "지금 랜선동네모임에서 모임을 만들고 이웃을 만나보세요!"
+    title = "지금 랜동모에서 모임을 만들어 보세요🥳"
+    text = "랜선동네모임에서 나만의 모임을 만들어 관심사가 맞는 이웃을 찾아보세요.\n실시간으로 이웃들의 알림 신청 현황을 확인할 수 있어요."
     primary_button_text = "모임 생성하러 가기"
     total_alarm_num = 0
     url = "{}/index.html?#/".format(
@@ -350,12 +350,10 @@ def send_meeting_create_function_alarm_talk_to_opinions(opinion_list):
 
 
 def send_welcome_alarm_talk_to_new_user(user):
-    title = "{}님 환영해요🤗"
-    text = "랜선동네모임에 오신 것을 환영해요!\n\n당근마켓 앱 하단의 '내근처'>'생활서비스'에서 랜동모를 확인할 수 있어요"
+    title = "{}님, 랜선동네모임에 오신 것을 환영해요🤗"
+    text = "동네 이웃을 만나는 공간 '랜선동네모임'에서 이웃들과 대화를 나눠보세요! \n아래 '랜동모 홈으로 가기' 버튼을 눌러 우리 동네 모임을 둘러보세요. "
     primary_button_text = "랜동모 홈으로 가기"
-    url = "{}/index.html?#/".format(
-        CLIENT_BASE_URL,
-    )
+    url = "{}/index.html?#/".format(CLIENT_BASE_URL)
     welcome_image = "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/%EC%95%8C%EB%A6%BC%ED%86%A1.png"
 
     if send_biz_chat_message(
