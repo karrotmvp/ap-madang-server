@@ -119,7 +119,8 @@ def get_meeting_image(image_url):
 
 
 def send_meeting_create_slack_webhook(meeting_log):
-    MEETING_CREATE_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+
+    MEETING_CREATE_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
     datetime_in_korean = date_and_time_to_korean(
         datetime.strptime(meeting_log.date, "%Y-%m-%d").date(),
         meeting_log.meeting.start_time,
@@ -132,8 +133,9 @@ def send_meeting_create_slack_webhook(meeting_log):
             datetime_in_korean,
         )
     }
-    requests.post(
+    res = requests.post(
         MEETING_CREATE_SLACK_WEBHOOK_URL,
         data=json.dumps(payloads),
         headers={"Content-Type": "application/json"},
     )
+    print(res)
