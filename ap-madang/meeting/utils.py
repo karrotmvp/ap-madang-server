@@ -4,6 +4,7 @@ from config.settings import (
     AWS_SECRET_ACCESS_KEY,
     AWS_STORAGE_BUCKET_NAME,
     AWS_S3_REGION_NAME,
+    MEETING_CREATE_SLACK_WEBHOOK_URL,
 )
 from botocore.exceptions import ClientError
 from uuid import uuid4
@@ -119,8 +120,6 @@ def get_meeting_image(image_url):
 
 
 def send_meeting_create_slack_webhook(meeting_log):
-
-    MEETING_CREATE_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
     datetime_in_korean = date_and_time_to_korean(
         datetime.strptime(meeting_log.date, "%Y-%m-%d").date(),
         meeting_log.meeting.start_time,
