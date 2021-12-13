@@ -1,18 +1,15 @@
 from datetime import date, timedelta, datetime
-
-from requests.models import Response
 from config.settings import (
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
     AWS_STORAGE_BUCKET_NAME,
     AWS_S3_REGION_NAME,
 )
-import boto3
 from botocore.exceptions import ClientError
 from uuid import uuid4
-import mimetypes
 from urllib.parse import urlparse
-import random
+import random, requests, json, mimetypes, boto3
+from alarmtalk.utils import date_and_time_to_korean
 
 DAY_TO_MODEL = {
     0: "0_MON",
@@ -119,3 +116,24 @@ def get_meeting_image(image_url):
             + DEFAULT_MEETING_IMAGE[random.choice(range(len(DEFAULT_MEETING_IMAGE)))]
         )
     return "meeting_image/" + urlparse(image_url).path.split("/")[-1]
+
+
+def send_meeting_create_slack_webhook(meeting_log):
+    MEETING_CREATE_SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+    datetime_in_korean = date_and_time_to_korean(
+        datetime.strptime(meeting_log.date, "%Y-%m-%d").date(),
+        meeting_log.meeting.start_time,
+    )
+
+    payloads = {
+        "text": "주인님🙇‍♂️, [ {} ] 님이 [ {} ] 모임을 생성했습니다!! \n모임 시작 일시 : {}".format(
+            meeting_log.meeting.user.nickname,
+            meeting_log.meeting.title,
+            datetime_in_korean,
+        )
+    }
+    requests.post(
+        MEETING_CREATE_SLACK_WEBHOOK_URL,
+        data=json.dumps(payloads),
+        headers={"Content-Type": "application/json"},
+    )

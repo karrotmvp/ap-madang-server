@@ -186,6 +186,7 @@ class MeetingViewSet(
             meeting.save()
 
         send_meeting_create_alarm_talk(meeting_log)
+        send_meeting_create_slack_webhook(meeting_log)
         return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
 
     @jwt_authentication
