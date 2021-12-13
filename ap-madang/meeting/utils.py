@@ -5,6 +5,7 @@ from config.settings import (
     AWS_STORAGE_BUCKET_NAME,
     AWS_S3_REGION_NAME,
     MEETING_CREATE_SLACK_WEBHOOK_URL,
+    ENV_NAME,
 )
 from botocore.exceptions import ClientError
 from uuid import uuid4
@@ -126,7 +127,8 @@ def send_meeting_create_slack_webhook(meeting_log):
     )
 
     payloads = {
-        "text": "주인님🙇‍♂️, [ {} ] 님이 [ {} ] 모임을 생성했습니다!! \n모임 시작 일시 : {}".format(
+        "text": "환경 : {} \n주인님🙇‍♂️, [ {} ] 님이 [ {} ] 모임을 생성했습니다!! \n모임 시작 일시 : {}".format(
+            ENV_NAME,
             meeting_log.meeting.user.nickname,
             meeting_log.meeting.title,
             datetime_in_korean,

@@ -12,9 +12,7 @@ from oauth.views import get_region_from_region_id
 from rest_framework import status
 from rest_framework.response import Response
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
-from alarmtalk.views import send_meeting_create_alarm_talk
 from rest_framework.decorators import api_view
-import requests
 
 
 # def get_meeting_list_for_bot(request):
@@ -185,7 +183,7 @@ class MeetingViewSet(
             meeting.meeting_url = create_zoom_meeting(meeting_log)
             meeting.save()
 
-        send_meeting_create_alarm_talk(meeting_log)
+        # send_meeting_create_alarm_talk(meeting_log)
         send_meeting_create_slack_webhook(meeting_log)
         return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
 
