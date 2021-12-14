@@ -34,5 +34,6 @@ def get_or_create_short_url(request):
 def redirect_to_karrot_scheme(request):
     code = request.GET.get("code", None)
     short_url = get_object_or_404(ShareUrl, code=code)
-
+    short_url.access_cnt += 1
+    short_url.save()
     return redirect(short_url.karrot_scheme_url)
