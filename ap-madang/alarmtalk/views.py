@@ -354,7 +354,7 @@ def send_meeting_start_in_hour_alarm_talk(alarm_list):
                     alarm.user.id, alarm.user.nickname, alarm.user.karrot_user_id
                 )
             )
-            alarm.sent_at = datetime.now()
+            alarm.hour_left_sent_at = datetime.now()
             alarm.save()
             total_alarm_num += 1
 
