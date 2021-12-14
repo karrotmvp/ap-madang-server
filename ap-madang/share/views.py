@@ -14,7 +14,9 @@ HttpResponseRedirect.allowed_schemes.append("karrot.alpha")
 @api_view(["GET"])
 def get_or_create_short_url(request):
     meeting_id = request.GET.get("meeting", None)
-    origin_url = "{}/index.html?#/meetings/{}".format(CLIENT_BASE_URL, meeting_id)
+    origin_url = "{}/index.html?#/meetings/{}?ref=share".format(
+        CLIENT_BASE_URL, meeting_id
+    )
 
     short_url, created = ShareUrl.objects.get_or_create(
         origin_url=origin_url,
