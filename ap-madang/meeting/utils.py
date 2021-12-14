@@ -127,9 +127,10 @@ def send_meeting_create_slack_webhook(meeting_log):
     )
 
     payloads = {
-        "text": "환경 : {} \n주인님🙇‍♂️, [ {} ] 님이 [ {} ] 모임을 생성했습니다!! \n모임 시작 일시 : {}".format(
+        "text": "환경 : {} \nJinny 주인님🙇‍♂️, [ {} ] 님이 [ {} ]에 [ {} ] 모임을 생성했습니다!! \n모임 시작 일시 : {}".format(
             ENV_NAME,
             meeting_log.meeting.user.nickname,
+            meeting_log.meeting.region,
             meeting_log.meeting.title,
             datetime_in_korean,
         )

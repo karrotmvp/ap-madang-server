@@ -15,7 +15,7 @@ class User(Base):
     profile_image_url = models.TextField(blank=True, null=True)
     manner_point = models.IntegerField(blank=True, null=True)
     manner_temperature = models.FloatField(blank=True, null=True)
-    token = models.CharField(max_length=400)
+    token = models.CharField(max_length=767)
     region_name = models.CharField(max_length=50, blank=True, null=True)
     sent_at = models.DateTimeField(blank=True, null=True)
 
