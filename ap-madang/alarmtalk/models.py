@@ -15,6 +15,7 @@ class UserMeetingAlarm(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(MeetingLog, on_delete=models.CASCADE)
     sent_at = models.DateTimeField(blank=True, null=True)
+    hour_left_sent_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         constraints = [
