@@ -3,13 +3,16 @@ from user.jwt_authentication import jwt_authentication, jwt_light_authentication
 from .models import *
 from .serializers import *
 from .utils import *
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from agora.models import *
-from rest_framework.response import Response
 from oauth.views import get_region_from_region_id
+from rest_framework import status
+from rest_framework.response import Response
+from zoom.views import create_zoom_meeting, delete_zoom_meeting
+from rest_framework.decorators import api_view
 
 
 # def get_meeting_list_for_bot(request):
@@ -47,6 +50,7 @@ class MeetingViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = MeetingLogSerializer
@@ -55,11 +59,7 @@ class MeetingViewSet(
     def get_queryset(self):
         if self.request.user is not None:
             queryset = (
-                MeetingLog.objects.filter(
-                    meeting__is_deleted=False,
-                    date__in=[date.today(), date.today() + timedelta(days=1)],
-                )
-                .annotate(
+                MeetingLog.objects.annotate(
                     user_enter_cnt=Subquery(
                         UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
                         .values("meeting")
@@ -79,22 +79,18 @@ class MeetingViewSet(
                     alarm_id=Subquery(
                         UserMeetingAlarm.objects.filter(
                             sent_at=None,
-                            user=self.request.user.id,
+                            user=self.request.user,
                             meeting=OuterRef("pk"),
                         ).values("id")
                     )
                 )
-                .select_related("meeting")
+                .prefetch_related("meeting", "meeting__user")
                 .order_by("date", "meeting__start_time")
             )
 
         else:
             queryset = (
-                MeetingLog.objects.filter(
-                    meeting__is_deleted=False,
-                    date__in=[date.today(), date.today() + timedelta(days=1)],
-                )
-                .annotate(
+                MeetingLog.objects.annotate(
                     user_enter_cnt=Subquery(
                         UserMeetingEnter.objects.filter(meeting=OuterRef("pk"))
                         .values("meeting")
@@ -115,8 +111,25 @@ class MeetingViewSet(
             )
 
         if self.action == "list":
+            today = date.today()
             region = self.request.region
-            queryset = queryset.filter(meeting__region=region)
+
+            queryset = queryset.filter(
+                meeting__is_deleted=False,
+                date__range=(today - timedelta(days=1), today + timedelta(days=6)),
+                meeting__region=region,
+            ).exclude(
+                date__range=(today + timedelta(days=2), today + timedelta(days=6)),
+                meeting__user__isnull=True,
+            )
+            filtered_queryset = []
+            for q in queryset:
+                q.live_status = get_live_status(
+                    q.date, q.meeting.start_time, q.meeting.end_time
+                )
+                if q.live_status != "finish":
+                    filtered_queryset.append(q)
+            return filtered_queryset
 
         return queryset
 
@@ -130,8 +143,15 @@ class MeetingViewSet(
         region_id = request.GET.get("region_id", None)
         request.region = get_region_from_region_id(region_id).get("name2")
         # TODO region 문제 있을 때 에러 처리
-        self.request.data.update({"user": request.user})
+        # self.request.data.update({"user": request.user})
         return super().list(request, *args, **kwargs)
+
+    def get_object(self):
+        object = super().get_object()
+        object.live_status = get_live_status(
+            object.date, object.meeting.start_time, object.meeting.end_time
+        )
+        return object
 
     @jwt_light_authentication
     def retrieve(self, request, *args, **kwargs):
@@ -139,16 +159,16 @@ class MeetingViewSet(
 
     @jwt_authentication
     def create(self, request, *args, **kwargs):
+        desc = json.dumps(request.data["description"], ensure_ascii=False)
         self.request.data.update(
             {
                 "user": request.user.id,
                 "region": request.region,
-                "start_time": datetime.datetime.strftime(
-                    datetime.datetime.now(), "%H:%M:%00"
-                ),
+                "image": get_meeting_image(request.data.get("image_url", None)),
+                "description": desc,
             }
         )
-        self.user_id = request.user.id
+        # self.user_id = request.user.id
 
         # Meeting Obj Create
         serializer = MeetingSerializer(data=request.data)
@@ -156,12 +176,31 @@ class MeetingViewSet(
         meeting = serializer.save()
 
         # MeetingLog Obj Create
-        meeting_log = MeetingLog.objects.create(meeting=meeting, date=date.today())
+        date = request.data["date"]
+        meeting_log = MeetingLog.objects.create(meeting=meeting, date=date)
 
-        # Return Meeting Log Detail
-        self.lookup_url_kwarg = "id"
-        self.kwargs["id"] = meeting_log.id
-        return super().retrieve(request, *args, **kwargs)
+        if meeting.is_video:
+            meeting.meeting_url = create_zoom_meeting(meeting_log)
+            meeting.save()
+
+        # send_meeting_create_alarm_talk(meeting_log)
+        send_meeting_create_slack_webhook(meeting_log)
+        return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
+
+    @jwt_authentication
+    def destroy(self, request, *args, **kwargs):
+        meetinglog = self.get_object()
+        if meetinglog.meeting.user != request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        meeting = meetinglog.meeting
+        meeting.is_deleted = True
+        if meeting.is_video:
+            delete_zoom_meeting(meeting.meeting_url)
+
+        meeting.save()
+
+        return super().destroy(request, *args, **kwargs)
 
 
 class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -179,3 +218,23 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             pass
 
         return HttpResponse(status=201)
+
+
+@api_view(["GET"])
+def get_presigned_url(request):
+    file_name = request.GET.get("file_name", None)
+    url = generate_presigned_url(file_name)
+
+    # scriptpath = os.path.dirname(__file__)
+    # filename = os.path.join(scriptpath, "56837413.jpeg")
+
+    # with open(filename, "rb") as f:
+    #     print("!!")
+    #     files = {"file": (filename, f)}
+    #     http_response = requests.post(url["url"], data=url["fields"], files=files)
+    #     print(http_response)
+    #     print(http_response.request.url)
+    #     print(http_response.request.body)
+    #     print(http_response.request.headers)
+
+    return Response(url, status=status.HTTP_200_OK)

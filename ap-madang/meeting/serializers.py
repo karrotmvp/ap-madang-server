@@ -9,19 +9,19 @@ from django.db.models import OuterRef, Subquery, Count
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    # description = serializers.JSONField()
+    image = serializers.CharField()
 
     class Meta:
         model = Meeting
         fields = [
             "title",
-            "description",
             "user",
             "region",
             "start_time",
             "end_time",
-            "image",
             "is_video",
+            "image",
+            "description",
         ]
 
 
@@ -77,6 +77,8 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     is_video = serializers.SerializerMethodField()
     description_text = serializers.SerializerMethodField()
     alarm_num = serializers.SerializerMethodField()
+    is_host = serializers.SerializerMethodField()
+    host = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
@@ -89,6 +91,8 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "end_time",
             "is_video",
             "alarm_num",
+            "is_host",
+            "host",
         ]
         fields = common_fields + ["description_text"]
 
@@ -99,16 +103,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         return obj.meeting.end_time
 
     def get_live_status(self, obj):
-        now = datetime.now().time()
-        start = obj.meeting.start_time
-        end = obj.meeting.end_time
-        if obj.date != date.today():
-            return "tomorrow"
-        if (start <= now < end) or (start > end and (now >= start or now < end)):
-            return "live"
-        if now < start:
-            return "upcoming"
-        return "finish"
+        return obj.live_status
 
     def get_alarm_id(self, obj):
         user = self.context["request"].user
@@ -132,13 +127,31 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         fake = obj.alarm_cnt_fake
         return fake if cnt is None else (cnt + fake)
 
+    def get_is_host(self, obj):
+        user = self.context["request"].user
+        if user is None:
+            return False
+
+        return user == obj.meeting.user
+
+    def get_host(self, obj):
+        return (
+            UserSerializer(obj.meeting.user).data
+            if obj.meeting.user
+            else {
+                "id": 0,
+                "nickname": "랜선동네모임",
+                "profile_image_url": "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/logo.png",
+                "manner_temperature": 36.5,
+                "region_name": "교보타워",
+            }
+        )
+
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
-
-    # user = serializers.SerializerMethodField()
     # recommend = serializers.SerializerMethodField()
 
     def get_description(self, obj):
@@ -149,9 +162,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
 
     def get_region(self, obj):
         return obj.meeting.region
-
-    # def get_user(self, obj):
-    #     return UserSerializer(obj.meeting.user).data if obj.meeting.user else None
 
     # def get_recommend(self, obj):
     #     def check_live(obj):
@@ -187,6 +197,5 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             "description",
             "meeting_url",
             "region",
-            # "user",
             # "recommend",
         ]
