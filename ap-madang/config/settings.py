@@ -47,6 +47,7 @@ else:
         "d2p80xtunaym1x.cloudfront.net",
         "dtm2ixz1i9ezl.cloudfront.net",
         "meeting.daangn-meetup.com",
+        "shorturl.daangn-meetup.com",
     ]
 
 
