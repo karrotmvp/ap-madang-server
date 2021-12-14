@@ -100,7 +100,7 @@ class UserMeetingAlarmViewSet(
 
 
 def send_meeting_start_alarm_talk(alarm_list):
-    title = "지금 모임이 시작됐어요 🙌"
+    title = "지금 [{}]모임이 시작됐어요 🙌"
     text1 = "알림 신청하신 [ "
     text2 = " ] 모임이 시작됐어요.\n아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
     primary_button_text = "모임 바로가기"
@@ -112,7 +112,7 @@ def send_meeting_start_alarm_talk(alarm_list):
         url = get_meeting_detail_client_page(alarm.meeting.id)
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
-            title,
+            title.format(get_meeting_title_trunc(alarm.meeting.meeting.title)),
             text1 + alarm.meeting.meeting.title + text2,
             url,
             primary_button_text,
@@ -176,7 +176,7 @@ def send_meeting_end_alarm_talk(enter_list):
 
 
 def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
-    title = "지금 모임이 시작됐어요 🙌"
+    title = "지금 [{}]모임이 시작됐어요 🙌"
     text1 = "개설하신 [ "
     text2 = " ] 모임이 시작됐어요.\n아래 '모임 바로가기' 버튼을 눌러 이웃과 대화를 나눠보세요."
     primary_button_text = "모임 바로가기"
@@ -189,7 +189,7 @@ def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
             url = get_meeting_detail_client_page(meetinglog.id)
             if send_biz_chat_message(
                 meetinglog.meeting.user.karrot_user_id,
-                title,
+                title.format(get_meeting_title_trunc(meetinglog.meeting.title)),
                 text1 + meetinglog.meeting.title + text2,
                 url,
                 primary_button_text,
@@ -326,7 +326,7 @@ def send_welcome_alarm_talk_to_new_user(user):
 
 
 def send_meeting_start_in_hour_alarm_talk(alarm_list):
-    title = "한 시간 뒤에 모임이 시작돼요 ⏰"
+    title = "[{}] 모임이 한 시간 뒤에 시작돼요 ⏰"
     text = "알림 신청하신 [ {} ] 모임이 한 시간 뒤에 시작돼요.\n이웃과의 즐거운 만남이 기다리고 있으니 {}에 만나요🤗"
     primary_button_text = "모임 바로가기"
     normal_button_url = get_home_client_page()
@@ -337,7 +337,7 @@ def send_meeting_start_in_hour_alarm_talk(alarm_list):
         url = get_meeting_detail_client_page(alarm.meeting.id)
         if send_biz_chat_message(
             alarm.user.karrot_user_id,
-            title,
+            title.format(get_meeting_title_trunc(alarm.meeting.meeting.title)),
             text.format(
                 alarm.meeting.meeting.title,
                 time_to_korean(alarm.meeting.meeting.start_time, twelve_base=True),
@@ -367,7 +367,7 @@ def send_meeting_start_in_hour_alarm_talk(alarm_list):
 
 
 def send_meeting_start_in_hour_alarm_talk_to_owners(meetinglog_list):
-    title = "한 시간 뒤에 모임이 시작돼요 ⏰"
+    title = "[{}] 모임이 한 시간 뒤에 시작돼요 ⏰"
     text = "개설하신 [ {} ] 모임이 한 시간 뒤에 시작돼요.\n이웃과의 즐거운 만남이 기다리고 있으니 {}에 만나요🤗"
     primary_button_text = "모임 바로가기"
     normal_button_url = get_home_client_page()
@@ -379,7 +379,7 @@ def send_meeting_start_in_hour_alarm_talk_to_owners(meetinglog_list):
             url = get_meeting_detail_client_page(meetinglog.id)
             if send_biz_chat_message(
                 meetinglog.meeting.user.karrot_user_id,
-                title,
+                title.format(get_meeting_title_trunc(meetinglog.meeting.title)),
                 text.format(
                     meetinglog.meeting.title,
                     time_to_korean(meetinglog.meeting.start_time, twelve_base=True),

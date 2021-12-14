@@ -37,3 +37,10 @@ def get_home_client_page():
     return "{}/index.html?#/".format(
         CLIENT_BASE_URL,
     )
+
+
+def get_meeting_title_trunc(meeting_title):
+    MAX_LENGTH = 15
+    if len(meeting_title) > MAX_LENGTH:
+        return meeting_title[0:MAX_LENGTH] + "..."
+    return meeting_title
