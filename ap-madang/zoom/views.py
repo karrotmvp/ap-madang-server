@@ -1,6 +1,5 @@
-import jwt, json, requests
+import jwt, json, requests, random, string
 from datetime import datetime, timedelta
-
 from config.settings import ZOOM_API_KEY, ZOOM_API_SECRET
 
 
@@ -31,8 +30,6 @@ def create_zoom_meeting(meeting):
 
     duration = int((end_datetime - start_datetime).seconds / 60)
 
-    print(duration)
-
     payload = json.dumps(
         {
             "topic": meeting.meeting.title,
@@ -42,10 +39,17 @@ def create_zoom_meeting(meeting):
             + meeting.meeting.start_time.strftime("%H:%M:%S"),
             "duration": str(duration),
             "timezone": "Asia/Seoul",
+            "password": "".join(
+                random.choices(
+                    string.ascii_letters + string.digits,
+                    k=5,
+                )
+            ),
             "settings": {
                 "host_video": "false",
                 "participant_video": "false",
                 "join_before_host": "true",
+                "waiting_room": "false",
             },
         }
     )
