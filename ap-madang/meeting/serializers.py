@@ -59,6 +59,8 @@ class MeetingRecommendSerializer(serializers.ModelSerializer):
         return obj.meeting.title
 
     def get_image(self, obj):
+        if obj.meeting.thumbnail_image_url:
+            return obj.meeting.thumbnail_image_url
         if obj.meeting.image:
             return obj.meeting.image.url
         return None
@@ -162,6 +164,12 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
 
     def get_region(self, obj):
         return obj.meeting.region
+
+    # override get image to get original image
+    def get_image(self, obj):
+        if obj.meeting.image:
+            return obj.meeting.image.url
+        return None
 
     # def get_recommend(self, obj):
     #     def check_live(obj):
