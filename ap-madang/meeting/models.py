@@ -72,6 +72,10 @@ class Meeting(Base):
     is_deleted = models.BooleanField(default=False)
     is_video = models.BooleanField(default=False)
     sub_topics = models.TextField(default="[]")
+    thumbnail_image_url = models.CharField(max_length=400, blank=True, null=True)
+
+    class Meta:
+        indexes = [models.Index(fields=["thumbnail_image_url"])]
 
     def save(self, *args, **kwargs):
         if not self.id:
