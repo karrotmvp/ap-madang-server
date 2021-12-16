@@ -187,8 +187,7 @@ class MeetingViewSet(
         # send_meeting_create_alarm_talk(meeting_log)
 
         if image_url:
-            # send_image_resize_sqs_msg(meeting.id, image_url)
-            send_image_resize_sqs_msg(481, image_url)
+            send_image_resize_sqs_msg(meeting.id, image_url)
 
         send_meeting_create_slack_webhook(meeting_log)
         return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
