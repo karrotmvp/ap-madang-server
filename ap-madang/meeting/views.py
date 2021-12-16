@@ -160,11 +160,12 @@ class MeetingViewSet(
     @jwt_authentication
     def create(self, request, *args, **kwargs):
         desc = json.dumps(request.data["description"], ensure_ascii=False)
+        image_url = request.data.get("image_url", None)
         self.request.data.update(
             {
                 "user": request.user.id,
                 "region": request.region,
-                "image": get_meeting_image(request.data.get("image_url", None)),
+                "image": get_meeting_image(image_url),
                 "description": desc,
             }
         )
@@ -184,6 +185,11 @@ class MeetingViewSet(
             meeting.save()
 
         # send_meeting_create_alarm_talk(meeting_log)
+
+        if image_url:
+            # send_image_resize_sqs_msg(meeting.id, image_url)
+            send_image_resize_sqs_msg(481, image_url)
+
         send_meeting_create_slack_webhook(meeting_log)
         return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
 
