@@ -145,7 +145,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
                 "nickname": "랜선동네모임",
                 "profile_image_url": "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/logo.png",
                 "manner_temperature": 36.5,
-                "region_name": "교보타워",
+                "region_name": "당근마켓",
             }
         )
 
