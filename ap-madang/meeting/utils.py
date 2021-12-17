@@ -6,12 +6,14 @@ from config.settings import (
     AWS_S3_REGION_NAME,
     MEETING_CREATE_SLACK_WEBHOOK_URL,
     ENV_NAME,
+    IMAGE_RESIZE_SQS_URL,
 )
 from botocore.exceptions import ClientError
 from uuid import uuid4
 from urllib.parse import urlparse
 import random, requests, json, mimetypes, boto3
 from alarmtalk.utils import date_and_time_to_korean
+from sentry_sdk import capture_message
 
 DAY_TO_MODEL = {
     0: "0_MON",
@@ -39,6 +41,7 @@ def get_date(date):
 
 def generate_presigned_url(file_name):
     file_name = "{}{}.{}".format(datetime.now(), uuid4().hex, file_name.split(".")[-1])
+    file_name = file_name.replace(" ", "")
 
     s3_client = boto3.client(
         "s3",
@@ -140,4 +143,24 @@ def send_meeting_create_slack_webhook(meeting_log):
         data=json.dumps(payloads),
         headers={"Content-Type": "application/json"},
     )
-    print(res)
+
+
+def send_image_resize_sqs_msg(meeting_id, image_url):
+    sqs_client = boto3.client("sqs", region_name=AWS_S3_REGION_NAME)
+    try:
+        msg = sqs_client.send_message(
+            QueueUrl=IMAGE_RESIZE_SQS_URL,
+            MessageBody=image_url,
+            MessageAttributes={
+                "meeting_id": {"StringValue": str(meeting_id), "DataType": "String"},
+                "bucket": {"StringValue": "ap-madang-server", "DataType": "String"},
+                "key": {
+                    "StringValue": image_url.split("com/")[1],
+                    "DataType": "String",
+                },
+            },
+        )
+    except ClientError as e:
+        capture_message("썸네일 이미지가 생성되지 않았습니다")
+        return None
+    return msg
