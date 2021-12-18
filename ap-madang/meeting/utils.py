@@ -11,9 +11,14 @@ from config.settings import (
 from botocore.exceptions import ClientError
 from uuid import uuid4
 from urllib.parse import urlparse
-import random, requests, json, mimetypes, boto3
+import random
+import requests
+import json
+import mimetypes
+import boto3
 from alarmtalk.utils import date_and_time_to_korean
 from sentry_sdk import capture_message
+from common.utils import get_env_name
 
 DAY_TO_MODEL = {
     0: "0_MON",
@@ -40,7 +45,8 @@ def get_date(date):
 
 
 def generate_presigned_url(file_name):
-    file_name = "{}{}.{}".format(datetime.now(), uuid4().hex, file_name.split(".")[-1])
+    file_name = "{}{}.{}".format(
+        datetime.now(), uuid4().hex, file_name.split(".")[-1])
     file_name = file_name.replace(" ", "")
 
     s3_client = boto3.client(
@@ -154,6 +160,7 @@ def send_image_resize_sqs_msg(meeting_id, image_url):
             MessageAttributes={
                 "meeting_id": {"StringValue": str(meeting_id), "DataType": "String"},
                 "bucket": {"StringValue": "ap-madang-server", "DataType": "String"},
+                "env": {"StringValue": get_env_name(), "DataType": "String"},
                 "key": {
                     "StringValue": image_url.split("com/")[1],
                     "DataType": "String",
