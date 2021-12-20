@@ -47,6 +47,8 @@ else:
         "localhost",
         ".ap-northeast-2.compute.amazonaws.com",
         "ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
+        "ap-madang-env-sub.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
+        "ec2-15-165-246-184.ap-northeast-2.compute.amazonaws.com"
         "d2p80xtunaym1x.cloudfront.net",
         "dtm2ixz1i9ezl.cloudfront.net",
         "meeting.daangn-meetup.com",
