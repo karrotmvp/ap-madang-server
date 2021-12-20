@@ -1,11 +1,9 @@
 from rest_framework import serializers
 from .models import *
-from datetime import datetime
-from alarmtalk.models import UserMeetingAlarm
 import json
 from .utils import *
 from user.serializers import *
-from django.db.models import OuterRef, Subquery, Count
+from agora.views import is_agora_channel_available
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -154,6 +152,7 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
+    is_agora_channel_available = serializers.SerializerMethodField()
     # recommend = serializers.SerializerMethodField()
 
     def get_description(self, obj):
@@ -170,6 +169,9 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
         if obj.meeting.image:
             return obj.meeting.image.url
         return None
+
+    def get_is_agora_channel_available(self, obj):
+        return is_agora_channel_available(obj.meeting.channel_name)
 
     # def get_recommend(self, obj):
     #     def check_live(obj):
@@ -205,5 +207,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
             "description",
             "meeting_url",
             "region",
+            "is_agora_channel_available"
             # "recommend",
         ]

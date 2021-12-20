@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+from sentry_sdk.integrations.django import DjangoIntegration
+import sentry_sdk
 from pathlib import Path
-import json, os
+import json
+import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,6 +47,8 @@ else:
         "localhost",
         ".ap-northeast-2.compute.amazonaws.com",
         "ap-madang-env.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
+        "ap-madang-env-sub.eba-rtbc3esy.ap-northeast-2.elasticbeanstalk.com",
+        "ec2-15-165-246-184.ap-northeast-2.compute.amazonaws.com"
         "d2p80xtunaym1x.cloudfront.net",
         "dtm2ixz1i9ezl.cloudfront.net",
         "meeting.daangn-meetup.com",
@@ -222,8 +227,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 
 if ENV_NAME != "Local":
     sentry_sdk.init(
@@ -293,5 +296,8 @@ AGORA_APP_CERTIFICATE = os.environ.get("AGORA_APP_CERTIFICATE")
 ZOOM_API_KEY = os.environ.get("ZOOM_API_KEY")
 ZOOM_API_SECRET = os.environ.get("ZOOM_API_SECRET")
 SERVER_SHORT_URL_BASE_URL = os.environ.get("SERVER_SHORT_URL_BASE_URL")
-MEETING_CREATE_SLACK_WEBHOOK_URL = os.environ.get("MEETING_CREATE_SLACK_WEBHOOK_URL")
+MEETING_CREATE_SLACK_WEBHOOK_URL = os.environ.get(
+    "MEETING_CREATE_SLACK_WEBHOOK_URL")
 IMAGE_RESIZE_SQS_URL = os.environ.get("IMAGE_RESIZE_SQS_URL")
+AGORA_CUSTOMER_ID = os.environ.get("AGORA_CUSTOMER_ID")
+AGORA_CUSTOMER_SECRET = os.environ.get("AGORA_CUSTOMER_SECRET")

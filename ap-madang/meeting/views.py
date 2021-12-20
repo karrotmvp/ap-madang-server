@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from rest_framework.decorators import api_view
+from alarmtalk.models import UserMeetingAlarm
 
 
 # def get_meeting_list_for_bot(request):
@@ -116,10 +117,12 @@ class MeetingViewSet(
 
             queryset = queryset.filter(
                 meeting__is_deleted=False,
-                date__range=(today - timedelta(days=1), today + timedelta(days=6)),
+                date__range=(today - timedelta(days=1),
+                             today + timedelta(days=6)),
                 meeting__region=region,
             ).exclude(
-                date__range=(today + timedelta(days=2), today + timedelta(days=6)),
+                date__range=(today + timedelta(days=2),
+                             today + timedelta(days=6)),
                 meeting__user__isnull=True,
             )
             filtered_queryset = []
@@ -215,7 +218,8 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     @jwt_authentication
     def create(self, request, *args, **kwargs):
         self.request.data.update(
-            {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
+            {"user": request.user.id,
+                "meeting": kwargs["pk"], "region": request.region}
         )
         try:
             super().create(request, *args, **kwargs)
