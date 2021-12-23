@@ -37,9 +37,11 @@ class MeetingEnterCode(Base):
     is_valid = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        # 생성될 때마다 code, token 자동 생성 (수정되는 경우는 없어야함)
-        self.code = create_meeting_enter_code(self.meeting.id, self.user.id)
-        self.agora_token = create_agora_token(self.meeting, self.user)
+        if not self.id:
+            # 생성될 때마다 code, token 자동 생성 (수정되는 경우는 없어야함)
+            self.code = create_meeting_enter_code(
+                self.meeting.id, self.user.id)
+            self.agora_token = create_agora_token(self.meeting, self.user)
         return super(MeetingEnterCode, self).save(*args, **kwargs)
 
     class Meta:

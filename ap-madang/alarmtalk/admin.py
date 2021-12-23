@@ -3,8 +3,11 @@ from .models import UserMeetingAlarm
 from meeting.filters import CustomDateFieldListFilter
 
 # Register your models here.
+
+
 @admin.register(UserMeetingAlarm)
 class UserMeetingAlarmAdmin(admin.ModelAdmin):
+    readonly_fields = ["meeting", "user"]
     list_display = (
         "id",
         "user",
