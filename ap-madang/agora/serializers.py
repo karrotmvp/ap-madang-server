@@ -14,7 +14,8 @@ class MeetingLogSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MeetingLog
-        fields = ["id", "title", "channel_name", "sub_topics", "description", "host"]
+        fields = ["id", "title", "channel_name",
+                  "sub_topics", "description", "host"]
 
     def get_title(self, obj):
         return obj.meeting.title
@@ -49,7 +50,7 @@ class MeetingEnterCodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MeetingEnterCode
-        fields = ["meeting", "user", "agora_token", "token"]
+        fields = ["meeting", "user", "agora_token", "token", "code"]
 
     def get_token(self, obj):
         return obj.user.token

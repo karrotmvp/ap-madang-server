@@ -16,6 +16,7 @@ class DaysAdmin(admin.ModelAdmin):
 
 @admin.register(MeetingLog)
 class MeetingLogAdmin(admin.ModelAdmin):
+    readonly_fields = ["meeting"]
     list_display = (
         "id",
         "date",
@@ -25,7 +26,8 @@ class MeetingLogAdmin(admin.ModelAdmin):
         "enter_cnt_fake",
         "alarm_fake_add_cnt",
     )
-    list_filter = [("date", CustomDateFieldListFilter), "meeting__region", "meeting"]
+    list_filter = [("date", CustomDateFieldListFilter),
+                   "meeting__region", "meeting"]
 
 
 def create_meeting_log(request, queryset, date):
@@ -140,6 +142,7 @@ class MeetingAdmin(admin.ModelAdmin):
 
 @admin.register(UserMeetingEnter)
 class UserMeetingEnterAdmin(admin.ModelAdmin):
+    readonly_fields = ["meeting", "user"]
     list_display = (
         "id",
         "user",

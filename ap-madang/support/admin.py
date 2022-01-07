@@ -7,6 +7,7 @@ from django.contrib import messages
 @admin.register(UserOpinion)
 class UserOpinionAdmin(admin.ModelAdmin):
     list_display = ("user", "body", "created_at", "sent_at")
+    readonly_fields = ["user"]
 
     actions = ["send_open_alarm"]
 
