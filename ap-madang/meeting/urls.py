@@ -7,6 +7,6 @@ router.register(r"", MeetingViewSet)
 
 urlpatterns = router.urls + [
     path("<int:pk>/enter", UserMeetingEnterViewSet.as_view({"post": "create"})),
-    path("presigned-url", get_presigned_url)
-    # path("bot", get_meeting_list_for_bot),
+    path("presigned-url", get_presigned_url),
+    path("<int:pk>/user-list", get_meeting_agora_user_list),
 ]

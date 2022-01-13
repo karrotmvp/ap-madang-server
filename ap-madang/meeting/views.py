@@ -1,52 +1,23 @@
 from rest_framework import viewsets, mixins
-from user.jwt_authentication import jwt_authentication, jwt_light_authentication
-from .models import *
-from .serializers import *
-from .utils import *
 from datetime import date, timedelta
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
-from agora.models import *
-from oauth.views import get_region_from_region_id
 from rest_framework import status
 from rest_framework.response import Response
-from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
+
+from user.jwt_authentication import jwt_authentication, jwt_light_authentication
+from .models import *
+from .serializers import *
+from .utils import *
+from agora.models import *
+from oauth.views import get_region_from_region_id
+from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from alarmtalk.models import UserMeetingAlarm
 
 
-# def get_meeting_list_for_bot(request):
-#     if request.method == "GET":
-#         meeting_in_24_list = list()
-
-#         meetings = MeetingLog.objects.filter(
-#             meeting__is_deleted=False,
-#             date__in=[date.today(), date.today() + timedelta(days=1)],
-#         )
-
-#         now = datetime.now()
-
-#         for meeting in meetings:
-#             if (
-#                 timedelta(hours=0)
-#                 < datetime.combine(meeting.date, meeting.meeting.start_time) - now
-#                 < timedelta(hours=24)
-#             ):
-#                 dic = {
-#                     "title": meeting.meeting.title,
-#                     "start_time": meeting.meeting.start_time,
-#                     "end_time": meeting.meeting.end_time,
-#                     "meeting_url": meeting.meeting.meeting_url,
-#                     "region": meeting.meeting.region,
-#                     "date": meeting.date,
-#                 }
-#                 meeting_in_24_list.append(dic)
-
-#         return JsonResponse(meeting_in_24_list, status=200, safe=False)
-
-
-# Create your views here.
 class MeetingViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -107,7 +78,7 @@ class MeetingViewSet(
                         .values("count")
                     )
                 )
-                .select_related("meeting")
+                .prefetch_related("meeting")
                 .order_by("date", "meeting__start_time")
             )
 
@@ -117,12 +88,10 @@ class MeetingViewSet(
 
             queryset = queryset.filter(
                 meeting__is_deleted=False,
-                date__range=(today - timedelta(days=1),
-                             today + timedelta(days=6)),
+                date__range=(today - timedelta(days=1), today + timedelta(days=6)),
                 meeting__region=region,
             ).exclude(
-                date__range=(today + timedelta(days=2),
-                             today + timedelta(days=6)),
+                date__range=(today + timedelta(days=2), today + timedelta(days=6)),
                 meeting__user__isnull=True,
             )
             filtered_queryset = []
@@ -218,8 +187,7 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     @jwt_authentication
     def create(self, request, *args, **kwargs):
         self.request.data.update(
-            {"user": request.user.id,
-                "meeting": kwargs["pk"], "region": request.region}
+            {"user": request.user.id, "meeting": kwargs["pk"], "region": request.region}
         )
         try:
             super().create(request, *args, **kwargs)
@@ -233,17 +201,10 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 def get_presigned_url(request):
     file_name = request.GET.get("file_name", None)
     url = generate_presigned_url(file_name)
-
-    # scriptpath = os.path.dirname(__file__)
-    # filename = os.path.join(scriptpath, "56837413.jpeg")
-
-    # with open(filename, "rb") as f:
-    #     print("!!")
-    #     files = {"file": (filename, f)}
-    #     http_response = requests.post(url["url"], data=url["fields"], files=files)
-    #     print(http_response)
-    #     print(http_response.request.url)
-    #     print(http_response.request.body)
-    #     print(http_response.request.headers)
-
     return Response(url, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_meeting_agora_user_list(request, pk):
+    meeting_log = get_object_or_404(MeetingLog, id=pk)
+    return Response(json.loads(meeting_log.agora_user_list), status=status.HTTP_200_OK)
