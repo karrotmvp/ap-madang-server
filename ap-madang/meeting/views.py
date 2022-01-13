@@ -205,6 +205,7 @@ def get_presigned_url(request):
 
 
 @api_view(["GET"])
+@jwt_authentication
 def get_meeting_agora_user_list(request, pk):
     meeting_log = get_object_or_404(MeetingLog, id=pk)
     return Response(json.loads(meeting_log.agora_user_list), status=status.HTTP_200_OK)
