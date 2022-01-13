@@ -8,7 +8,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 
-from user.jwt_authentication import jwt_authentication, jwt_light_authentication
+from user.jwt_authentication import (
+    jwt_authentication,
+    jwt_light_authentication,
+    jwt_authentication_fbv,
+)
 from .models import *
 from .serializers import *
 from .utils import *
@@ -205,7 +209,7 @@ def get_presigned_url(request):
 
 
 @api_view(["GET"])
-@jwt_authentication
+@jwt_authentication_fbv
 def get_meeting_agora_user_list(request, pk):
     meeting_log = get_object_or_404(MeetingLog, id=pk)
     return Response(json.loads(meeting_log.agora_user_list), status=status.HTTP_200_OK)
