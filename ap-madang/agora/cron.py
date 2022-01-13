@@ -8,28 +8,18 @@ from .views import get_agora_channel_user_list
 def update_agora_user_list():
     # 지금 열리는 모임 가져오기
     today = date.today()
-    meetings = (
-        MeetingLog.objects.filter(
-            meeting__is_deleted=False,
-            date__range=(today - timedelta(days=1), today),
-            meeting__is_video=False,
-        )
-        .prefetch_related("meeting")
-        .values(
-            "id",
-            "date",
-            "meeting__start_time",
-            "meeting__end_time",
-            "meeting__channel_name",
-        )
-    )
+    meetings = MeetingLog.objects.filter(
+        meeting__is_deleted=False,
+        date__range=(today - timedelta(days=1), today),
+        meeting__is_video=False,
+    ).prefetch_related("meeting")
     filtered_meetings = []
 
     for meeting in meetings:
         live_status = get_live_status(
-            meeting["date"],
-            meeting["meeting__start_time"],
-            meeting["meeting__end_time"],
+            meeting.date,
+            meeting.meeting.start_time,
+            meeting.meeting.end_time,
         )
         if live_status == "live":
             filtered_meetings.append(meeting)
@@ -44,15 +34,16 @@ def update_agora_user_list():
 
     # 모임 유저 리스트 업데이트하기
     for meeting in filtered_meetings:
-        response_data = get_agora_channel_user_list(
-            meeting["meeting__channel_name"]
-        ).get("data")
+        response_data = get_agora_channel_user_list(meeting.meeting.channel_name).get(
+            "data"
+        )
         channel_exist = response_data.get("channel_exist")
 
         # 채널이 존재하면(사람이 있으면) 유저 리스트를 업데이트 해준다
         if channel_exist:
             users = response_data.get("users")
-            meeting.objects.update(agora_user_list=users)
+            meeting.agora_user_list = users
+            meeting.save()
 
     print(
         "----- meeting agora_user_list update with total :{} , time: {}-----".format(
