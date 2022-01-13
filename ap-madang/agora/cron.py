@@ -39,11 +39,14 @@ def update_agora_user_list():
         )
         channel_exist = response_data.get("channel_exist")
 
-        # 채널이 존재하면(사람이 있으면) 유저 리스트를 업데이트 해준다
+        # 채널이 존재하면(사람이 있으면) 유저 리스트를 받아와서 업데이트 해준다
         if channel_exist:
             users = response_data.get("users")
             meeting.agora_user_list = users
-            meeting.save()
+        else:
+            # 채널이 존재하지 않으면, 아무도 없다는 뜻이므로 리스트를 비워준다
+            meeting.agora_user_list = "[]"
+        meeting.save()
 
     print(
         "----- meeting agora_user_list update with total :{} , time: {}-----".format(
