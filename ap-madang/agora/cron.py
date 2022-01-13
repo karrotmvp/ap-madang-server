@@ -5,7 +5,7 @@ from meeting.utils import get_live_status
 from .views import get_agora_channel_user_list
 
 
-def update_agora_user_list(request):
+def update_agora_user_list():
     # 지금 열리는 모임 가져오기
     today = date.today()
     meetings = (
@@ -24,7 +24,7 @@ def update_agora_user_list(request):
         )
     )
     filtered_meetings = []
-    print(meetings)
+
     for meeting in meetings:
         live_status = get_live_status(
             meeting["date"],
