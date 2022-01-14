@@ -24,6 +24,7 @@ from .settings import ENV_NAME, DEBUG
 # from alarmtalk.cron import send_meeting_alarm
 # from oauth.views import test
 # from support.views import query
+# from agora.cron import update_agora_user_list
 
 
 def env_name(request):
@@ -52,6 +53,7 @@ urlpatterns = [
     path("agora/", include("agora.urls")),
     path("share/", include("share.urls")),
     # path("cron", send_meeting_alarm),
+    # path("cron", update_agora_user_list),
     # path("test", test),
     # path("query", query),
 ]

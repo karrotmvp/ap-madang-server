@@ -91,7 +91,7 @@ INSTALLED_APPS = (
 )
 
 # Cron
-if DEBUG or ENV_NAME == "cron":
+if DEBUG or ENV_NAME in ["cron", "cron-dev"]:
     CRONJOBS = [
         # ("*/5 * * * *", "meeting.cron.add_fake_cnt", ">> /var/log/add_fake_cnt.log"),
         (
@@ -103,6 +103,11 @@ if DEBUG or ENV_NAME == "cron":
             "0 1 * * *",
             "meeting.cron.create_tomorrows_meeting",
             ">> /var/log/crontab_create_tomorrows_meeting.log",
+        ),
+        (
+            "0 0 1 1 *",
+            "agora.cron.update_agora_user_list",
+            ">> /var/log/crontab_update_agora_user_list.log",
         ),
     ]
 
@@ -296,8 +301,7 @@ AGORA_APP_CERTIFICATE = os.environ.get("AGORA_APP_CERTIFICATE")
 ZOOM_API_KEY = os.environ.get("ZOOM_API_KEY")
 ZOOM_API_SECRET = os.environ.get("ZOOM_API_SECRET")
 SERVER_SHORT_URL_BASE_URL = os.environ.get("SERVER_SHORT_URL_BASE_URL")
-MEETING_CREATE_SLACK_WEBHOOK_URL = os.environ.get(
-    "MEETING_CREATE_SLACK_WEBHOOK_URL")
+MEETING_CREATE_SLACK_WEBHOOK_URL = os.environ.get("MEETING_CREATE_SLACK_WEBHOOK_URL")
 IMAGE_RESIZE_SQS_URL = os.environ.get("IMAGE_RESIZE_SQS_URL")
 AGORA_CUSTOMER_ID = os.environ.get("AGORA_CUSTOMER_ID")
 AGORA_CUSTOMER_SECRET = os.environ.get("AGORA_CUSTOMER_SECRET")
