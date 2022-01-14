@@ -16,7 +16,7 @@ class DaysAdmin(admin.ModelAdmin):
 
 @admin.register(MeetingLog)
 class MeetingLogAdmin(admin.ModelAdmin):
-    readonly_fields = ["meeting", "user"]
+    readonly_fields = ["meeting"]
     list_display = (
         "id",
         "date",
@@ -75,6 +75,7 @@ def create_meeting_log(request, queryset, date):
 
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
+    readonly_fields = ["user"]
     formfield_overrides = {
         models.ManyToManyField: {"widget": forms.CheckboxSelectMultiple}
     }
