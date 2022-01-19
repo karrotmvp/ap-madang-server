@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view
-from config.settings import CLIENT_BASE_URL, SERVER_SHORT_URL_BASE_URL
+from config.settings import CLIENT_BASE_URL
 from .models import *
 from .utils import *
-from oauth.views import get_karrot_scheme
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
@@ -18,16 +18,7 @@ def get_or_create_short_url(request):
         CLIENT_BASE_URL, meeting_id
     )
 
-    short_url, created = ShareUrl.objects.get_or_create(
-        origin_url=origin_url,
-        defaults={
-            "karrot_scheme_url": get_karrot_scheme(origin_url),
-            "code": create_url_code(origin_url, meeting_id),
-        },
-    )
-
-    url = "{}/share/redirect?code={}".format(SERVER_SHORT_URL_BASE_URL, short_url.code)
-
+    url = create_meeting_short_url(origin_url, meeting_id)
     return JsonResponse({"short_url": url}, status=200, safe=False)
 
 
