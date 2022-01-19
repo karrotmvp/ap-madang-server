@@ -45,8 +45,7 @@ def get_date(date):
 
 
 def generate_presigned_url(file_name):
-    file_name = "{}{}.{}".format(
-        datetime.now(), uuid4().hex, file_name.split(".")[-1])
+    file_name = "{}{}.{}".format(datetime.now(), uuid4().hex, file_name.split(".")[-1])
     file_name = file_name.replace(" ", "")
 
     s3_client = boto3.client(
@@ -82,6 +81,8 @@ def generate_presigned_url(file_name):
 
 
 def get_live_status(start_date, start_time, end_time):
+    if start_date == start_time == end_time == None:
+        return None
     now = datetime.now().time()
     start = start_time
     end = end_time
@@ -142,6 +143,20 @@ def send_meeting_create_slack_webhook(meeting_log):
             meeting_log.meeting.region,
             meeting_log.meeting.title,
             datetime_in_korean,
+        )
+    }
+    res = requests.post(
+        MEETING_CREATE_SLACK_WEBHOOK_URL,
+        data=json.dumps(payloads),
+        headers={"Content-Type": "application/json"},
+    )
+
+
+def send_meeting_link_create_slack_webhook(meeting_log):
+
+    payloads = {
+        "text": "환경 : {} \nJinny 주인님🙇‍♂️, [ {} ] 님이 모임 링크를 생성했습니다! id = {}".format(
+            ENV_NAME, meeting_log.meeting.user.nickname, str(meeting_log.id)
         )
     }
     res = requests.post(
