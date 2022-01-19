@@ -88,6 +88,7 @@ class MeetingAdmin(admin.ModelAdmin):
         "end_time",
         "is_deleted",
         "is_video",
+        "is_link",
     )
     list_filter = ["region", "is_deleted"]
     actions = [
