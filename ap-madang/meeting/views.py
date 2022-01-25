@@ -231,7 +231,7 @@ def create_meeting_link(request):
     )
     meeting_log = MeetingLog.objects.create(meeting=meeting)
 
-    origin_url = "{}/index.html?#/meetings/{}?ref=share".format(
+    origin_url = "{}/daangn#/redirect?meeting_id={}".format(
         CLIENT_BASE_URL, meeting_log.id
     )
 
