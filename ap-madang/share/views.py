@@ -28,3 +28,13 @@ def redirect_to_karrot_scheme(request):
     short_url.access_cnt += 1
     short_url.save()
     return redirect(short_url.karrot_scheme_url)
+
+
+def get_karrot_scheme_url(request):
+    code = request.GET.get("share_code", None)
+    short_url = get_object_or_404(ShareUrl, code=code)
+    short_url.access_cnt += 1
+    short_url.save()
+    return JsonResponse(
+        {"karrot_scheme_url": short_url.karrot_scheme_url}, status=200, safe=False
+    )

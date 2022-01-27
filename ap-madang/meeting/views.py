@@ -235,10 +235,10 @@ def create_meeting_link(request):
         CLIENT_BASE_URL, meeting_log.id
     )
 
-    url = create_meeting_short_url(origin_url, meeting_log.id)
+    url, share_code = create_meeting_short_url(origin_url, meeting_log.id)
 
     send_meeting_link_create_slack_webhook(meeting_log)
 
     return Response(
-        {"id": meeting_log.id, "short_url": url}, status=status.HTTP_201_CREATED
+        {"id": meeting_log.id, "share_code": share_code}, status=status.HTTP_201_CREATED
     )

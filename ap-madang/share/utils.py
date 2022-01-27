@@ -17,6 +17,8 @@ def create_meeting_short_url(origin_url, meeting_id):
         },
     )
 
-    url = "{}/share/redirect?code={}".format(SERVER_SHORT_URL_BASE_URL, short_url.code)
+    url = "{}/share/redirect?share_code={}".format(
+        SERVER_SHORT_URL_BASE_URL, short_url.code
+    )
 
-    return url
+    return url, short_url.code
