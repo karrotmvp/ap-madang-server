@@ -7,6 +7,7 @@ from config.settings import (
     MEETING_CREATE_SLACK_WEBHOOK_URL,
     ENV_NAME,
     IMAGE_RESIZE_SQS_URL,
+    MEETING_ENTER_SLACK_WEBHOOK_URL,
 )
 from botocore.exceptions import ClientError
 from uuid import uuid4
@@ -131,6 +132,9 @@ def get_meeting_image(image_url):
 
 
 def send_meeting_create_slack_webhook(meeting_log):
+    if get_env_name() != "prod":
+        return None
+
     datetime_in_korean = date_and_time_to_korean(
         datetime.strptime(meeting_log.date, "%Y-%m-%d").date(),
         meeting_log.meeting.start_time,
@@ -153,6 +157,8 @@ def send_meeting_create_slack_webhook(meeting_log):
 
 
 def send_meeting_link_create_slack_webhook(meeting_log):
+    if get_env_name() != "prod":
+        return None
 
     payloads = {
         "text": "환경 : {} \nJinny 주인님🙇‍♂️, [ {} ] 님이 모임 링크를 생성했습니다! id = {}".format(
@@ -186,3 +192,19 @@ def send_image_resize_sqs_msg(meeting_id, image_url):
         capture_message("썸네일 이미지가 생성되지 않았습니다")
         return None
     return msg
+
+
+def send_meeting_enter_slack_webhook(user, meeting_log):
+    if get_env_name() != "prod":
+        return None
+
+    payloads = {
+        "text": "멍! [ {} ] 님이 모임에 입장했멍! ( meetinglog_id = {}, user_id = {} )".format(
+            user.nickname, str(meeting_log.id), str(user.id)
+        )
+    }
+    res = requests.post(
+        MEETING_ENTER_SLACK_WEBHOOK_URL,
+        data=json.dumps(payloads),
+        headers={"Content-Type": "application/json"},
+    )
