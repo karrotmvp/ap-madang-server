@@ -63,9 +63,9 @@ class Meeting(Base):
     )
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     region = models.CharField(max_length=200)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    days = models.ManyToManyField(Days, blank=True)
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
+    days = models.ManyToManyField(Days, blank=True, null=True)
     meeting_url = models.TextField(blank=True, null=True)
     channel_name = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
@@ -73,6 +73,7 @@ class Meeting(Base):
     is_video = models.BooleanField(default=False)
     sub_topics = models.TextField(default="[]")
     thumbnail_image_url = models.CharField(max_length=400, blank=True, null=True)
+    is_link = models.BooleanField(default=False)
 
     class Meta:
         indexes = [models.Index(fields=["thumbnail_image_url"])]
@@ -96,7 +97,7 @@ class Meeting(Base):
 
 class MeetingLog(Base):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.DateField(blank=True, null=True)
     alarm_cnt_fake = models.IntegerField(default=0)
     enter_cnt_fake = models.IntegerField(default=0)
     alarm_fake_add_cnt = models.IntegerField(default=0)

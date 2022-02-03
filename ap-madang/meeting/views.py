@@ -20,6 +20,9 @@ from agora.models import *
 from oauth.views import get_region_from_region_id
 from zoom.views import create_zoom_meeting, delete_zoom_meeting
 from alarmtalk.models import UserMeetingAlarm
+from share.utils import create_meeting_short_url
+
+from config.settings import CLIENT_BASE_URL
 
 
 class MeetingViewSet(
@@ -92,6 +95,7 @@ class MeetingViewSet(
 
             queryset = queryset.filter(
                 meeting__is_deleted=False,
+                meeting__is_link=False,
                 date__range=(today - timedelta(days=1), today + timedelta(days=6)),
                 meeting__region=region,
             ).exclude(
@@ -135,7 +139,7 @@ class MeetingViewSet(
 
     @jwt_authentication
     def create(self, request, *args, **kwargs):
-        desc = json.dumps(request.data["description"], ensure_ascii=False)
+        desc = json.dumps(request.data.get("description", None), ensure_ascii=False)
         image_url = request.data.get("image_url", None)
         self.request.data.update(
             {
@@ -213,3 +217,28 @@ def get_presigned_url(request):
 def get_meeting_agora_user_list(request, pk):
     meeting_log = get_object_or_404(MeetingLog, id=pk)
     return Response(json.loads(meeting_log.agora_user_list), status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@jwt_authentication_fbv
+def create_meeting_link(request):
+    user = request.user
+    region = request.region
+    title = "{}님의 음성 모임 방".format(user.nickname)
+
+    meeting = Meeting.objects.create(
+        user=user, region=region, title=title, is_link=True
+    )
+    meeting_log = MeetingLog.objects.create(meeting=meeting)
+
+    origin_url = "{}/daangn?#/redirect?meeting={}".format(
+        CLIENT_BASE_URL, meeting_log.id
+    )
+
+    url, share_code = create_meeting_short_url(origin_url, meeting_log.id)
+
+    send_meeting_link_create_slack_webhook(meeting_log)
+
+    return Response(
+        {"id": meeting_log.id, "share_code": share_code}, status=status.HTTP_201_CREATED
+    )

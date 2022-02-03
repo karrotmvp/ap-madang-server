@@ -100,7 +100,9 @@ class UserMeetingViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         queryset = (
             MeetingLog.objects.filter(
-                meeting__is_deleted=False, meeting__user=self.request.user.id
+                meeting__is_deleted=False,
+                meeting__is_link=False,
+                meeting__user=self.request.user.id,
             )
             .annotate(
                 user_enter_cnt=Subquery(
