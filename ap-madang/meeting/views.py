@@ -202,6 +202,10 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         except IntegrityError:
             pass
 
+        send_meeting_enter_slack_webhook(
+            request.user, MeetingLog.objects.get(id=kwargs["pk"])
+        )
+
         return HttpResponse(status=201)
 
 
