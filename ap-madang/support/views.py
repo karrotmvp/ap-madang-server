@@ -125,16 +125,12 @@ def query(request):
             "라면",
         ]
     )
+    meetings = Meeting.objects.filter(is_link=True).exclude(
+        user__nickname__in=["찬구", "진희", "소금빵", "녹미", "옝니", "꽉오", "땅콩"]
+    )
+    print("생성된 모임 링크 수", len(meetings))
 
-    cnt = 0
-
-    for alarm in alarms:
-        if UserMeetingEnter.objects.filter(
-            meeting=alarm.meeting, user=alarm.user
-        ).exists():
-            cnt += 1
-
-    print("총 알림 신청자 수", alarms.count())
-
-    print("알림 신청한 사람 중 모임에 입장한 사람", cnt)
-    print("알림 신청 -> 모임 입장 전환률", cnt / alarms.count())
+    enters = UserMeetingEnter.objects.filter(
+        meeting__created_at__range=["2022-2-3", "2022-2-7"]
+    ).exclude(user__nickname__in=["찬구", "진희", "소금빵", "녹미", "옝니", "꽉오", "땅콩"])
+    print("입장 수", len(enters))
