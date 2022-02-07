@@ -8,9 +8,8 @@ from user.jwt_authentication import jwt_authentication_fbv
 from meeting.models import MeetingLog
 import requests
 import json
-from config.settings import AGORA_CUSTOMER_ID, AGORA_APP_ID
+from config.settings import AGORA_APP_ID
 from .utils import *
-from meeting.utils import send_meeting_enter_slack_webhook
 
 
 @api_view(["GET"])
@@ -24,10 +23,6 @@ def get_user_meeting_from_code(request):
     meeting_enter_code.is_valid = False
     meeting_enter_code.save()
     serializer = MeetingEnterCodeSerializer(meeting_enter_code)
-
-    send_meeting_enter_slack_webhook(
-        meeting_enter_code.user, meeting_enter_code.meeting
-    )
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
