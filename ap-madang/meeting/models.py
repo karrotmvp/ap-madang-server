@@ -102,6 +102,7 @@ class MeetingLog(Base):
     enter_cnt_fake = models.IntegerField(default=0)
     alarm_fake_add_cnt = models.IntegerField(default=0)
     agora_user_list = models.TextField(default="[]")
+    closed_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         constraints = [

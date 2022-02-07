@@ -10,20 +10,25 @@ import requests
 import json
 from config.settings import AGORA_CUSTOMER_ID, AGORA_APP_ID
 from .utils import *
+from meeting.utils import send_meeting_enter_slack_webhook
 
 
 @api_view(["GET"])
 def get_user_meeting_from_code(request):
     code = request.GET.get("code", None)
     try:
-        meeting_enter_code = MeetingEnterCode.objects.get(
-            code=code, is_valid=True)
+        meeting_enter_code = MeetingEnterCode.objects.get(code=code, is_valid=True)
     except MeetingEnterCode.DoesNotExist:
         return JsonResponse({"error_code": "INVALID_CODE"}, status=401)
 
     meeting_enter_code.is_valid = False
     meeting_enter_code.save()
     serializer = MeetingEnterCodeSerializer(meeting_enter_code)
+
+    send_meeting_enter_slack_webhook(
+        meeting_enter_code.user, meeting_enter_code.meeting
+    )
+
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -40,12 +45,11 @@ def get_meeting_enter_code(request):
 
 def get_agora_channel_user_list(channel_name):
     url = "https://api.agora.io/dev/v1/channel/user/{}/{}".format(
-        AGORA_APP_ID, channel_name)
+        AGORA_APP_ID, channel_name
+    )
 
     payload = {}
-    headers = {
-        'Authorization': 'Basic ' + str(get_agora_credentials())
-    }
+    headers = {"Authorization": "Basic " + str(get_agora_credentials())}
     response = requests.request("GET", url, headers=headers, data=payload)
     return json.loads(response.text)
 

@@ -22,9 +22,7 @@ class MeetingLogAdmin(admin.ModelAdmin):
         "date",
         "meeting",
         "created_at",
-        "alarm_cnt_fake",
-        "enter_cnt_fake",
-        "alarm_fake_add_cnt",
+        "closed_at",
     )
     list_filter = [("date", CustomDateFieldListFilter), "meeting__region", "meeting"]
 

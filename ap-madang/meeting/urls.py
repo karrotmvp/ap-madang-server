@@ -10,4 +10,5 @@ urlpatterns = router.urls + [
     path("presigned-url", get_presigned_url),
     path("<int:pk>/user-list", get_meeting_agora_user_list),
     path("link", create_meeting_link),
+    path("link/<int:pk>/close", close_meeting_link),
 ]

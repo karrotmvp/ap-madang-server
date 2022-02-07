@@ -202,10 +202,6 @@ class UserMeetingEnterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         except IntegrityError:
             pass
 
-        send_meeting_enter_slack_webhook(
-            request.user, MeetingLog.objects.get(id=kwargs["pk"])
-        )
-
         return HttpResponse(status=201)
 
 
@@ -246,3 +242,56 @@ def create_meeting_link(request):
     return Response(
         {"id": meeting_log.id, "share_code": share_code}, status=status.HTTP_201_CREATED
     )
+
+
+@api_view(["POST"])
+@jwt_authentication_fbv
+def create_meeting_link(request):
+    user = request.user
+    region = request.region
+    title = "{}님의 음성 모임 방".format(user.nickname)
+
+    meeting = Meeting.objects.create(
+        user=user, region=region, title=title, is_link=True
+    )
+    meeting_log = MeetingLog.objects.create(meeting=meeting)
+
+    origin_url = "{}/daangn?#/redirect?meeting={}".format(
+        CLIENT_BASE_URL, meeting_log.id
+    )
+
+    url, share_code = create_meeting_short_url(origin_url, meeting_log.id)
+
+    send_meeting_link_create_slack_webhook(meeting_log)
+
+    return Response(
+        {"id": meeting_log.id, "share_code": share_code}, status=status.HTTP_201_CREATED
+    )
+
+
+@api_view(["PATCH"])
+@jwt_authentication_fbv
+def close_meeting_link(request, pk):
+    meeting_log = get_object_or_404(MeetingLog, id=pk)
+
+    # 방장인지 확인
+    if request.user.id != meeting_log.meeting.user.id:
+        return Response(
+            {
+                "error_message": "방장만 모임을 종료할 수 있습니다",
+                "error_code": "CLOSED_NOT_PERMITTED",
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    # 종료되지 않은 모임인지 확인
+    if meeting_log.closed_at is not None:
+        return Response(
+            {"error_message": "이미 종료된 모임입니다", "error_code": "ALREADY_CLOSED"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    meeting_log.closed_at = datetime.datetime.now()
+    meeting_log.save()
+
+    return Response(status=status.HTTP_200_OK)
