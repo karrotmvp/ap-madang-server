@@ -141,7 +141,8 @@ class MeetingViewSet(
 
     @jwt_authentication
     def create(self, request, *args, **kwargs):
-        desc = json.dumps(request.data.get("description", ""), ensure_ascii=False)
+        description_format = {"text": request.data.get("description", "")}
+        desc = json.dumps(description_format, ensure_ascii=False)
         start_time, end_time = set_start_end_time(request.data.get("start_time", None))
 
         # image_url = request.data.get("image_url", None)
