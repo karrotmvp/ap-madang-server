@@ -1,4 +1,6 @@
-from config.settings import CLIENT_BASE_URL
+from config.settings import CLIENT_BASE_URL, ERROR_SLACK_WEBHOOK_URL
+from common.utils import get_env_name
+import json, requests
 
 
 def time_to_korean(time, twelve_base=False):
@@ -44,3 +46,15 @@ def get_meeting_title_trunc(meeting_title):
     if len(meeting_title) > MAX_LENGTH:
         return meeting_title[0:MAX_LENGTH] + "..."
     return meeting_title
+
+
+def send_alarmtalk_error_slack_webhook(text):
+    if get_env_name() != "prod":
+        return None
+
+    payloads = {"text": text}
+    res = requests.post(
+        ERROR_SLACK_WEBHOOK_URL,
+        data=json.dumps(payloads),
+        headers={"Content-Type": "application/json"},
+    )
