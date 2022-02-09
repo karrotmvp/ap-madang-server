@@ -65,7 +65,7 @@ class Meeting(Base):
     region = models.CharField(max_length=200)
     start_time = models.TimeField(blank=True, null=True)
     end_time = models.TimeField(blank=True, null=True)
-    days = models.ManyToManyField(Days, blank=True, null=True)
+    days = models.ManyToManyField(Days, blank=True)
     meeting_url = models.TextField(blank=True, null=True)
     channel_name = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=path_and_rename)
