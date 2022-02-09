@@ -127,6 +127,9 @@ class MeetingLog(Base):
             )
         return datetime.combine(self.date, self.meeting.end_time)
 
+    def get_meeting_start_datetime(self):
+        return datetime.combine(self.date, self.meeting.start_time)
+
 
 class UserMeetingEnter(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

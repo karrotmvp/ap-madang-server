@@ -208,3 +208,13 @@ def send_meeting_enter_slack_webhook(user, meeting_log):
         data=json.dumps(payloads),
         headers={"Content-Type": "application/json"},
     )
+
+
+def set_start_end_time(start_time):
+    if start_time:
+        end_time = datetime.strptime(start_time, "%H:%M:%S") + timedelta(hours=3)
+        return start_time, end_time.time()
+
+    now = datetime.now()
+    three_hours_later = now + timedelta(hours=3)
+    return now.time(), three_hours_later.time()

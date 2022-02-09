@@ -7,8 +7,6 @@ from agora.views import is_agora_channel_available
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    image = serializers.CharField()
-
     class Meta:
         model = Meeting
         fields = [
@@ -18,7 +16,6 @@ class MeetingSerializer(serializers.ModelSerializer):
             "start_time",
             "end_time",
             "is_video",
-            "image",
             "description",
         ]
 
