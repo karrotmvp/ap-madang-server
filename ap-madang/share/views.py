@@ -43,7 +43,7 @@ def get_karrot_scheme_url(request):
             if (meeting_log.closed_at is not None) and (meeting_log.meeting.is_link):
                 short_url = get_object_or_404(ShareUrl, code="CLOSED")
 
-        except MeetingLog.DoesNotExist:
+        except:
             # 모임에 대한 code 가 아닌 경우
             pass
 
