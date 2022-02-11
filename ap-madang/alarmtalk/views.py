@@ -7,7 +7,6 @@ from config.settings import API_KEY, BASE_URL_REGION
 import json
 import requests
 from django.db.utils import IntegrityError
-from sentry_sdk import capture_message
 from datetime import datetime
 from .utils import *
 
@@ -63,6 +62,11 @@ def send_biz_chat_message(
     request_data = json.loads(response.text).get("data", None)
 
     if request_data is None:
+        send_alarmtalk_error_slack_webhook(
+            "***** Alarm talk sent failed!!! *****\n{}\nuser_id = {}".format(
+                response.text, user_id
+            )
+        )
         print("***** Alarm talk sent failed!!! *****")
         print(response.text)
         return False
@@ -116,7 +120,7 @@ def send_meeting_start_alarm_talk(alarm_list):
             text1 + alarm.meeting.meeting.title + text2,
             url,
             primary_button_text,
-            alarm.meeting.meeting.image.url,
+            None,
             True,
             normal_button_url,
             normal_button_text,
@@ -131,7 +135,7 @@ def send_meeting_start_alarm_talk(alarm_list):
             total_alarm_num += 1
 
         else:
-            capture_message(
+            send_alarmtalk_error_slack_webhook(
                 "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id), "error"
             )
 
@@ -167,7 +171,7 @@ def send_meeting_end_alarm_talk(enter_list):
             total_alarm_num += 1
 
         else:
-            capture_message(
+            send_alarmtalk_error_slack_webhook(
                 "모임 종료/후기 알림톡이 전송되지 않았습니다. usermeetingenter.id = " + str(enter.id),
                 "error",
             )
@@ -193,7 +197,7 @@ def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
                 text1 + meetinglog.meeting.title + text2,
                 url,
                 primary_button_text,
-                meetinglog.meeting.image.url,
+                None,
                 True,
                 normal_button_url,
                 normal_button_text,
@@ -208,9 +212,8 @@ def send_meeting_start_alarm_talk_to_owners(meetinglog_list):
                 total_alarm_num += 1
 
             else:
-                capture_message(
-                    "모임 시작 알림톡이 전송되지 않았습니다. meetinglog.id = " + str(meetinglog.id),
-                    "error",
+                send_alarmtalk_error_slack_webhook(
+                    "모임 시작 알림톡이 개설자에게 전송되지 않았습니다. meetinglog.id = " + str(meetinglog.id)
                 )
 
     return total_alarm_num
@@ -286,7 +289,7 @@ def send_meeting_create_function_alarm_talk_to_opinions(opinion_list):
             total_alarm_num += 1
 
         else:
-            capture_message(
+            send_alarmtalk_error_slack_webhook(
                 "모임 생성 기능 알림톡이 전송되지 않았습니다. useropinion.id = " + str(opinion.id),
                 "error",
             )
@@ -319,7 +322,7 @@ def send_welcome_alarm_talk_to_new_user(user):
         user.save()
 
     else:
-        capture_message(
+        send_alarmtalk_error_slack_webhook(
             "새 유저 환영 알림톡이 전송되지 않았습니다. useropinion.id = " + str(user.id),
             "error",
         )
@@ -344,7 +347,7 @@ def send_meeting_start_in_hour_alarm_talk(alarm_list):
             ),
             url,
             primary_button_text,
-            alarm.meeting.meeting.image.url,
+            None,
             True,
             normal_button_url,
             normal_button_text,
@@ -359,8 +362,9 @@ def send_meeting_start_in_hour_alarm_talk(alarm_list):
             total_alarm_num += 1
 
         else:
-            capture_message(
-                "모임 시작 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id), "error"
+            send_alarmtalk_error_slack_webhook(
+                "모임 시작 1시간 전 알림톡이 전송되지 않았습니다. usermeetingalarm.id = " + str(alarm.id),
+                "error",
             )
 
     return total_alarm_num
@@ -386,7 +390,7 @@ def send_meeting_start_in_hour_alarm_talk_to_owners(meetinglog_list):
                 ),
                 url,
                 primary_button_text,
-                meetinglog.meeting.image.url,
+                None,
                 True,
                 normal_button_url,
                 normal_button_text,
@@ -401,8 +405,9 @@ def send_meeting_start_in_hour_alarm_talk_to_owners(meetinglog_list):
                 total_alarm_num += 1
 
             else:
-                capture_message(
-                    "모임 시작 알림톡이 전송되지 않았습니다. meetinglog.id = " + str(meetinglog.id),
+                send_alarmtalk_error_slack_webhook(
+                    "모임 시작 한 시간 전 알림톡이 개설자에게 전송되지 않았습니다. meetinglog.id = "
+                    + str(meetinglog.id),
                     "error",
                 )
 

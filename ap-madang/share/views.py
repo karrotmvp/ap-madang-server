@@ -35,16 +35,17 @@ def get_karrot_scheme_url(request):
     code = request.GET.get("share_code", None)
     short_url = get_object_or_404(ShareUrl, code=code)
 
-    try:
-        # 모임에 대한 code 인 경우
-        meeting_log = MeetingLog.objects.get(id=code[5:])
-        # 링크 모임이면서, 모임이 종료된 경우 -> CLOSED 스킴을 반환한다
-        if (meeting_log.closed_at is not None) and (meeting_log.meeting.is_link):
-            short_url = get_object_or_404(ShareUrl, code="CLOSED")
+    if len(code) > 5:
+        try:
+            # 모임에 대한 code 인 경우
+            meeting_log = MeetingLog.objects.get(id=code[5:])
+            # 링크 모임이면서, 모임이 종료된 경우 -> CLOSED 스킴을 반환한다
+            if (meeting_log.closed_at is not None) and (meeting_log.meeting.is_link):
+                short_url = get_object_or_404(ShareUrl, code="CLOSED")
 
-    except MeetingLog.DoesNotExist:
-        # 모임에 대한 code 가 아닌 경우
-        pass
+        except MeetingLog.DoesNotExist:
+            # 모임에 대한 code 가 아닌 경우
+            pass
 
     short_url.access_cnt += 1
     short_url.save()

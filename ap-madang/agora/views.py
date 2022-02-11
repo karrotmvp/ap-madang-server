@@ -27,14 +27,27 @@ def get_user_meeting_from_code(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+def is_agora_channel_available(channel_name):
+    response_data = get_agora_channel_user_list(channel_name).get("data")
+    channel_exist = response_data.get("channel_exist")
+    if not channel_exist:
+        return True
+    total = response_data.get("total")
+    return total < 17
+
+
 @api_view(["GET"])
 @jwt_authentication_fbv
 def get_meeting_enter_code(request):
     meeting_id = request.GET.get("meeting", None)
     # TODO 쿼리 파라미터 없는 경우
-    code = MeetingEnterCode.objects.create(
-        meeting=MeetingLog.objects.get(id=meeting_id), user=request.user
-    )
+    meeting_log = MeetingLog.objects.get(id=meeting_id)
+
+    # 입장 가능한 경우에만 코드를 생성한다
+    if is_agora_channel_available(meeting_log.meeting.channel_name):
+        code = MeetingEnterCode.objects.create(meeting=meeting_log, user=request.user)
+    else:
+        code = None
     return JsonResponse({"code": code.code}, status=201, safe=False)
 
 
@@ -47,13 +60,3 @@ def get_agora_channel_user_list(channel_name):
     headers = {"Authorization": "Basic " + str(get_agora_credentials())}
     response = requests.request("GET", url, headers=headers, data=payload)
     return json.loads(response.text)
-
-
-def is_agora_channel_available(channel_name):
-    response_data = get_agora_channel_user_list(channel_name).get("data")
-
-    channel_exist = response_data.get("channel_exist")
-    if not channel_exist:
-        return True
-    total = response_data.get("total")
-    return total < 17

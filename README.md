@@ -123,8 +123,7 @@ crontab -l
 
 9. 로그 확인
 ```
-cat /var/log/crontab_meeting_alarm.log
-cat /var/log/crontab_test.log
-cat /var/log/crontab_create_tomorrows_meeting.log
-cat /var/log/add_fake_cnt.log
+tail -100 /var/log/crontab_meeting_alarm.log
+tail -100 /var/log/crontab_create_tomorrows_meeting.log
+tail -100 /var/log/crontab_update_agora_user_list.log
 ```

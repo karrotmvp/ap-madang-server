@@ -1,5 +1,7 @@
+from importlib.util import decode_source
+from tracemalloc import start
 from rest_framework import viewsets, mixins
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.db.models import OuterRef, Subquery, Count
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
@@ -139,14 +141,19 @@ class MeetingViewSet(
 
     @jwt_authentication
     def create(self, request, *args, **kwargs):
-        desc = json.dumps(request.data.get("description", None), ensure_ascii=False)
-        image_url = request.data.get("image_url", None)
+        description_format = {"text": request.data.get("description", "")}
+        desc = json.dumps(description_format, ensure_ascii=False)
+        start_time, end_time = set_start_end_time(request.data.get("start_time", None))
+
+        # image_url = request.data.get("image_url", None)
         self.request.data.update(
             {
                 "user": request.user.id,
                 "region": request.region,
-                "image": get_meeting_image(image_url),
+                # "image": get_meeting_image(image_url),
                 "description": desc,
+                "start_time": start_time,
+                "end_time": end_time,
             }
         )
         # self.user_id = request.user.id
@@ -166,8 +173,8 @@ class MeetingViewSet(
 
         # send_meeting_create_alarm_talk(meeting_log)
 
-        if image_url:
-            send_image_resize_sqs_msg(meeting.id, image_url)
+        # if image_url:
+        #     send_image_resize_sqs_msg(meeting.id, image_url)
 
         send_meeting_create_slack_webhook(meeting_log)
         return Response({"id": meeting_log.id}, status=status.HTTP_201_CREATED)
@@ -273,6 +280,7 @@ def create_meeting_link(request):
     )
 
 
+# 링크 모임 종료
 @api_view(["PATCH"])
 @jwt_authentication_fbv
 def close_meeting_link(request, pk):
@@ -297,5 +305,44 @@ def close_meeting_link(request, pk):
 
     meeting_log.closed_at = datetime.datetime.now()
     meeting_log.save()
+
+    return Response(status=status.HTTP_200_OK)
+
+
+# 일반 모임 종료
+@api_view(["PATCH"])
+@jwt_authentication_fbv
+def close_meeting(request, pk):
+    meeting_log = get_object_or_404(MeetingLog, id=pk)
+
+    # 방장인지 확인
+    if request.user.id != meeting_log.meeting.user.id:
+        return Response(
+            {
+                "error_message": "방장만 모임을 종료할 수 있습니다",
+                "error_code": "CLOSED_NOT_PERMITTED",
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    now = datetime.datetime.now()
+
+    # 모임 시작시간이 현시각 보다 뒤인 경우(모임이 시작하지 않은 경우)
+    if meeting_log.get_meeting_start_datetime() > now:
+        return Response(
+            {"error_message": "시작하지 않은 모임은 종료할 수 없습니다", "error_code": "NOT_STARTED"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # 모임 종료시간이 현시각 보다 앞인 경우(이미 모임이 종료된 경우)
+    if meeting_log.get_meeting_end_datetime() < now:
+        return Response(
+            {"error_message": "이미 종료된 모임입니다", "error_code": "ALREADY_CLOSED"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    meeting = Meeting.objects.get(id=meeting_log.meeting.id)
+    meeting.end_time = now.time()
+    meeting.save()
 
     return Response(status=status.HTTP_200_OK)
