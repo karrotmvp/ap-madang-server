@@ -125,12 +125,45 @@ def query(request):
             "라면",
         ]
     )
-    meetings = Meeting.objects.filter(is_link=True).exclude(
-        user__nickname__in=["찬구", "진희", "소금빵", "녹미", "옝니", "꽉오", "땅콩"]
+    meetings = (
+        Meeting.objects.filter(is_link=True)
+        .exclude(
+            user__nickname__in=[
+                "찬구",
+                "주디아빠",
+                "소금빵",
+                "녹미",
+                "옝니",
+                "꽉오",
+                "땅콩",
+                "월화",
+                "피자빌런",
+            ],
+            created_at__range=["2022-02-07", "2022-02-14"],
+        )
+        .distinct()
     )
     print("생성된 모임 링크 수", len(meetings))
 
-    enters = UserMeetingEnter.objects.filter(
-        meeting__created_at__range=["2022-2-3", "2022-2-7"]
-    ).exclude(user__nickname__in=["찬구", "진희", "소금빵", "녹미", "옝니", "꽉오", "땅콩"])
+    enters = (
+        UserMeetingEnter.objects.filter(
+            meeting__created_at__range=["2022-02-07", "2022-02-14"]
+        )
+        .exclude(
+            user__nickname__in=[
+                "찬구",
+                "주디아빠",
+                "소금빵",
+                "녹미",
+                "옝니",
+                "꽉오",
+                "땅콩",
+                "월화",
+                "피자빌런",
+            ]
+        )
+        .distinct()
+    )
     print("입장 수", len(enters))
+
+    print("한명이라도 입장한 모임 수", len(enters.values_list("meeting").distinct()))
