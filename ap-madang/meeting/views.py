@@ -87,7 +87,7 @@ class MeetingViewSet(
                         .values("count")
                     )
                 )
-                .prefetch_related("meeting")
+                .prefetch_related("meeting", "meeting__user")
                 .order_by("date", "meeting__start_time")
             )
 
