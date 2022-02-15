@@ -126,7 +126,9 @@ def query(request):
         ]
     )
     meetings = (
-        Meeting.objects.filter(is_link=True)
+        Meeting.objects.filter(
+            is_link=True, created_at__range=["2022-02-07", "2022-02-14"], region="서초구"
+        )
         .exclude(
             user__nickname__in=[
                 "찬구",
@@ -138,12 +140,12 @@ def query(request):
                 "땅콩",
                 "월화",
                 "피자빌런",
-            ],
-            created_at__range=["2022-02-07", "2022-02-14"],
+            ]
         )
         .distinct()
+        .count()
     )
-    print("생성된 모임 링크 수", len(meetings))
+    print("생성된 모임 링크 수", meetings)
 
     enters = (
         UserMeetingEnter.objects.filter(

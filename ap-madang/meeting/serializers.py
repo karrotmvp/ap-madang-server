@@ -3,7 +3,7 @@ from .models import *
 import json
 from .utils import *
 from user.serializers import *
-from agora.views import is_agora_channel_available
+from agora.views import is_agora_channel_available, get_agora_channel_user_cnt
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -76,6 +76,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     alarm_num = serializers.SerializerMethodField()
     is_host = serializers.SerializerMethodField()
     host = serializers.SerializerMethodField()
+    agora_channel_user_cnt = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
@@ -90,6 +91,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "alarm_num",
             "is_host",
             "host",
+            "agora_channel_user_cnt",
         ]
         fields = common_fields + ["description_text"]
 
@@ -143,6 +145,11 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
                 "region_name": "당근마켓",
             }
         )
+
+    def get_agora_channel_user_cnt(self, obj):
+        if obj.live_status != "live":
+            return 0
+        return get_agora_channel_user_cnt(obj.meeting.channel_name)
 
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
