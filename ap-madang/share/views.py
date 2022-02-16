@@ -19,7 +19,7 @@ def get_or_create_short_url(request):
         CLIENT_BASE_URL, meeting_id
     )
 
-    url = create_meeting_short_url(origin_url, meeting_id)
+    url, _ = create_meeting_short_url(origin_url, meeting_id)
     return JsonResponse({"short_url": url}, status=200, safe=False)
 
 
