@@ -5,6 +5,6 @@ def get_env_name():
     # returns dev / prod / other
     if ENV_NAME in ["dev", "dev-sub"]:
         return "dev"
-    if ENV_NAME in ["production", "production-sub"]:
+    if ENV_NAME in ["production", "production-sub", "cron"]:
         return "prod"
     return "other"

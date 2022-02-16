@@ -66,7 +66,7 @@ class MeetingViewSet(
                     )
                 )
                 .prefetch_related("meeting", "meeting__user")
-                .order_by("date", "meeting__start_time")
+                .order_by("-date", "-meeting__start_time")
             )
 
         else:
@@ -88,7 +88,7 @@ class MeetingViewSet(
                     )
                 )
                 .prefetch_related("meeting", "meeting__user")
-                .order_by("date", "meeting__start_time")
+                .order_by("-date", "-meeting__start_time")
             )
 
         if self.action == "list":
@@ -109,7 +109,7 @@ class MeetingViewSet(
                 q.live_status = get_live_status(
                     q.date, q.meeting.start_time, q.meeting.end_time
                 )
-                if q.live_status != "finish":
+                if q.live_status == "live":
                     filtered_queryset.append(q)
             return filtered_queryset
 
@@ -164,7 +164,7 @@ class MeetingViewSet(
         meeting = serializer.save()
 
         # MeetingLog Obj Create
-        date = request.data["date"]
+        date = datetime.datetime.now().strftime("%Y-%m-%d")
         meeting_log = MeetingLog.objects.create(meeting=meeting, date=date)
 
         if meeting.is_video:
