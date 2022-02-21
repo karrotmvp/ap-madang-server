@@ -75,7 +75,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     is_video = serializers.SerializerMethodField()
     description_text = serializers.SerializerMethodField()
     # alarm_num = serializers.SerializerMethodField()
-    # is_host = serializers.SerializerMethodField()
+    is_host = serializers.SerializerMethodField()
     host = serializers.SerializerMethodField()
     agora_user_list = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
@@ -91,7 +91,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "end_time",
             "is_video",
             #    "alarm_num",
-            #    "is_host",
+            "is_host",
             "host",
             "agora_user_list",
             "meeting_url",

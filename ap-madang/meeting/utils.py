@@ -215,6 +215,10 @@ def set_start_end_time(start_time):
         end_time = datetime.strptime(start_time, "%H:%M:%S") + timedelta(hours=3)
         return start_time, end_time.time()
 
-    now = datetime.now()
-    three_hours_later = now + timedelta(hours=3)
-    return now.time(), three_hours_later.time()
+    now_datetime = datetime.now()
+    now = datetime.strftime(now_datetime, "%H:%M:%000")
+
+    three_hours_later = datetime.strftime(
+        now_datetime + timedelta(hours=3), "%H:%M:%000"
+    )
+    return now, three_hours_later
