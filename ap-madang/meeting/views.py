@@ -171,6 +171,10 @@ class MeetingViewSet(
             meeting.meeting_url = create_zoom_meeting(meeting_log)
             meeting.save()
 
+        origin_url = "{}/?#/?meeting={}".format(CLIENT_BASE_URL, meeting_log.id)
+
+        create_meeting_short_url(origin_url, meeting_log.id)
+
         # send_meeting_create_alarm_talk(meeting_log)
 
         # if image_url:
