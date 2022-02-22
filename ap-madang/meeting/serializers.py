@@ -5,6 +5,8 @@ from .utils import *
 from user.serializers import *
 from agora.views import is_agora_channel_available, get_agora_channel_user_cnt
 from user.models import User
+from config.settings import CLIENT_BASE_URL
+from share.utils import create_meeting_short_url
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -79,6 +81,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
     host = serializers.SerializerMethodField()
     agora_user_list = serializers.SerializerMethodField()
     meeting_url = serializers.SerializerMethodField()
+    share_code = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
@@ -95,6 +98,7 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "host",
             "agora_user_list",
             "meeting_url",
+            "share_code",
         ]
         fields = common_fields + ["description_text"]
 
@@ -158,6 +162,11 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
 
     def get_meeting_url(self, obj):
         return obj.meeting.meeting_url
+
+    def get_share_code(self, obj):
+        origin_url = "{}/?#/?meeting={}".format(CLIENT_BASE_URL, obj.id)
+        url, code = create_meeting_short_url(origin_url, obj.id)
+        return code
 
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
