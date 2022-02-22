@@ -164,8 +164,13 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
         return obj.meeting.meeting_url
 
     def get_share_code(self, obj):
+        if obj.share_code:
+            return obj.share_code
+
         origin_url = "{}/?#/?meeting={}".format(CLIENT_BASE_URL, obj.id)
         url, code = create_meeting_short_url(origin_url, obj.id)
+        obj.share_code = code
+        obj.save()
         return code
 
 
