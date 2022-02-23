@@ -11,11 +11,22 @@ class MeetingLogSimpleSerializer(serializers.ModelSerializer):
     sub_topics = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     host = serializers.SerializerMethodField()
+    start_time = serializers.SerializerMethodField()
+    end_time = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingLog
-        fields = ["id", "title", "channel_name",
-                  "sub_topics", "description", "host"]
+        fields = [
+            "id",
+            "title",
+            "channel_name",
+            "sub_topics",
+            "description",
+            "host",
+            "date",
+            "start_time",
+            "end_time",
+        ]
 
     def get_title(self, obj):
         return obj.meeting.title
@@ -41,6 +52,12 @@ class MeetingLogSimpleSerializer(serializers.ModelSerializer):
                 "region_name": "교보타워",
             }
         )
+
+    def get_start_time(self, obj):
+        return obj.meeting.start_time
+
+    def get_end_time(self, obj):
+        return obj.meeting.end_time
 
 
 class MeetingEnterCodeSerializer(serializers.ModelSerializer):
