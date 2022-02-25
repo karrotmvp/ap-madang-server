@@ -73,8 +73,8 @@ def login(request):
     user.token = token
     user.save()
 
-    # if created:
-    #     send_welcome_alarm_talk_to_new_user(user)
+    if created:
+        send_welcome_alarm_talk_to_new_user(user)
 
     return JsonResponse({"token": token}, status=200, safe=False)
 

@@ -94,11 +94,11 @@ INSTALLED_APPS = (
 if DEBUG or ENV_NAME in ["cron", "cron-dev"]:
     CRONJOBS = [
         # ("*/5 * * * *", "meeting.cron.add_fake_cnt", ">> /var/log/add_fake_cnt.log"),
-        (
-            "*/30 * * * *",
-            "alarmtalk.cron.send_meeting_alarm",
-            ">> /var/log/crontab_meeting_alarm.log",
-        ),
+        # (
+        #     "*/30 * * * *",
+        #     "alarmtalk.cron.send_meeting_alarm",
+        #     ">> /var/log/crontab_meeting_alarm.log",
+        # ),
         (
             "0 1 * * *",
             "meeting.cron.create_tomorrows_meeting",

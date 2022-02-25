@@ -36,9 +36,7 @@ def get_meeting_detail_client_page(meeting_id):
 
 
 def get_home_client_page():
-    return "{}/index.html?#/".format(
-        CLIENT_BASE_URL,
-    )
+    return "{}/index.html?#/?scheme=true".format(CLIENT_BASE_URL)
 
 
 def get_meeting_title_trunc(meeting_title):
