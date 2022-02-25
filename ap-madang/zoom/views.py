@@ -50,6 +50,7 @@ def create_zoom_meeting(meeting):
                 "participant_video": "false",
                 "join_before_host": "true",
                 "waiting_room": "false",
+                "meeting_authentication": "false",
             },
         }
     )
