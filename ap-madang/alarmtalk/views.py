@@ -302,7 +302,7 @@ def send_welcome_alarm_talk_to_new_user(user):
     text = "동네 이웃을 만나는 공간 '랜선동네모임'에서 이웃들과 대화를 나눠보세요! \n아래 '랜동모 홈으로 가기' 버튼을 눌러 우리 동네 모임을 둘러보세요. "
     primary_button_text = "랜동모 홈으로 가기"
     url = get_home_client_page()
-    welcome_image = "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/alarmtalk_welcome.png"
+    welcome_image = "https://ap-madang-server.s3.ap-northeast-2.amazonaws.com/static/api/알림톡+(1).png"
 
     if send_biz_chat_message(
         user.karrot_user_id,
