@@ -36,6 +36,14 @@ def is_agora_channel_available(channel_name):
     return total < 17
 
 
+def get_agora_channel_user_cnt(channel_name):
+    response_data = get_agora_channel_user_list(channel_name).get("data")
+    channel_exist = response_data.get("channel_exist")
+    if not channel_exist:
+        return 0
+    return response_data.get("total")
+
+
 @api_view(["GET"])
 @jwt_authentication_fbv
 def get_meeting_enter_code(request):

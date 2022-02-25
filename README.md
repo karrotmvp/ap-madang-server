@@ -1,6 +1,6 @@
 # ap-madang-server
 랜던 동네 모임 서버
-![image](https://user-images.githubusercontent.com/57395765/137661835-504cf61f-530d-4772-97d1-f47ac7792078.png)
+![image](https://user-images.githubusercontent.com/57395765/153853185-3b263103-d5da-400c-9c3c-48c5e56c834f.png)
 
 
 ## 환경 세팅

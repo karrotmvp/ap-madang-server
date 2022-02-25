@@ -3,7 +3,10 @@ from .models import *
 import json
 from .utils import *
 from user.serializers import *
-from agora.views import is_agora_channel_available
+from agora.views import is_agora_channel_available, get_agora_channel_user_cnt
+from user.models import User
+from config.settings import CLIENT_BASE_URL
+from share.utils import create_meeting_short_url
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -43,12 +46,12 @@ class UserMeetingEnterSerializer(serializers.ModelSerializer):
 
 class MeetingRecommendSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
-    user_enter_cnt = serializers.SerializerMethodField()
+    # image = serializers.SerializerMethodField()
+    # user_enter_cnt = serializers.SerializerMethodField()
 
     class Meta:
         model = MeetingLog
-        fields = ["title", "image", "user_enter_cnt"]
+        fields = ["title"]
 
     def get_title(self, obj):
         return obj.meeting.title
@@ -68,14 +71,17 @@ class MeetingRecommendSerializer(serializers.ModelSerializer):
 
 class MeetingLogSerializer(MeetingRecommendSerializer):
     live_status = serializers.SerializerMethodField()
-    alarm_id = serializers.SerializerMethodField()
+    # alarm_id = serializers.SerializerMethodField()
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
     is_video = serializers.SerializerMethodField()
     description_text = serializers.SerializerMethodField()
-    alarm_num = serializers.SerializerMethodField()
+    # alarm_num = serializers.SerializerMethodField()
     is_host = serializers.SerializerMethodField()
     host = serializers.SerializerMethodField()
+    agora_user_list = serializers.SerializerMethodField()
+    meeting_url = serializers.SerializerMethodField()
+    share_code = serializers.SerializerMethodField()
 
     class Meta(MeetingRecommendSerializer.Meta):
         model = MeetingLog
@@ -83,13 +89,16 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             "id",
             "date",
             "live_status",
-            "alarm_id",
+            #    "alarm_id",
             "start_time",
             "end_time",
             "is_video",
-            "alarm_num",
+            #    "alarm_num",
             "is_host",
             "host",
+            "agora_user_list",
+            "meeting_url",
+            "share_code",
         ]
         fields = common_fields + ["description_text"]
 
@@ -144,19 +153,35 @@ class MeetingLogSerializer(MeetingRecommendSerializer):
             }
         )
 
+    def get_agora_user_list(self, obj):
+        if obj.live_status != "live" or obj.meeting.is_video:
+            return list()
+        agora_users_list = json.loads(obj.agora_user_list)
+        users = User.objects.filter(id__in=agora_users_list)
+        return SimpleUserSerializer(users, many=True).data
+
+    def get_meeting_url(self, obj):
+        return obj.meeting.meeting_url
+
+    def get_share_code(self, obj):
+        if obj.share_code:
+            return obj.share_code
+
+        origin_url = "{}/?#/?meeting={}".format(CLIENT_BASE_URL, obj.id)
+        url, code = create_meeting_short_url(origin_url, obj.id)
+        obj.share_code = code
+        obj.save()
+        return code
+
 
 class MeetingLogDetailSerializer(MeetingLogSerializer):
     description = serializers.SerializerMethodField()
-    meeting_url = serializers.SerializerMethodField()
     region = serializers.SerializerMethodField()
     is_agora_channel_available = serializers.SerializerMethodField()
     # recommend = serializers.SerializerMethodField()
 
     def get_description(self, obj):
         return json.loads(obj.meeting.description)
-
-    def get_meeting_url(self, obj):
-        return obj.meeting.meeting_url
 
     def get_region(self, obj):
         return obj.meeting.region
@@ -202,7 +227,6 @@ class MeetingLogDetailSerializer(MeetingLogSerializer):
     class Meta(MeetingLogSerializer.Meta):
         fields = MeetingLogSerializer.Meta.common_fields + [
             "description",
-            "meeting_url",
             "region",
             "is_agora_channel_available"
             # "recommend",

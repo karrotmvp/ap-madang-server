@@ -18,3 +18,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_profile_image_url(self, obj):
         return get_profile_image_url(obj)
+
+
+class SimpleUserSerializer(serializers.ModelSerializer):
+    profile_image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "nickname", "profile_image_url"]
+
+    def get_profile_image_url(self, obj):
+        return get_profile_image_url(obj)
