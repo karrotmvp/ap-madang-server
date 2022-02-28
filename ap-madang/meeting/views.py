@@ -98,18 +98,15 @@ class MeetingViewSet(
             queryset = queryset.filter(
                 meeting__is_deleted=False,
                 meeting__is_link=False,
-                date__range=(today - timedelta(days=1), today + timedelta(days=6)),
+                date__range=["2022-02-25", today],
                 meeting__region=region,
-            ).exclude(
-                date__range=(today + timedelta(days=2), today + timedelta(days=6)),
-                meeting__user__isnull=True,
             )
             filtered_queryset = []
             for q in queryset:
                 q.live_status = get_live_status(
                     q.date, q.meeting.start_time, q.meeting.end_time
                 )
-                if q.live_status == "live":
+                if q.live_status == "live" or q.live_status == "finish":
                     filtered_queryset.append(q)
             return filtered_queryset
 
